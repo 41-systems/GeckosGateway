@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src https:; frame-src https://www.openstreetmap.org; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
-<meta name="description" content="Gecko's Gateway — lightweight browser-side privacy and utility tools.">
+<meta name="description" content="Gecko's Gateway: DNS, IP, RDAP, fingerprint and password tools.">
 <title>🦎 Gecko's Gateway</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🦎%3C/text%3E%3C/svg%3E">
 <style>
@@ -33,7 +33,6 @@ header{padding:28px 28px 24px;text-align:center;border-bottom:1px solid var(--bo
 .section h2{display:flex;align-items:center;gap:8px;margin:0 0 8px;font-size:1.18rem}
 .section h2::after{content:"";flex:1;height:1px;margin-left:8px;background:linear-gradient(90deg,var(--border-strong),transparent)}
 .help-text{margin:0 0 18px;color:var(--muted);line-height:1.6}
-.notice{margin-top:14px;padding:12px 14px;color:var(--muted);background:rgba(138,96,0,.06);border:1px solid rgba(138,96,0,.25);border-radius:10px;font-size:.9rem;line-height:1.5}
 .input-group{display:flex;gap:10px;margin-bottom:12px}
 input,select{width:100%;min-height:44px;padding:10px 12px;color:var(--text);background:#fff;border:1px solid var(--border-strong);border-radius:9px;outline:none;transition:border-color .18s,box-shadow .18s}
 input::placeholder{color:#7b9486}
@@ -81,7 +80,7 @@ body{padding:10px}header{padding:22px 16px 18px}.tab-content{padding:14px}.secti
 <main class="container">
 <header>
 <h1 class="brand">🦎 Gecko's Gateway</h1>
-<p class="tagline">A compact browser-side toolkit for DNS records, DNS leak testing, public IP details, RDAP, fingerprint signals, and secure password generation.</p>
+<p class="tagline">Network tools & stuff</p>
 <div class="gecko-art"><svg viewBox="0 0 320 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cartoon gecko in overalls typing at a computer">
 <defs><pattern id="spray" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="2" cy="3" r="1" fill="#00aa00"/><circle cx="8" cy="12" r="1.5" fill="#008800"/><circle cx="15" cy="5" r="1" fill="#00aa00"/><circle cx="11" cy="17" r="1" fill="#006600"/><circle cx="5" cy="18" r="1.2" fill="#00aa00"/></pattern></defs>
 <rect width="320" height="260" fill="#fff"/>
@@ -127,7 +126,7 @@ body{padding:10px}header{padding:22px 16px 18px}.tab-content{padding:14px}.secti
 <section id="dns-panel" class="tab-panel active">
 <div class="section">
 <h2>DNS Record Lookup</h2>
-<p class="help-text">Query common DNS record types through Cloudflare's DNS-over-HTTPS service. This looks up records; it does not test for leaks (see below).</p>
+<p class="help-text">Look up DNS records through Cloudflare's DNS-over-HTTPS service.</p>
 <div class="input-group">
 <input type="text" id="domain-input" placeholder="e.g. google.com" value="google.com" autocomplete="off" aria-label="Domain name">
 <select id="record-type" aria-label="DNS record type">
@@ -141,17 +140,16 @@ body{padding:10px}header{padding:22px 16px 18px}.tab-content{padding:14px}.secti
 
 <div class="section">
 <h2>DNS Leak Test</h2>
-<p class="help-text">Your browser looks up 10 unique, random hostnames. The test service (bash.ws) records which DNS resolvers asked for them, so you can see who actually handles your DNS. If you use a VPN, those resolvers should belong to the VPN or your chosen DNS provider, not your ISP.</p>
+<p class="help-text">Shows which DNS resolvers handle your lookups, using bash.ws. A random test ID and your IP address are sent to that service.</p>
 <button class="action-btn" id="leak-btn">🛡️ Run DNS Leak Test</button>
 <div id="leak-output" class="output-box" aria-live="polite">Click the button to start the test...</div>
-<div class="notice">ℹ️ Running the test sends a random test ID and your IP address to bash.ws. Browser "secure DNS" (DoH) settings count: if enabled, the resolver shown is the one your browser uses, which can differ from your operating system's.</div>
 </div>
 </section>
 
 <section id="ip-panel" class="tab-panel">
 <div class="section">
 <h2>Public IP &amp; Geolocation</h2>
-<p class="help-text">See the public IP address and approximate network/location information visible to an IP geolocation service.</p>
+<p class="help-text">Your public IP address and approximate location, from ipwho.is.</p>
 <button class="action-btn" id="ip-btn">🌐 Check IP Information</button>
 <div id="ip-output" class="output-box" aria-live="polite">Click the button above to view public IP details...</div>
 <div id="ip-map-container" class="map-container"><iframe id="ip-map" title="Approximate IP geolocation map" loading="lazy" referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin"></iframe></div>
@@ -161,7 +159,7 @@ body{padding:10px}header{padding:22px 16px 18px}.tab-content{padding:14px}.secti
 <section id="whois-panel" class="tab-panel">
 <div class="section">
 <h2>Domain Registration Data · RDAP</h2>
-<p class="help-text">Retrieve registration dates, registrar, nameservers, and RDAP status information for a domain.</p>
+<p class="help-text">Registration dates, registrar, nameservers and status for a domain.</p>
 <div class="input-group"><input type="text" id="whois-input" placeholder="e.g. wikipedia.org" value="github.com" autocomplete="off" aria-label="Domain name"></div>
 <button class="action-btn" id="whois-btn">📋 Lookup Domain RDAP</button>
 <div id="whois-output" class="output-box" aria-live="polite">Enter a domain above to query registration records...</div>
@@ -171,7 +169,7 @@ body{padding:10px}header{padding:22px 16px 18px}.tab-content{padding:14px}.secti
 <section id="fp-panel" class="tab-panel">
 <div class="section">
 <h2>Device &amp; Browser Signals</h2>
-<p class="help-text">Generate a local, approximate browser fingerprint from signals exposed to JavaScript. This is not a permanent identifier and results vary with browser settings. Nothing is sent anywhere.</p>
+<p class="help-text">Browser and device signals visible to JavaScript. Nothing is sent anywhere.</p>
 <button class="action-btn" id="fp-btn">🔍 Generate Fingerprint</button>
 <div id="fp-output" class="output-box">Click the button above to calculate browser identity signals...</div>
 </div>
@@ -180,7 +178,7 @@ body{padding:10px}header{padding:22px 16px 18px}.tab-content{padding:14px}.secti
 <section id="news-panel" class="tab-panel">
 <div class="section">
 <h2>News</h2>
-<p class="help-text">Live headlines pulled straight from public APIs in your browser. Links open in a new tab.</p>
+<p class="help-text">Headlines from public APIs. Links open in a new tab.</p>
 <div class="input-group">
 <select id="news-source" aria-label="News source">
 <option value="hn-top">Hacker News · Top stories</option>
@@ -191,13 +189,12 @@ body{padding:10px}header{padding:22px 16px 18px}.tab-content{padding:14px}.secti
 </div>
 <div id="news-list" class="output-box" aria-live="polite">Open this tab or press Refresh to load headlines...</div>
 </div>
-<div class="notice">ℹ️ Sites like Malwarebytes, BleepingComputer and Krebs only offer RSS feeds that browsers can't read directly from another website. Adding them needs a small proxy.</div>
 </section>
 
 <section id="pwd-panel" class="tab-panel">
 <div class="section">
 <h2>Secure Password &amp; Passphrase Generator</h2>
-<p class="help-text">Generation happens locally in your browser using the Web Crypto API. Passwords are never sent anywhere.</p>
+<p class="help-text">Generated locally with the Web Crypto API. Nothing leaves your browser.</p>
 <div class="password-display-wrapper">
 <div id="pwd-result" class="password-display" aria-live="polite">Click Generate below...</div>
 <button class="secondary-btn copy-btn" id="copy-btn">Copy 📋</button>
@@ -264,16 +261,13 @@ body{padding:10px}header{padding:22px 16px 18px}.tab-content{padding:14px}.secti
 </section>
 </div>
 
-<footer>🦎 Gecko's Gateway · Browser-side utilities · No account required</footer>
+<footer>🦎 Gecko's Gateway</footer>
 </main>
 
 <script>
 "use strict";
 const $ = id => document.getElementById(id);
 
-/* ---------- helpers ---------- */
-
-// fetch JSON with timeout; never sends cookies or referrer
 async function getJSON(url, opts = {}, ms = 10000) {
   const c = new AbortController(), t = setTimeout(() => c.abort(), ms);
   try {
@@ -285,15 +279,12 @@ async function getJSON(url, opts = {}, ms = 10000) {
   } finally { clearTimeout(t); }
 }
 
-// fire-and-forget request, used only to trigger a DNS lookup
 function ping(url, ms = 6000) {
   const c = new AbortController();
   setTimeout(() => c.abort(), ms);
   return fetch(url, { mode: "no-cors", cache: "no-store", credentials: "omit", referrerPolicy: "no-referrer", signal: c.signal }).catch(() => {});
 }
 
-// Safe output: builds DOM nodes with textContent only (no innerHTML anywhere).
-// Row = [text] for a plain line, or [label, value] for a highlighted label.
 function fill(el, rows) {
   el.textContent = "";
   for (const r of rows) {
@@ -313,7 +304,6 @@ function addLink(el, href, text) {
   el.append(a, "\n");
 }
 
-// Normalises user input to a bare, valid hostname (punycode for IDN) or returns null
 function cleanDomain(raw) {
   try {
     const h = new URL("http://" + String(raw).trim().replace(/^[a-z][a-z0-9+.-]*:\/\//i, "")).hostname.replace(/\.$/, "");
@@ -323,15 +313,12 @@ function cleanDomain(raw) {
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-// Unbiased random integer in [0, max) using rejection sampling
 function rand(max) {
   if (max <= 1) return 0;
   const lim = Math.floor(0x100000000 / max) * max, a = new Uint32Array(1);
   do crypto.getRandomValues(a); while (a[0] >= lim);
   return a[0] % max;
 }
-
-/* ---------- tabs ---------- */
 
 function switchTab(btn) {
   document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
@@ -340,8 +327,6 @@ function switchTab(btn) {
   btn.classList.add("active");
   if (btn.dataset.tab === "news-panel" && !newsLoaded) loadNews();
 }
-
-/* ---------- DNS lookup ---------- */
 
 const RR = { 1: "A", 2: "NS", 5: "CNAME", 15: "MX", 16: "TXT", 28: "AAAA" };
 
@@ -357,8 +342,6 @@ async function lookupDNS() {
       `Name: ${r.name}\nType: ${RR[r.type] || r.type}\nTTL: ${r.TTL}s\nData: ${r.data}`).join("\n-------------------------------\n");
   } catch (e) { out.textContent = "Error querying DNS: " + e.message; }
 }
-
-/* ---------- DNS leak test (bash.ws protocol) ---------- */
 
 async function runLeakTest() {
   const out = $("leak-output"), btn = $("leak-btn");
@@ -381,18 +364,15 @@ async function runLeakTest() {
     const lines = [];
     mine.forEach(r => lines.push(["Your IP:", info(r)]));
     lines.push([""], [`Resolvers seen (${dns.length}):`]);
-    if (!dns.length) lines.push(["No resolver queries were recorded. An ad-blocker or DNS filter may have blocked the test hostnames; disable it for this page and retry."]);
+    if (!dns.length) lines.push(["No resolver queries were recorded. Try again with any ad-blocker or DNS filter turned off."]);
     dns.forEach(r => lines.push(["Resolver:", info(r)]));
     verdict.forEach(r => lines.push([""], ["Service verdict:", r.ip]));
-    lines.push([""], ["How to read this: a leak is a resolver owned by your ISP while you expect your VPN or private DNS provider to handle lookups. Resolvers from Cloudflare, Google, Quad9 or your VPN are expected if you configured them."]);
     fill(out, lines);
   } catch (e) {
-    out.textContent = "Could not read results automatically (" + e.message + "). The browser, an extension, or the service may have blocked it.\nThe lookups were still sent, so you can view the results here:\n";
+    out.textContent = "Couldn't fetch results (" + e.message + "). You can view them here:\n";
     addLink(out, resultsUrl + "?txt", "Open results on bash.ws ↗");
   } finally { btn.disabled = false; }
 }
-
-/* ---------- IP info ---------- */
 
 async function fetchIPDetails() {
   const out = $("ip-output"), box = $("ip-map-container"), map = $("ip-map");
@@ -426,8 +406,6 @@ async function fetchIPDetails() {
   } catch (e) { out.textContent = "Error fetching IP details: " + e.message; }
 }
 
-/* ---------- RDAP ---------- */
-
 async function fetchWHOIS() {
   const out = $("whois-output"), d = cleanDomain($("whois-input").value);
   if (!d) { out.textContent = "Enter a valid domain name, e.g. wikipedia.org"; return; }
@@ -449,8 +427,6 @@ async function fetchWHOIS() {
     ]);
   } catch (e) { out.textContent = "Error querying RDAP data: " + e.message; }
 }
-
-/* ---------- fingerprint ---------- */
 
 function simpleHash(str) {
   let h1 = 0xdeadbeef, h2 = 0x41c6ce57;
@@ -498,8 +474,6 @@ function generateFingerprint() {
     ["Do Not Track:", navigator.doNotTrack || "Unspecified"], ["User Agent:", navigator.userAgent]
   ]);
 }
-
-/* ---------- password generator ---------- */
 
 const WORDS = ("anchor aperture beacon breeze cactus canyon castle cobalt comet compass crystal delta echo falcon fender forest fossil galaxy glacier harbor " +
   "horizon island jungle lantern legend matrix meadow meteor mirage mountain nebula orbit oasis panther phantom planet pulse pyramid radar river rocket saddle " +
@@ -551,7 +525,7 @@ function generatePassword() {
     const tr = (c, i) => style === "lowercase" ? c.toLowerCase() : style === "uppercase" ? c.toUpperCase()
       : style === "alternating" ? (i % 2 ? c.toUpperCase() : c.toLowerCase()) : style === "leetspeak" ? (LEET[c.toLowerCase()] || c) : c;
     body = out.map(tr).join("");
-    bits = len * Math.log2(new Set(pool.map(c => tr(c, 0))).size);   // prefix/suffix are not random, so not counted
+    bits = len * Math.log2(new Set(pool.map(c => tr(c, 0))).size);
   } else {
     const n = +$("pwd-word-count").value, wc = $("pwd-word-case").value, nm = $("pwd-word-numbers").value, sm = $("pwd-word-symbols").value;
     const sc = $("pwd-separator").value, sep = sc === "custom" ? $("pwd-custom-sep").value : sc;
@@ -604,8 +578,6 @@ async function copyPassword() {
   setTimeout(() => btn.textContent = "Copy 📋", 1800);
 }
 
-/* ---------- news ---------- */
-
 let newsLoaded = false;
 const HTTPS = /^https:\/\//;
 const ago = t => { const m = Math.max(0, Math.round((Date.now() / 1000 - t) / 60)); return m < 60 ? m + "m ago" : m < 1440 ? Math.round(m / 60) + "h ago" : Math.round(m / 1440) + "d ago"; };
@@ -653,8 +625,6 @@ async function loadNews() {
   } catch (e) { out.textContent = "Could not load news: " + e.message; }
   finally { btn.disabled = false; }
 }
-
-/* ---------- wiring ---------- */
 
 document.querySelectorAll(".tab-btn").forEach(b => b.addEventListener("click", () => switchTab(b)));
 $("dns-btn").addEventListener("click", lookupDNS);
