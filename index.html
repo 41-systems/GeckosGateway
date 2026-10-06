@@ -3,2527 +3,602 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src https:; frame-src https://www.openstreetmap.org; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
 <meta name="description" content="Gecko's Gateway — lightweight browser-side privacy and utility tools.">
-<title>Gecko's Gateway</title>
+<title>🦎 Gecko's Gateway</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🦎%3C/text%3E%3C/svg%3E">
 <style>
-
-:root {
-    --bg: #07120e;
-    --surface: #0d1c16;
-    --surface-2: #11261d;
-    --surface-3: #173126;
-    --border: #244638;
-    --border-strong: #356b50;
-    --text: #e9f7ee;
-    --muted: #9db5a6;
-    --green: #55d98b;
-    --green-bright: #7df2aa;
-    --green-dark: #1e8a52;
-    --blue: #61b8ff;
-    --amber: #f3c969;
-    --red: #ff7777;
-    --shadow: 0 24px 70px rgba(0, 0, 0, .38);
-    --radius: 16px;
-}
-
-* { box-sizing: border-box; }
-
-html { scroll-behavior: smooth; }
-
-body {
-    min-height: 100vh;
-    margin: 0;
-    padding: 28px 16px;
-    color: var(--text);
-    background:
-        radial-gradient(circle at 50% -10%, rgba(65, 151, 99, .18), transparent 38rem),
-        linear-gradient(180deg, #091811 0%, var(--bg) 55%, #050c09 100%);
-    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-}
-
-button, input, select { font: inherit; }
-
-button { -webkit-tap-highlight-color: transparent; }
-
-.container {
-    width: min(100%, 980px);
-    margin: 0 auto;
-    overflow: hidden;
-    background: rgba(13, 28, 22, .96);
-    border: 1px solid var(--border);
-    border-radius: 22px;
-    box-shadow: var(--shadow);
-}
-
-/* Header */
-
-header {
-    position: relative;
-    padding: 28px 28px 24px;
-    text-align: center;
-    border-bottom: 1px solid var(--border);
-    background:
-        linear-gradient(180deg, rgba(27, 62, 46, .42), rgba(13, 28, 22, .1));
-}
-
-.brand {
-    margin: 0 0 6px;
-    color: var(--green-bright);
-    font-family: "Courier New", ui-monospace, monospace;
-    font-size: clamp(1.8rem, 5vw, 2.55rem);
-    letter-spacing: .04em;
-    text-shadow: 0 0 22px rgba(85, 217, 139, .18);
-}
-
-.tagline {
-    max-width: 640px;
-    margin: 0 auto 20px;
-    color: var(--muted);
-    line-height: 1.55;
-}
-
-.gecko-art {
-    display: flex;
-    justify-content: center;
-}
-
-.gecko-art svg {
-    width: min(100%, 420px);
-    height: auto;
-    padding: 8px;
-    border: 1px solid var(--border-strong);
-    border-radius: 14px;
-    background: #08120d;
-    box-shadow: inset 0 0 28px rgba(0, 0, 0, .35);
-}
-
-/* Tabs */
-
-.tab-header {
-    display: flex;
-    overflow-x: auto;
-    gap: 4px;
-    padding: 8px;
-    border-bottom: 1px solid var(--border);
-    background: #091711;
-    scrollbar-width: thin;
-}
-
-.tab-btn {
-    flex: 1 0 auto;
-    min-height: 46px;
-    padding: 10px 15px;
-    border: 1px solid transparent;
-    border-radius: 10px;
-    color: var(--muted);
-    background: transparent;
-    cursor: pointer;
-    font-weight: 750;
-    font-size: .9rem;
-    transition: .18s ease;
-}
-
-.tab-btn:hover {
-    color: var(--text);
-    background: rgba(85, 217, 139, .07);
-}
-
-.tab-btn.active {
-    color: #06110b;
-    background: var(--green);
-    border-color: var(--green);
-    box-shadow: 0 5px 18px rgba(85, 217, 139, .14);
-}
-
-/* Content */
-
-.tab-content { padding: 24px; }
-
-.tab-panel { display: none; }
-.tab-panel.active { display: block; }
-
-.section {
-    margin: 0;
-    padding: 22px;
-    background: linear-gradient(180deg, rgba(23, 49, 38, .62), rgba(13, 28, 22, .72));
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-}
-
-.section + .section { margin-top: 16px; }
-
-.section h2 {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin: 0 0 8px;
-    color: var(--text);
-    font-size: 1.18rem;
-}
-
-.section h2::after {
-    content: "";
-    flex: 1;
-    height: 1px;
-    margin-left: 8px;
-    background: linear-gradient(90deg, var(--border-strong), transparent);
-}
-
-.help-text {
-    margin: 0 0 18px;
-    color: var(--muted);
-    line-height: 1.6;
-}
-
-.notice {
-    margin-top: 14px;
-    padding: 12px 14px;
-    color: var(--muted);
-    background: rgba(243, 201, 105, .06);
-    border: 1px solid rgba(243, 201, 105, .2);
-    border-radius: 10px;
-    font-size: .9rem;
-    line-height: 1.5;
-}
-
-/* Inputs */
-
-.input-group {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 12px;
-}
-
-input, select {
-    width: 100%;
-    min-height: 44px;
-    padding: 10px 12px;
-    color: var(--text);
-    background: #08150f;
-    border: 1px solid var(--border);
-    border-radius: 9px;
-    outline: none;
-    transition: border-color .18s ease, box-shadow .18s ease;
-}
-
-input::placeholder { color: #698374; }
-
-input:focus, select:focus {
-    border-color: var(--green);
-    box-shadow: 0 0 0 3px rgba(85, 217, 139, .1);
-}
-
-select { cursor: pointer; }
-
-/* Buttons */
-
-.action-btn, .secondary-btn {
-    min-height: 44px;
-    padding: 10px 16px;
-    border-radius: 9px;
-    cursor: pointer;
-    font-weight: 800;
-    transition: transform .12s ease, filter .18s ease, background .18s ease;
-}
-
-.action-btn {
-    border: 1px solid var(--green);
-    color: #06110b;
-    background: var(--green);
-}
-
-.action-btn:hover {
-    filter: brightness(1.08);
-    transform: translateY(-1px);
-}
-
-.secondary-btn {
-    border: 1px solid var(--border-strong);
-    color: var(--text);
-    background: var(--surface-3);
-}
-
-.secondary-btn:hover {
-    background: #1c3b2d;
-}
-
-/* Output */
-
-.output-box {
-    min-height: 108px;
-    margin-top: 14px;
-    padding: 16px;
-    overflow-x: auto;
-    white-space: pre-wrap;
-    color: #d8e9de;
-    background: #06110c;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-    font-size: .86rem;
-    line-height: 1.65;
-}
-
-.highlight { color: var(--green-bright); font-weight: 750; }
-.badge-open { color: var(--green-bright); font-weight: 800; }
-.badge-closed { color: var(--red); font-weight: 800; }
-.badge-amber { color: var(--amber); font-weight: 800; }
-
-.map-container {
-    display: none;
-    margin-top: 14px;
-    overflow: hidden;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-}
-
-#ip-map {
-    display: block;
-    width: 100%;
-    height: 350px;
-    border: 0;
-}
-
-.map-link {
-    display: inline-block;
-    margin-top: 10px;
-    color: var(--blue);
-}
-
-/* Password */
-
-.password-display-wrapper {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 16px;
-}
-
-.password-display {
-    flex: 1;
-    min-height: 48px;
-    padding: 13px 14px;
-    overflow-wrap: anywhere;
-    color: var(--green-bright);
-    background: #040a07;
-    border: 1px solid var(--border-strong);
-    border-radius: 9px;
-    font-family: "SFMono-Regular", Consolas, monospace;
-}
-
-.copy-btn { flex: 0 0 auto; }
-
-.strength-meter { margin-bottom: 20px; }
-
-.strength-label {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 7px;
-    color: var(--muted);
-    font-size: .88rem;
-}
-
-.strength-bar-bg {
-    width: 100%;
-    height: 9px;
-    overflow: hidden;
-    background: #1a2d24;
-    border-radius: 999px;
-}
-
-.strength-bar-fill {
-    width: 0;
-    height: 100%;
-    background: var(--green);
-    border-radius: inherit;
-    transition: width .2s ease, background .2s ease;
-}
-
-.controls-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 14px;
-    margin-bottom: 14px;
-}
-
-.control-item {
-    display: flex;
-    flex-direction: column;
-    gap: 7px;
-}
-
-.control-item label {
-    color: #c8dbcf;
-    font-weight: 700;
-    font-size: .88rem;
-}
-
-.range-slider-container { padding-top: 8px; }
-
-input[type="range"] {
-    min-height: auto;
-    padding: 0;
-    accent-color: var(--green);
-}
-
-.range-val { color: var(--green-bright); }
-
-.checkbox-group {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px 18px;
-}
-
-.checkbox-label {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center;
-    gap: 7px;
-    color: var(--muted);
-    font-weight: 500 !important;
-}
-
-.checkbox-label input { width: auto; min-height: auto; }
-
-/* Footer */
-
-footer {
-    padding: 0 24px 22px;
-    color: #708b7c;
-    text-align: center;
-    font-size: .78rem;
-}
-
-/* Mobile */
-
-@media (max-width: 720px) {
-    body { padding: 10px; }
-
-    header { padding: 22px 16px 18px; }
-
-    .tab-content { padding: 14px; }
-
-    .section { padding: 17px; }
-
-    .tab-btn {
-        flex: 0 0 auto;
-        padding-inline: 13px;
-    }
-
-    .input-group,
-    .password-display-wrapper,
-    .controls-grid {
-        grid-template-columns: 1fr;
-        flex-direction: column;
-    }
-
-    .copy-btn { width: 100%; }
-
-    #ip-map { height: 280px; }
-}
-
+:root{--bg:#fff;--surface:#f5faf7;--surface-3:#e3f1e8;--border:#d3e5da;--border-strong:#a8cfb7;--text:#14291d;--muted:#4d6a5a;--green:#1b7f4b;--green-bright:#146c3d;--blue:#1a62b0;--amber:#8a6000;--red:#c0392b;--radius:16px}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth}
+body{min-height:100vh;margin:0;padding:28px 16px;color:var(--text);background:var(--bg);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+button,input,select{font:inherit}
+.container{width:min(100%,980px);margin:0 auto;overflow:hidden;background:#fff;border:1px solid var(--border);border-radius:22px;box-shadow:0 12px 40px rgba(20,60,35,.1)}
+header{padding:28px 28px 24px;text-align:center;border-bottom:1px solid var(--border);background:linear-gradient(180deg,rgba(27,127,75,.08),rgba(27,127,75,0))}
+.brand{margin:0 0 6px;color:var(--green-bright);font-family:"Courier New",ui-monospace,monospace;font-size:clamp(1.8rem,5vw,2.55rem);letter-spacing:.04em}
+.tagline{max-width:640px;margin:0 auto 20px;color:var(--muted);line-height:1.55}
+.gecko-art{display:flex;justify-content:center}
+.gecko-art svg{width:min(100%,420px);height:auto;padding:8px;border:1px solid var(--border-strong);border-radius:14px;background:#fff}
+.tab-header{display:flex;overflow-x:auto;gap:4px;padding:8px;border-bottom:1px solid var(--border);background:var(--surface)}
+.tab-btn{flex:1 0 auto;min-height:46px;padding:10px 15px;border:1px solid transparent;border-radius:10px;color:var(--muted);background:transparent;cursor:pointer;font-weight:700;font-size:.9rem;transition:.18s ease}
+.tab-btn:hover{color:var(--text);background:rgba(27,127,75,.08)}
+.tab-btn.active{color:#fff;background:var(--green);border-color:var(--green)}
+.tab-content{padding:24px}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+.section{padding:22px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius)}
+.section+.section{margin-top:16px}
+.section h2{display:flex;align-items:center;gap:8px;margin:0 0 8px;font-size:1.18rem}
+.section h2::after{content:"";flex:1;height:1px;margin-left:8px;background:linear-gradient(90deg,var(--border-strong),transparent)}
+.help-text{margin:0 0 18px;color:var(--muted);line-height:1.6}
+.notice{margin-top:14px;padding:12px 14px;color:var(--muted);background:rgba(138,96,0,.06);border:1px solid rgba(138,96,0,.25);border-radius:10px;font-size:.9rem;line-height:1.5}
+.input-group{display:flex;gap:10px;margin-bottom:12px}
+input,select{width:100%;min-height:44px;padding:10px 12px;color:var(--text);background:#fff;border:1px solid var(--border-strong);border-radius:9px;outline:none;transition:border-color .18s,box-shadow .18s}
+input::placeholder{color:#7b9486}
+input:focus,select:focus,button:focus-visible{border-color:var(--green);box-shadow:0 0 0 3px rgba(27,127,75,.2)}
+button:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+select{cursor:pointer}
+.action-btn,.secondary-btn{min-height:44px;padding:10px 16px;border-radius:9px;cursor:pointer;font-weight:800;transition:transform .12s,filter .18s,background .18s}
+.action-btn{border:1px solid var(--green);color:#fff;background:var(--green)}
+.action-btn:hover:not(:disabled){filter:brightness(1.1);transform:translateY(-1px)}
+.action-btn:disabled{opacity:.6;cursor:wait}
+.secondary-btn{border:1px solid var(--border-strong);color:var(--text);background:var(--surface-3)}
+.secondary-btn:hover{background:#cfe7d9}
+.output-box{min-height:108px;margin-top:14px;padding:16px;overflow-x:auto;white-space:pre-wrap;overflow-wrap:anywhere;color:#1b3326;background:#fff;border:1px solid var(--border);border-radius:10px;font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace;font-size:.86rem;line-height:1.65}
+.highlight{color:var(--green-bright);font-weight:750}
+.map-container{display:none;margin-top:14px;overflow:hidden;border:1px solid var(--border);border-radius:12px}
+#ip-map{display:block;width:100%;height:350px;border:0}
+.map-link{color:var(--blue)}
+.password-display-wrapper{display:flex;gap:10px;margin-bottom:16px}
+.password-display{flex:1;min-height:48px;padding:13px 14px;overflow-wrap:anywhere;color:var(--green-bright);background:#fff;border:1px solid var(--border-strong);border-radius:9px;font-family:"SFMono-Regular",Consolas,monospace}
+.copy-btn{flex:0 0 auto}
+.strength-meter{margin-bottom:20px}
+.strength-label{display:flex;justify-content:space-between;gap:12px;margin-bottom:7px;color:var(--muted);font-size:.88rem}
+.strength-bar-bg{width:100%;height:9px;overflow:hidden;background:#dfece4;border-radius:999px}
+.strength-bar-fill{width:0;height:100%;background:var(--green);border-radius:inherit;transition:width .2s,background .2s}
+.controls-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-bottom:14px}
+.control-item{display:flex;flex-direction:column;gap:7px}
+.control-item label{color:#2a4636;font-weight:700;font-size:.88rem}
+.range-val{color:var(--green-bright)}
+input[type=range]{min-height:auto;padding:0;accent-color:var(--green)}
+.checkbox-group{display:flex;flex-wrap:wrap;gap:10px 18px}
+.control-item .checkbox-label{display:flex;flex-direction:row;align-items:center;gap:7px;color:var(--muted);font-weight:500}
+.checkbox-label input{width:auto;min-height:auto}
+.wide{grid-column:1/-1}
+footer{padding:0 24px 22px;color:#5f7a6b;text-align:center;font-size:.78rem}
+@media(max-width:720px){
+body{padding:10px}header{padding:22px 16px 18px}.tab-content{padding:14px}.section{padding:17px}
+.tab-btn{flex:0 0 auto;padding-inline:13px}
+.input-group,.password-display-wrapper{flex-direction:column}
+.controls-grid{grid-template-columns:1fr}
+.copy-btn{width:100%}#ip-map{height:280px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 </style>
 </head>
-
 <body>
 <main class="container">
-    <header>
-        <h1 class="brand">🦎 Gecko's Gateway</h1>
-        <p class="tagline">A compact browser-side toolkit for DNS records, public IP details, RDAP, fingerprint signals, and secure password generation.</p>
-        <div class="gecko-art"><svg width="320" height="260" viewBox="0 0 320 260"
-xmlns="http://www.w3.org/2000/svg"
-style="border:3px inset #c0c0c0;background:#fff;">
-
-<defs>
-
-<pattern id="spray"
-width="20"
-height="20"
-patternUnits="userSpaceOnUse">
-
-<circle cx="2" cy="3" r="1" fill="#00aa00"/>
-<circle cx="8" cy="12" r="1.5" fill="#008800"/>
-<circle cx="15" cy="5" r="1" fill="#00aa00"/>
-<circle cx="11" cy="17" r="1" fill="#006600"/>
-<circle cx="5" cy="18" r="1.2" fill="#00aa00"/>
-
-</pattern>
-
-</defs>
-
+<header>
+<h1 class="brand">🦎 Gecko's Gateway</h1>
+<p class="tagline">A compact browser-side toolkit for DNS records, DNS leak testing, public IP details, RDAP, fingerprint signals, and secure password generation.</p>
+<div class="gecko-art"><svg viewBox="0 0 320 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cartoon gecko in overalls typing at a computer">
+<defs><pattern id="spray" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="2" cy="3" r="1" fill="#00aa00"/><circle cx="8" cy="12" r="1.5" fill="#008800"/><circle cx="15" cy="5" r="1" fill="#00aa00"/><circle cx="11" cy="17" r="1" fill="#006600"/><circle cx="5" cy="18" r="1.2" fill="#00aa00"/></pattern></defs>
 <rect width="320" height="260" fill="#fff"/>
-
-<!-- Computer -->
-
-<rect x="180" y="80" width="110" height="90"
-fill="#e0e0d0" stroke="#000" stroke-width="4"/>
-
-<rect x="190" y="90" width="90" height="70"
-fill="#c0c0b0" stroke="#000" stroke-width="3"/>
-
-<rect x="198" y="98" width="74" height="54"
-fill="#002200" stroke="#000" stroke-width="2"/>
-
-<path d="M204 108L240 108M204 116L260 116M204 124L230 124M204 132L250 132"
-stroke="#00ff00" stroke-width="3"/>
-
-<polygon points="210,170 260,170 270,190 200,190"
-fill="#c0c0b0" stroke="#000" stroke-width="3"/>
-
-<rect x="250" y="140" width="50" height="80"
-fill="#d0d0c0" stroke="#000" stroke-width="4"/>
-
-<circle cx="285" cy="200" r="4" fill="#ff0000"/>
-
-<!-- Gecko tail -->
-
-<path d="M50 190Q20 200 15 160Q10 120 40 150Q60 170 80 180"
-fill="none"
-stroke="#00aa00"
-stroke-width="14"
-stroke-linecap="round"/>
-
-<path d="M50 190Q20 200 15 160Q10 120 40 150Q60 170 80 180"
-fill="none"
-stroke="#000"
-stroke-width="3"/>
-
-<!-- Gecko body -->
-
-<ellipse cx="100" cy="170" rx="35" ry="45"
-fill="#00cc00"
-stroke="#000"
-stroke-width="4"/>
-
-<ellipse cx="100" cy="170" rx="35" ry="45"
-fill="url(#spray)"/>
-
-<!-- Head -->
-
-<polygon points="75,120 125,120 135,90 85,85"
-fill="#00cc00"
-stroke="#000"
-stroke-width="4"/>
-
-<!-- Eyes -->
-
-<circle cx="90" cy="90" r="14"
-fill="#fff" stroke="#000" stroke-width="3"/>
-
-<circle cx="92" cy="88" r="4" fill="#000"/>
-
-<circle cx="120" cy="95" r="14"
-fill="#fff" stroke="#000" stroke-width="3"/>
-
-<circle cx="124" cy="97" r="4" fill="#000"/>
-
-<!-- Tongue -->
-
-<path d="M115 110Q135 115 140 125Q145 135 138 135Q130 135 120 115"
-fill="#ff3366"
-stroke="#000"
-stroke-width="2"/>
-
-<!-- Overalls -->
-
-<path d="M70 160L130 160L135 210L65 210Z"
-fill="#0055ff"
-stroke="#000"
-stroke-width="4"/>
-
-<rect x="80" y="135" width="40" height="30"
-fill="#0055ff"
-stroke="#000"
-stroke-width="3"/>
-
-<line x1="82" y1="135" x2="75" y2="105"
-stroke="#0055ff" stroke-width="8"/>
-
-<line x1="82" y1="135" x2="75" y2="105"
-stroke="#000" stroke-width="2"/>
-
-<line x1="118" y1="135" x2="125" y2="105"
-stroke="#0055ff" stroke-width="8"/>
-
-<line x1="118" y1="135" x2="125" y2="105"
-stroke="#000" stroke-width="2"/>
-
-<circle cx="83" cy="138" r="3"
-fill="#ffff00" stroke="#000"/>
-
-<circle cx="117" cy="138" r="3"
-fill="#ffff00" stroke="#000"/>
-
-<rect x="92" y="142" width="16" height="15"
-fill="none" stroke="#000" stroke-width="2"
-stroke-dasharray="2,2"/>
-
-<!-- Gecko reaching toward computer -->
-
-<path d="M120 150Q150 160 175 175"
-fill="none"
-stroke="#00aa00"
-stroke-width="8"
-stroke-linecap="round"/>
-
-<path d="M120 150Q150 160 175 175"
-fill="none"
-stroke="#000"
-stroke-width="3"
-stroke-linecap="round"/>
-
-<!-- Keyboard -->
-
-<polygon points="160,185 240,185 230,205 150,205"
-fill="#d0d0c0"
-stroke="#000"
-stroke-width="3"/>
-
-<path d="M165 190L230 190M162 195L227 195M160 200L222 200"
-stroke="#555"
-stroke-width="2"
-stroke-dasharray="3,2"/>
-
-<circle cx="20" cy="25" r="1.5" fill="#f00"/>
-<circle cx="25" cy="22" r="2" fill="#f00"/>
-<circle cx="22" cy="30" r="1" fill="#f00"/>
-
-<text x="35" y="30"
-font-family="Comic Sans MS, Arial"
-font-size="12"
-fill="#f00"
-transform="rotate(-5 35 30)">
-
-</text>
-
+<rect x="180" y="80" width="110" height="90" fill="#e0e0d0" stroke="#000" stroke-width="4"/>
+<rect x="190" y="90" width="90" height="70" fill="#c0c0b0" stroke="#000" stroke-width="3"/>
+<rect x="198" y="98" width="74" height="54" fill="#002200" stroke="#000" stroke-width="2"/>
+<path d="M204 108L240 108M204 116L260 116M204 124L230 124M204 132L250 132" stroke="#00ff00" stroke-width="3"/>
+<polygon points="210,170 260,170 270,190 200,190" fill="#c0c0b0" stroke="#000" stroke-width="3"/>
+<rect x="250" y="140" width="50" height="80" fill="#d0d0c0" stroke="#000" stroke-width="4"/>
+<circle cx="285" cy="200" r="4" fill="#f00"/>
+<path d="M50 190Q20 200 15 160Q10 120 40 150Q60 170 80 180" fill="none" stroke="#00aa00" stroke-width="14" stroke-linecap="round"/>
+<path d="M50 190Q20 200 15 160Q10 120 40 150Q60 170 80 180" fill="none" stroke="#000" stroke-width="3"/>
+<ellipse cx="100" cy="170" rx="35" ry="45" fill="#00cc00" stroke="#000" stroke-width="4"/>
+<ellipse cx="100" cy="170" rx="35" ry="45" fill="url(#spray)"/>
+<polygon points="75,120 125,120 135,90 85,85" fill="#00cc00" stroke="#000" stroke-width="4"/>
+<circle cx="90" cy="90" r="14" fill="#fff" stroke="#000" stroke-width="3"/><circle cx="92" cy="88" r="4" fill="#000"/>
+<circle cx="120" cy="95" r="14" fill="#fff" stroke="#000" stroke-width="3"/><circle cx="124" cy="97" r="4" fill="#000"/>
+<path d="M115 110Q135 115 140 125Q145 135 138 135Q130 135 120 115" fill="#ff3366" stroke="#000" stroke-width="2"/>
+<path d="M70 160L130 160L135 210L65 210Z" fill="#0055ff" stroke="#000" stroke-width="4"/>
+<rect x="80" y="135" width="40" height="30" fill="#0055ff" stroke="#000" stroke-width="3"/>
+<line x1="82" y1="135" x2="75" y2="105" stroke="#0055ff" stroke-width="8"/><line x1="82" y1="135" x2="75" y2="105" stroke="#000" stroke-width="2"/>
+<line x1="118" y1="135" x2="125" y2="105" stroke="#0055ff" stroke-width="8"/><line x1="118" y1="135" x2="125" y2="105" stroke="#000" stroke-width="2"/>
+<circle cx="83" cy="138" r="3" fill="#ff0" stroke="#000"/><circle cx="117" cy="138" r="3" fill="#ff0" stroke="#000"/>
+<rect x="92" y="142" width="16" height="15" fill="none" stroke="#000" stroke-width="2" stroke-dasharray="2,2"/>
+<path d="M120 150Q150 160 175 175" fill="none" stroke="#00aa00" stroke-width="8" stroke-linecap="round"/>
+<path d="M120 150Q150 160 175 175" fill="none" stroke="#000" stroke-width="3" stroke-linecap="round"/>
+<polygon points="160,185 240,185 230,205 150,205" fill="#d0d0c0" stroke="#000" stroke-width="3"/>
+<path d="M165 190L230 190M162 195L227 195M160 200L222 200" stroke="#555" stroke-width="2" stroke-dasharray="3,2"/>
+<circle cx="20" cy="25" r="1.5" fill="#f00"/><circle cx="25" cy="22" r="2" fill="#f00"/><circle cx="22" cy="30" r="1" fill="#f00"/>
 </svg></div>
-    </header>
+</header>
 
-    <nav class="tab-header" aria-label="Gateway tools">
-        <button class="tab-btn active" onclick="switchTab(event,'dns-panel')">🧭 DNS Lookup</button>
-        <button class="tab-btn" onclick="switchTab(event,'ip-panel')">🌐 IP Info</button>
-        <button class="tab-btn" onclick="switchTab(event,'whois-panel')">📋 RDAP</button>
-        <button class="tab-btn" onclick="switchTab(event,'fp-panel')">🔍 Fingerprint</button>
-        <button class="tab-btn" onclick="switchTab(event,'pwd-panel')">🔑 Passwords</button>
-    </nav>
+<nav class="tab-header" aria-label="Gateway tools">
+<button class="tab-btn active" data-tab="dns-panel">🧭 DNS</button>
+<button class="tab-btn" data-tab="ip-panel">🌐 IP Info</button>
+<button class="tab-btn" data-tab="whois-panel">📋 RDAP</button>
+<button class="tab-btn" data-tab="fp-panel">🔍 Fingerprint</button>
+<button class="tab-btn" data-tab="pwd-panel">🔑 Passwords</button>
+</nav>
 
-    <div class="tab-content">
-        <section id="dns-panel" class="tab-panel active">
-            <div class="section">
-                <h2>DNS Record Lookup</h2>
-                <p class="help-text">Query common DNS record types through Cloudflare's DNS-over-HTTPS service. This is a record lookup, not a DNS leak test.</p>
-                <div class="input-group">
-                    <input type="text" id="domain-input" placeholder="e.g. google.com" value="google.com" autocomplete="off">
-                    <select id="record-type" aria-label="DNS record type">
-                        <option value="A">A · IPv4</option>
-                        <option value="AAAA">AAAA · IPv6</option>
-                        <option value="MX">MX · Mail</option>
-                        <option value="TXT">TXT · Text / SPF</option>
-                        <option value="NS">NS · Nameservers</option>
-                        <option value="CNAME">CNAME · Alias</option>
-                    </select>
-                </div>
-                <button class="action-btn" onclick="lookupDNS()">🔎 Query DNS Record</button>
-                <div id="dns-output" class="output-box">DNS lookup results will appear here...</div>
-            </div>
-            <div class="notice">ℹ️ A normal GitHub Pages site cannot reliably inspect the DNS resolver used by your operating system. The old “DNS Leak Test” has therefore been removed instead of presenting a misleading result.</div>
-        </section>
+<div class="tab-content">
+<section id="dns-panel" class="tab-panel active">
+<div class="section">
+<h2>DNS Record Lookup</h2>
+<p class="help-text">Query common DNS record types through Cloudflare's DNS-over-HTTPS service. This looks up records; it does not test for leaks (see below).</p>
+<div class="input-group">
+<input type="text" id="domain-input" placeholder="e.g. google.com" value="google.com" autocomplete="off" aria-label="Domain name">
+<select id="record-type" aria-label="DNS record type">
+<option value="A">A · IPv4</option><option value="AAAA">AAAA · IPv6</option><option value="MX">MX · Mail</option>
+<option value="TXT">TXT · Text / SPF</option><option value="NS">NS · Nameservers</option><option value="CNAME">CNAME · Alias</option>
+</select>
+</div>
+<button class="action-btn" id="dns-btn">🔎 Query DNS Record</button>
+<div id="dns-output" class="output-box" aria-live="polite">DNS lookup results will appear here...</div>
+</div>
 
-        <section id="ip-panel" class="tab-panel">
-            <div class="section">
-                <h2>Public IP &amp; Geolocation</h2>
-                <p class="help-text">See the public IP address and approximate network/location information visible to an IP geolocation service.</p>
-                <button class="action-btn" onclick="fetchIPDetails()">🌐 Check IP Information</button>
-                <div id="ip-output" class="output-box">Click the button above to view public IP details...</div>
-                <div id="ip-map-container" class="map-container">
-                    <iframe id="ip-map" title="Approximate IP geolocation map" loading="lazy"></iframe>
-                </div>
-            </div>
-        </section>
+<div class="section">
+<h2>DNS Leak Test</h2>
+<p class="help-text">Your browser looks up 10 unique, random hostnames. The test service (bash.ws) records which DNS resolvers asked for them, so you can see who actually handles your DNS. If you use a VPN, those resolvers should belong to the VPN or your chosen DNS provider, not your ISP.</p>
+<button class="action-btn" id="leak-btn">🛡️ Run DNS Leak Test</button>
+<div id="leak-output" class="output-box" aria-live="polite">Click the button to start the test...</div>
+<div class="notice">ℹ️ Running the test sends a random test ID and your IP address to bash.ws. Browser "secure DNS" (DoH) settings count: if enabled, the resolver shown is the one your browser uses, which can differ from your operating system's.</div>
+</div>
+</section>
 
-        <section id="whois-panel" class="tab-panel">
-            <div class="section">
-                <h2>Domain Registration Data · RDAP</h2>
-                <p class="help-text">Retrieve registration dates, registrar, nameservers, and RDAP status information for a domain.</p>
-                <div class="input-group">
-                    <input type="text" id="whois-input" placeholder="e.g. wikipedia.org" value="github.com" autocomplete="off">
-                </div>
-                <button class="action-btn" onclick="fetchWHOIS()">📋 Lookup Domain RDAP</button>
-                <div id="whois-output" class="output-box">Enter a domain above to query registration records...</div>
-            </div>
-        </section>
+<section id="ip-panel" class="tab-panel">
+<div class="section">
+<h2>Public IP &amp; Geolocation</h2>
+<p class="help-text">See the public IP address and approximate network/location information visible to an IP geolocation service.</p>
+<button class="action-btn" id="ip-btn">🌐 Check IP Information</button>
+<div id="ip-output" class="output-box" aria-live="polite">Click the button above to view public IP details...</div>
+<div id="ip-map-container" class="map-container"><iframe id="ip-map" title="Approximate IP geolocation map" loading="lazy" referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin"></iframe></div>
+</div>
+</section>
 
-        <section id="fp-panel" class="tab-panel">
-            <div class="section">
-                <h2>Device &amp; Browser Signals</h2>
-                <p class="help-text">Generate a local, approximate browser fingerprint from signals exposed to JavaScript. This is not a permanent identifier and results can vary by browser settings.</p>
-                <button class="action-btn" onclick="generateFingerprint()">🔍 Generate Fingerprint</button>
-                <div id="fp-output" class="output-box">Click the button above to calculate browser identity signals...</div>
-            </div>
-        </section>
+<section id="whois-panel" class="tab-panel">
+<div class="section">
+<h2>Domain Registration Data · RDAP</h2>
+<p class="help-text">Retrieve registration dates, registrar, nameservers, and RDAP status information for a domain.</p>
+<div class="input-group"><input type="text" id="whois-input" placeholder="e.g. wikipedia.org" value="github.com" autocomplete="off" aria-label="Domain name"></div>
+<button class="action-btn" id="whois-btn">📋 Lookup Domain RDAP</button>
+<div id="whois-output" class="output-box" aria-live="polite">Enter a domain above to query registration records...</div>
+</div>
+</section>
 
-        <section id="pwd-panel" class="tab-panel">
-            <div class="section">
-                <h2>Secure Password &amp; Passphrase Generator</h2>
-                <p class="help-text">Generation happens locally in your browser using the Web Crypto API. Passwords are not sent to a server.</p>
+<section id="fp-panel" class="tab-panel">
+<div class="section">
+<h2>Device &amp; Browser Signals</h2>
+<p class="help-text">Generate a local, approximate browser fingerprint from signals exposed to JavaScript. This is not a permanent identifier and results vary with browser settings. Nothing is sent anywhere.</p>
+<button class="action-btn" id="fp-btn">🔍 Generate Fingerprint</button>
+<div id="fp-output" class="output-box">Click the button above to calculate browser identity signals...</div>
+</div>
+</section>
 
-                <div class="password-display-wrapper">
-                    <div id="pwd-result" class="password-display">Click Generate below...</div>
-                    <button class="secondary-btn copy-btn" id="copy-btn" onclick="copyPassword()">Copy 📋</button>
-                </div>
+<section id="pwd-panel" class="tab-panel">
+<div class="section">
+<h2>Secure Password &amp; Passphrase Generator</h2>
+<p class="help-text">Generation happens locally in your browser using the Web Crypto API. Passwords are never sent anywhere.</p>
+<div class="password-display-wrapper">
+<div id="pwd-result" class="password-display" aria-live="polite">Click Generate below...</div>
+<button class="secondary-btn copy-btn" id="copy-btn">Copy 📋</button>
+</div>
+<div class="strength-meter">
+<div class="strength-label"><span>Estimated strength: <strong id="strength-text">-</strong></span><span id="entropy-bits">0 bits</span></div>
+<div class="strength-bar-bg"><div id="strength-bar" class="strength-bar-fill"></div></div>
+</div>
 
-                <div class="strength-meter">
-                    <div class="strength-label">
-                        <span>Entropy / Strength: <strong id="strength-text">-</strong></span>
-                        <span id="entropy-bits">0 bits</span>
-                    </div>
-                    <div class="strength-bar-bg"><div id="strength-bar" class="strength-bar-fill"></div></div>
-                </div>
+<div class="controls-grid">
+<div class="control-item"><label for="pwd-mode">Generation Mode</label>
+<select id="pwd-mode"><option value="characters">Random Characters</option><option value="passphrase">Memorable Passphrase · Words</option></select></div>
+<div class="control-item mode-char-option"><label for="pwd-length">Length: <span id="pwd-len-val" class="range-val">20</span></label>
+<input type="range" id="pwd-length" min="6" max="128" value="20"></div>
+<div class="control-item mode-word-option" hidden><label for="pwd-word-count">Word Count: <span id="pwd-words-val" class="range-val">6</span></label>
+<input type="range" id="pwd-word-count" min="3" max="12" value="6"></div>
+<div class="control-item mode-char-option"><label for="pwd-case-style">Formatting Style</label>
+<select id="pwd-case-style"><option value="default">Standard / Default</option><option value="lowercase">all lowercase</option><option value="uppercase">ALL UPPERCASE</option><option value="alternating">aLtErNaTiNg CaSe</option><option value="leetspeak">L33tSp34k</option></select></div>
+<div class="control-item mode-word-option" hidden><label for="pwd-word-case">Word Capitalization Style</label>
+<select id="pwd-word-case"><option value="title">Title Case</option><option value="upper">UPPERCASE</option><option value="lower">lowercase</option><option value="alternating-words">Alternating Words</option><option value="random-words">Random Upper/Lower</option><option value="random-letters">Random Letter Case</option></select></div>
+</div>
 
-                <div class="controls-grid">
-                    <div class="control-item">
-                        <label for="pwd-mode">Generation Mode</label>
-                        <select id="pwd-mode" onchange="togglePasswordMode()">
-                            <option value="characters">Random Characters</option>
-                            <option value="passphrase">Memorable Passphrase · Words</option>
-                        </select>
-                    </div>
+<div class="controls-grid mode-word-option" hidden>
+<div class="control-item"><label for="pwd-word-numbers">Number Insertion Mode</label>
+<select id="pwd-word-numbers"><option value="none">No Extra Numbers</option><option value="after-each-1" selected>1 Digit After Each Word</option><option value="after-each-2">2 Digits After Each Word</option><option value="end-1">1 Digit at End</option><option value="end-2">2 Digits at End</option><option value="end-4">4 Digits / PIN at End</option></select></div>
+<div class="control-item"><label for="pwd-word-symbols">Symbol Insertion Mode</label>
+<select id="pwd-word-symbols"><option value="none">None</option><option value="symbol-after-each">Random Symbol After Each Word</option><option value="symbol-end">Random Symbol at End</option></select></div>
+</div>
 
-                    <div class="control-item mode-char-option">
-                        <label for="pwd-length">Length: <span id="pwd-len-val" class="range-val">20</span></label>
-                        <input type="range" id="pwd-length" min="6" max="128" value="20" oninput="document.getElementById('pwd-len-val').textContent=this.value; generatePassword();">
-                    </div>
+<div class="controls-grid">
+<div class="control-item mode-word-option" hidden><label for="pwd-separator">Word Separator</label>
+<select id="pwd-separator"><option value="-">Hyphen</option><option value="_">Underscore</option><option value=".">Period</option><option value=" ">Space</option><option value="@">At Sign</option><option value="#">Hash</option><option value="custom">Custom</option></select></div>
+<div class="control-item" id="custom-sep-container" hidden><label for="pwd-custom-sep">Custom Separator Text</label><input type="text" id="pwd-custom-sep" value="+"></div>
+<div class="control-item"><label for="pwd-prefix">Optional Prefix</label><input type="text" id="pwd-prefix" placeholder="e.g. App1!"></div>
+<div class="control-item"><label for="pwd-suffix">Optional Suffix</label><input type="text" id="pwd-suffix" placeholder="e.g. #2026"></div>
+</div>
 
-                    <div class="control-item mode-word-option" style="display:none;">
-                        <label for="pwd-word-count">Word Count: <span id="pwd-words-val" class="range-val">4</span></label>
-                        <input type="range" id="pwd-word-count" min="3" max="12" value="4" oninput="document.getElementById('pwd-words-val').textContent=this.value; generatePassword();">
-                    </div>
+<div class="controls-grid mode-char-option">
+<div class="control-item wide"><label>Included Character Sets</label>
+<div class="checkbox-group">
+<label class="checkbox-label"><input type="checkbox" id="inc-uppercase" checked> Uppercase</label>
+<label class="checkbox-label"><input type="checkbox" id="inc-lowercase" checked> Lowercase</label>
+<label class="checkbox-label"><input type="checkbox" id="inc-numbers" checked> Numbers</label>
+<label class="checkbox-label"><input type="checkbox" id="inc-symbols" checked> Symbols</label>
+</div></div>
+</div>
 
-                    <div class="control-item mode-char-option">
-                        <label for="pwd-case-style">Formatting Style</label>
-                        <select id="pwd-case-style" onchange="generatePassword()">
-                            <option value="default">Standard / Default</option>
-                            <option value="lowercase">all lowercase</option>
-                            <option value="uppercase">ALL UPPERCASE</option>
-                            <option value="alternating">aLtErNaTiNg CaSe</option>
-                            <option value="leetspeak">L33tSp34k</option>
-                        </select>
-                    </div>
+<div class="controls-grid mode-char-option">
+<div class="control-item"><label for="pwd-custom-include">Extra Allowed Characters</label><input type="text" id="pwd-custom-include" placeholder="e.g. ~`^"></div>
+<div class="control-item"><label for="pwd-custom-exclude">Exclude Characters</label><input type="text" id="pwd-custom-exclude" placeholder="e.g. ' &quot; \ ; /"></div>
+</div>
 
-                    <div class="control-item mode-word-option" style="display:none;">
-                        <label for="pwd-word-case">Word Capitalization Style</label>
-                        <select id="pwd-word-case" onchange="generatePassword()">
-                            <option value="title">Title Case</option>
-                            <option value="upper">UPPERCASE</option>
-                            <option value="lower">lowercase</option>
-                            <option value="alternating-words">Alternating Words</option>
-                            <option value="random-words">Random Upper/Lower</option>
-                            <option value="random-letters">Random Letter Case</option>
-                        </select>
-                    </div>
-                </div>
+<div class="controls-grid">
+<div class="control-item wide"><label>Security &amp; Structure Rules</label>
+<div class="checkbox-group">
+<label class="checkbox-label"><input type="checkbox" id="exc-similar"> Exclude Similar Characters (1, l, I, 0, O)</label>
+<label class="checkbox-label mode-char-option"><input type="checkbox" id="enforce-all-sets" checked> Guarantee 1+ character from each selected set</label>
+<label class="checkbox-label mode-char-option"><input type="checkbox" id="no-repeat-adjacent"> Prevent adjacent repeated characters</label>
+</div></div>
+</div>
 
-                <div class="controls-grid mode-word-option" style="display:none;">
-                    <div class="control-item">
-                        <label for="pwd-word-numbers">Number Insertion Mode</label>
-                        <select id="pwd-word-numbers" onchange="generatePassword()">
-                            <option value="none">No Extra Numbers</option>
-                            <option value="after-each-1" selected>1 Digit After Each Word</option>
-                            <option value="after-each-2">2 Digits After Each Word</option>
-                            <option value="end-1">1 Digit at End</option>
-                            <option value="end-2">2 Digits at End</option>
-                            <option value="end-4">4 Digits / PIN at End</option>
-                        </select>
-                    </div>
-                    <div class="control-item">
-                        <label for="pwd-word-symbols">Symbol Insertion Mode</label>
-                        <select id="pwd-word-symbols" onchange="generatePassword()">
-                            <option value="none">None</option>
-                            <option value="symbol-after-each">Random Symbol After Each Word</option>
-                            <option value="symbol-end">Random Symbol at End</option>
-                        </select>
-                    </div>
-                </div>
+<button class="action-btn" id="gen-btn">⚡ Generate New Password</button>
+</div>
+</section>
+</div>
 
-                <div class="controls-grid">
-                    <div class="control-item mode-word-option" style="display:none;">
-                        <label for="pwd-separator">Word Separator</label>
-                        <select id="pwd-separator" onchange="toggleCustomSeparator(); generatePassword();">
-                            <option value="-">Hyphen</option>
-                            <option value="_">Underscore</option>
-                            <option value=".">Period</option>
-                            <option value=" ">Space</option>
-                            <option value="@">At Sign</option>
-                            <option value="#">Hash</option>
-                            <option value="custom">Custom</option>
-                        </select>
-                    </div>
-
-                    <div class="control-item" id="custom-sep-container" style="display:none;">
-                        <label for="pwd-custom-sep">Custom Separator Text</label>
-                        <input type="text" id="pwd-custom-sep" value="+" oninput="generatePassword()">
-                    </div>
-
-                    <div class="control-item">
-                        <label for="pwd-prefix">Optional Prefix</label>
-                        <input type="text" id="pwd-prefix" placeholder="e.g. App1!" oninput="generatePassword()">
-                    </div>
-
-                    <div class="control-item">
-                        <label for="pwd-suffix">Optional Suffix</label>
-                        <input type="text" id="pwd-suffix" placeholder="e.g. #2026" oninput="generatePassword()">
-                    </div>
-                </div>
-
-                <div class="controls-grid mode-char-option">
-                    <div class="control-item" style="grid-column:1/-1;">
-                        <label>Included Character Sets</label>
-                        <div class="checkbox-group">
-                            <label class="checkbox-label"><input type="checkbox" id="inc-uppercase" checked onchange="generatePassword()"> Uppercase</label>
-                            <label class="checkbox-label"><input type="checkbox" id="inc-lowercase" checked onchange="generatePassword()"> Lowercase</label>
-                            <label class="checkbox-label"><input type="checkbox" id="inc-numbers" checked onchange="generatePassword()"> Numbers</label>
-                            <label class="checkbox-label"><input type="checkbox" id="inc-symbols" checked onchange="generatePassword()"> Symbols</label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="controls-grid mode-char-option">
-                    <div class="control-item">
-                        <label for="pwd-custom-include">Extra Allowed Characters</label>
-                        <input type="text" id="pwd-custom-include" placeholder="e.g. ~`^" oninput="generatePassword()">
-                    </div>
-                    <div class="control-item">
-                        <label for="pwd-custom-exclude">Exclude Characters</label>
-                        <input type="text" id="pwd-custom-exclude" placeholder="e.g. ' &quot; \ ; /" oninput="generatePassword()">
-                    </div>
-                </div>
-
-                <div class="controls-grid">
-                    <div class="control-item" style="grid-column:1/-1;">
-                        <label>Security &amp; Structure Rules</label>
-                        <div class="checkbox-group">
-                            <label class="checkbox-label"><input type="checkbox" id="exc-similar" onchange="generatePassword()"> Exclude Similar Characters (1, l, I, 0, O)</label>
-                            <label class="checkbox-label mode-char-option"><input type="checkbox" id="enforce-all-sets" checked onchange="generatePassword()"> Guarantee 1+ character from each selected set</label>
-                            <label class="checkbox-label mode-char-option"><input type="checkbox" id="no-repeat-adjacent" onchange="generatePassword()"> Prevent adjacent repeated characters</label>
-                        </div>
-                    </div>
-                </div>
-
-                <button class="action-btn" onclick="generatePassword()">⚡ Generate New Password</button>
-            </div>
-        </section>
-    </div>
-
-    <footer>🦎 Gecko's Gateway · Browser-side utilities · No account required</footer>
+<footer>🦎 Gecko's Gateway · Browser-side utilities · No account required</footer>
 </main>
 
 <script>
-/* =========================================================
-   TAB SYSTEM
-========================================================= */
+"use strict";
+const $ = id => document.getElementById(id);
 
-function switchTab(evt, panelId) {
+/* ---------- helpers ---------- */
 
-    document.querySelectorAll(".tab-panel")
-        .forEach(panel => panel.classList.remove("active"));
-
-    document.querySelectorAll(".tab-btn")
-        .forEach(btn => btn.classList.remove("active"));
-
-    document.getElementById(panelId)
-        .classList.add("active");
-
-    evt.currentTarget.classList.add("active");
-
-    if (panelId === "pwd-panel") {
-        generatePassword();
-    }
+// fetch JSON with timeout; never sends cookies or referrer
+async function getJSON(url, opts = {}, ms = 10000) {
+  const c = new AbortController(), t = setTimeout(() => c.abort(), ms);
+  try {
+    const r = await fetch(url, { credentials: "omit", referrerPolicy: "no-referrer", ...opts, signal: c.signal });
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    return await r.json();
+  } catch (e) {
+    throw e.name === "AbortError" ? new Error("Request timed out") : e;
+  } finally { clearTimeout(t); }
 }
 
+// fire-and-forget request, used only to trigger a DNS lookup
+function ping(url, ms = 6000) {
+  const c = new AbortController();
+  setTimeout(() => c.abort(), ms);
+  return fetch(url, { mode: "no-cors", cache: "no-store", credentials: "omit", referrerPolicy: "no-referrer", signal: c.signal }).catch(() => {});
+}
 
-/* =========================================================
-   DNS RECORD LOOKUP
-========================================================= */
+// Safe output: builds DOM nodes with textContent only (no innerHTML anywhere).
+// Row = [text] for a plain line, or [label, value] for a highlighted label.
+function fill(el, rows) {
+  el.textContent = "";
+  for (const r of rows) {
+    if (r.length > 1) {
+      const s = document.createElement("span");
+      s.className = "highlight";
+      s.textContent = r[0] + " ";
+      el.append(s, String(r[1] ?? "N/A") + "\n");
+    } else el.append(r[0] + "\n");
+  }
+}
+
+function addLink(el, href, text) {
+  if (!/^https:\/\//.test(href)) return;
+  const a = document.createElement("a");
+  a.href = href; a.target = "_blank"; a.rel = "noopener noreferrer"; a.className = "map-link"; a.textContent = text;
+  el.append(a, "\n");
+}
+
+// Normalises user input to a bare, valid hostname (punycode for IDN) or returns null
+function cleanDomain(raw) {
+  try {
+    const h = new URL("http://" + String(raw).trim().replace(/^[a-z][a-z0-9+.-]*:\/\//i, "")).hostname.replace(/\.$/, "");
+    return /^(?=.{1,253}$)([a-z0-9_]([a-z0-9_-]{0,61}[a-z0-9_])?\.)+[a-z0-9-]{2,63}$/.test(h) ? h : null;
+  } catch { return null; }
+}
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+// Unbiased random integer in [0, max) using rejection sampling
+function rand(max) {
+  if (max <= 1) return 0;
+  const lim = Math.floor(0x100000000 / max) * max, a = new Uint32Array(1);
+  do crypto.getRandomValues(a); while (a[0] >= lim);
+  return a[0] % max;
+}
+
+/* ---------- tabs ---------- */
+
+function switchTab(btn) {
+  document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+  document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+  $(btn.dataset.tab).classList.add("active");
+  btn.classList.add("active");
+}
+
+/* ---------- DNS lookup ---------- */
+
+const RR = { 1: "A", 2: "NS", 5: "CNAME", 15: "MX", 16: "TXT", 28: "AAAA" };
 
 async function lookupDNS() {
-
-    const domain =
-        document.getElementById("domain-input")
-            .value.trim();
-
-    const type =
-        document.getElementById("record-type").value;
-
-    const output =
-        document.getElementById("dns-output");
-
-
-    if (!domain) {
-
-        output.textContent =
-            "Please enter a domain name.";
-
-        return;
-    }
-
-
-    output.textContent =
-        `Fetching ${type} record for ${domain}...`;
-
-
-    try {
-
-        const response =
-            await fetch(
-                "https://cloudflare-dns.com/dns-query" +
-                "?name=" +
-                encodeURIComponent(domain) +
-                "&type=" +
-                encodeURIComponent(type),
-                {
-                    headers: {
-                        "Accept":
-                            "application/dns-json"
-                    },
-                    cache: "no-store"
-                }
-            );
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                `HTTP Error ${response.status}`
-            );
-
-        }
-
-
-        const data =
-            await response.json();
-
-
-        if (!data.Answer ||
-            data.Answer.length === 0) {
-
-            output.textContent =
-                `No ${type} records found for ${domain}.`;
-
-            return;
-        }
-
-
-        let result =
-            `Results for ${domain} (${type}):\n\n`;
-
-
-        data.Answer.forEach(record => {
-
-            result +=
-                `Name: ${record.name}\n`;
-
-            result +=
-                `Type: ${typeIdToString(record.type)}\n`;
-
-            result +=
-                `TTL: ${record.TTL}s\n`;
-
-            result +=
-                `Data: ${record.data}\n`;
-
-            result +=
-                "-------------------------------\n";
-
-        });
-
-
-        output.textContent =
-            result.trim();
-
-    } catch (error) {
-
-        output.textContent =
-            "Error querying DNS: " +
-            error.message;
-
-    }
-
+  const out = $("dns-output"), d = cleanDomain($("domain-input").value), t = $("record-type").value;
+  if (!d) { out.textContent = "Enter a valid domain name, e.g. example.com"; return; }
+  out.textContent = `Fetching ${t} record for ${d}...`;
+  try {
+    const j = await getJSON(`https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(d)}&type=${encodeURIComponent(t)}`,
+      { headers: { Accept: "application/dns-json" }, cache: "no-store" });
+    if (!j.Answer?.length) { out.textContent = `No ${t} records found for ${d}.`; return; }
+    out.textContent = `Results for ${d} (${t}):\n\n` + j.Answer.map(r =>
+      `Name: ${r.name}\nType: ${RR[r.type] || r.type}\nTTL: ${r.TTL}s\nData: ${r.data}`).join("\n-------------------------------\n");
+  } catch (e) { out.textContent = "Error querying DNS: " + e.message; }
 }
 
+/* ---------- DNS leak test (bash.ws protocol) ---------- */
 
-function typeIdToString(typeId) {
-
-    const types = {
-        1: "A",
-        2: "NS",
-        5: "CNAME",
-        15: "MX",
-        16: "TXT",
-        28: "AAAA"
-    };
-
-    return types[typeId] || typeId;
+async function runLeakTest() {
+  const out = $("leak-output"), btn = $("leak-btn");
+  const id = String(1000000 + rand(9000000));
+  const resultsUrl = `https://bash.ws/dnsleak/test/${id}`;
+  btn.disabled = true;
+  try {
+    out.textContent = "Step 1/3: triggering 10 unique DNS lookups...";
+    await Promise.all(Array.from({ length: 10 }, (_, i) => ping(`https://${i + 1}.${id}.bash.ws/`)));
+    out.textContent = "Step 2/3: waiting for the test server to collect resolver data...";
+    let rows = [];
+    for (let i = 0; i < 4; i++) {
+      await sleep(1500);
+      rows = await getJSON(resultsUrl + "?json", { cache: "no-store" });
+      if (Array.isArray(rows) && rows.some(r => r.type === "dns")) break;
+    }
+    if (!Array.isArray(rows)) throw new Error("Unexpected response from test server");
+    const info = r => [r.ip, r.country_name, r.asn].filter(Boolean).join(" · ");
+    const mine = rows.filter(r => r.type === "ip"), dns = rows.filter(r => r.type === "dns"), verdict = rows.filter(r => r.type === "conclusion");
+    const lines = [];
+    mine.forEach(r => lines.push(["Your IP:", info(r)]));
+    lines.push([""], [`Resolvers seen (${dns.length}):`]);
+    if (!dns.length) lines.push(["No resolver queries were recorded. An ad-blocker or DNS filter may have blocked the test hostnames; disable it for this page and retry."]);
+    dns.forEach(r => lines.push(["Resolver:", info(r)]));
+    verdict.forEach(r => lines.push([""], ["Service verdict:", r.ip]));
+    lines.push([""], ["How to read this: a leak is a resolver owned by your ISP while you expect your VPN or private DNS provider to handle lookups. Resolvers from Cloudflare, Google, Quad9 or your VPN are expected if you configured them."]);
+    fill(out, lines);
+  } catch (e) {
+    out.textContent = "Could not read results automatically (" + e.message + "). The browser, an extension, or the service may have blocked it.\nThe lookups were still sent, so you can view the results here:\n";
+    addLink(out, resultsUrl + "?txt", "Open results on bash.ws ↗");
+  } finally { btn.disabled = false; }
 }
 
-
-/* =========================================================
-   IP INFORMATION
-========================================================= */
+/* ---------- IP info ---------- */
 
 async function fetchIPDetails() {
-
-    const output =
-        document.getElementById("ip-output");
-
-    const mapContainer =
-        document.getElementById("ip-map-container");
-
-    const mapIframe =
-        document.getElementById("ip-map");
-
-
-    output.textContent =
-        "Fetching IP information and geolocation data...";
-
-
-    try {
-
-        const response =
-            await fetch(
-                "https://ipwho.is/",
-                {
-                    cache: "no-store"
-                }
-            );
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                "Failed to retrieve IP details."
-            );
-
-        }
-
-
-        const data =
-            await response.json();
-
-
-        const lat = data.latitude;
-        const lon = data.longitude;
-
-
-        if (
-            typeof lat === "number" &&
-            typeof lon === "number"
-        ) {
-
-            const offset = 0.04;
-
-            const bbox =
-                `${lon-offset}%2C${lat-offset}%2C${lon+offset}%2C${lat+offset}`;
-
-            mapIframe.src =
-                "https://www.openstreetmap.org/export/embed.html" +
-                `?bbox=${bbox}` +
-                "&layer=mapnik" +
-                `&marker=${lat}%2C${lon}`;
-
-            mapContainer.style.display =
-                "block";
-
-        }
-
-
-        const gmapsUrl =
-            `https://www.google.com/maps?q=${encodeURIComponent(lat)},${encodeURIComponent(lon)}`;
-
-
-        output.innerHTML =
-
-`<span class="highlight">Public WAN IP:</span> ${escapeHTML(data.ip || "N/A")}
-<span class="highlight">Network / ASN:</span> AS${escapeHTML(String(data.asn || "N/A"))} - ${escapeHTML(data.connection?.asn_org || data.asn_org || "N/A")}
-<span class="highlight">ISP:</span> ${escapeHTML(data.connection?.isp || data.isp || "N/A")}
-
-<span class="highlight">--- GEO LOCATION DETAILS ---</span>
-<span class="highlight">City / Region:</span> ${escapeHTML(data.city || "N/A")}, ${escapeHTML(data.region || "N/A")} (${escapeHTML(data.postal || "N/A")})
-<span class="highlight">Country:</span> ${escapeHTML(data.country || "N/A")} (${escapeHTML(data.country_code || "N/A")})
-<span class="highlight">Coordinates:</span> ${escapeHTML(String(lat ?? "N/A"))}, ${escapeHTML(String(lon ?? "N/A"))}
-
-<a href="${escapeHTML(gmapsUrl)}"
-target="_blank"
-rel="noopener"
-class="map-link">
-View in Google Maps ↗
-</a>
-
-<span class="highlight">User Agent:</span>
-${escapeHTML(navigator.userAgent)}`;
-
-    } catch (error) {
-
-        output.textContent =
-            "Error fetching IP details: " +
-            error.message;
-
-        mapContainer.style.display =
-            "none";
-
+  const out = $("ip-output"), box = $("ip-map-container"), map = $("ip-map");
+  out.textContent = "Fetching IP information and geolocation data...";
+  box.style.display = "none";
+  try {
+    const d = await getJSON("https://ipwho.is/", { cache: "no-store" });
+    if (d.success === false) throw new Error(d.message || "Lookup failed");
+    const c = d.connection || {}, lat = Number(d.latitude), lon = Number(d.longitude);
+    const ok = d.latitude != null && d.longitude != null && Number.isFinite(lat) && Number.isFinite(lon);
+    fill(out, [
+      ["Public WAN IP:", d.ip],
+      ["Network / ASN:", `AS${c.asn ?? d.asn ?? "N/A"} - ${c.org ?? d.asn_org ?? "N/A"}`],
+      ["ISP:", c.isp ?? d.isp],
+      [""], ["--- GEO LOCATION DETAILS ---"],
+      ["City / Region:", `${d.city ?? "N/A"}, ${d.region ?? "N/A"} (${d.postal ?? "N/A"})`],
+      ["Country:", `${d.country ?? "N/A"} (${d.country_code ?? "N/A"})`],
+      ["Coordinates:", ok ? `${lat}, ${lon}` : "N/A"],
+      [""]
+    ]);
+    if (ok) {
+      const o = 0.04;
+      map.src = "https://www.openstreetmap.org/export/embed.html?bbox=" + encodeURIComponent(`${lon - o},${lat - o},${lon + o},${lat + o}`) +
+        "&layer=mapnik&marker=" + encodeURIComponent(`${lat},${lon}`);
+      box.style.display = "block";
+      addLink(out, `https://www.google.com/maps?q=${lat},${lon}`, "View in Google Maps ↗");
     }
-
+    out.append("\n");
+    const s = document.createElement("span"); s.className = "highlight"; s.textContent = "User Agent: ";
+    out.append(s, navigator.userAgent);
+  } catch (e) { out.textContent = "Error fetching IP details: " + e.message; }
 }
 
-
-/* =========================================================
-   RDAP / WHOIS
-========================================================= */
+/* ---------- RDAP ---------- */
 
 async function fetchWHOIS() {
-
-    let domain =
-        document.getElementById("whois-input")
-            .value.trim();
-
-    const output =
-        document.getElementById("whois-output");
-
-
-    if (!domain) {
-
-        output.textContent =
-            "Please enter a domain name.";
-
-        return;
-    }
-
-
-    domain =
-        domain
-            .replace(/^https?:\/\//i, "")
-            .split("/")[0];
-
-
-    output.textContent =
-        `Querying RDAP registration records for ${domain}...`;
-
-
-    try {
-
-        const response =
-            await fetch(
-                `https://rdap.org/domain/${encodeURIComponent(domain)}`
-            );
-
-
-        if (!response.ok) {
-
-            if (response.status === 404) {
-
-                throw new Error(
-                    "Domain or RDAP record not found."
-                );
-
-            }
-
-            throw new Error(
-                `HTTP Error ${response.status}`
-            );
-
-        }
-
-
-        const data =
-            await response.json();
-
-
-        let regDate = "N/A";
-        let expDate = "N/A";
-        let lastChanged = "N/A";
-
-
-        if (Array.isArray(data.events)) {
-
-            data.events.forEach(event => {
-
-                if (event.eventAction === "registration") {
-
-                    regDate =
-                        new Date(event.eventDate)
-                            .toUTCString();
-
-                }
-
-                if (event.eventAction === "expiration") {
-
-                    expDate =
-                        new Date(event.eventDate)
-                            .toUTCString();
-
-                }
-
-                if (event.eventAction === "last changed") {
-
-                    lastChanged =
-                        new Date(event.eventDate)
-                            .toUTCString();
-
-                }
-
-            });
-
-        }
-
-
-        let registrar = "N/A";
-
-
-        if (Array.isArray(data.entities)) {
-
-            const entity =
-                data.entities.find(
-                    item =>
-                        Array.isArray(item.roles) &&
-                        item.roles.includes("registrar")
-                );
-
-
-            if (entity?.vcardArray?.[1]) {
-
-                const fn =
-                    entity.vcardArray[1]
-                        .find(item => item[0] === "fn");
-
-                if (fn) {
-                    registrar = fn[3];
-                }
-
-            } else if (entity?.handle) {
-
-                registrar =
-                    entity.handle;
-
-            }
-
-        }
-
-
-        const nsList =
-            Array.isArray(data.nameservers)
-                ? data.nameservers.map(
-                    ns => ns.ldhName || ns.handle
-                )
-                : [];
-
-
-        const statusList =
-            Array.isArray(data.status)
-                ? data.status
-                : [];
-
-
-        output.innerHTML =
-
-`<span class="highlight">Domain Name:</span> ${escapeHTML(data.ldhName || domain)}
-<span class="highlight">Registrar:</span> ${escapeHTML(registrar)}
-<span class="highlight">Registered On:</span> ${escapeHTML(regDate)}
-<span class="highlight">Expires On:</span> ${escapeHTML(expDate)}
-<span class="highlight">Last Updated:</span> ${escapeHTML(lastChanged)}
-<span class="highlight">Nameservers:</span> ${escapeHTML(nsList.join(", ") || "N/A")}
-<span class="highlight">RDAP Status(es):</span>
-
-${statusList.length
-    ? statusList.map(status => "• " + escapeHTML(status)).join("\n")
-    : "N/A"}`;
-
-    } catch (error) {
-
-        output.textContent =
-            "Error querying WHOIS/RDAP data: " +
-            error.message;
-
-    }
-
+  const out = $("whois-output"), d = cleanDomain($("whois-input").value);
+  if (!d) { out.textContent = "Enter a valid domain name, e.g. wikipedia.org"; return; }
+  out.textContent = `Querying RDAP registration records for ${d}...`;
+  try {
+    let j;
+    try { j = await getJSON(`https://rdap.org/domain/${encodeURIComponent(d)}`, { headers: { Accept: "application/rdap+json" } }, 15000); }
+    catch (e) { throw e.message === "HTTP 404" ? new Error("Domain or RDAP record not found.") : e; }
+    const fd = s => { const t = new Date(s); return isNaN(t) ? "N/A" : t.toUTCString(); };
+    const ev = a => fd((j.events || []).find(e => e.eventAction === a)?.eventDate);
+    const reg = (j.entities || []).find(e => Array.isArray(e.roles) && e.roles.includes("registrar"));
+    const registrar = reg?.vcardArray?.[1]?.find(i => i[0] === "fn")?.[3] || reg?.handle || "N/A";
+    const ns = (j.nameservers || []).map(n => n.ldhName || n.handle).filter(Boolean);
+    const st = Array.isArray(j.status) ? j.status : [];
+    fill(out, [
+      ["Domain Name:", j.ldhName || d], ["Registrar:", registrar], ["Registered On:", ev("registration")],
+      ["Expires On:", ev("expiration")], ["Last Updated:", ev("last changed")], ["Nameservers:", ns.join(", ") || "N/A"],
+      ["RDAP Status(es):", st.length ? "" : "N/A"], ...st.map(s => ["• " + s])
+    ]);
+  } catch (e) { out.textContent = "Error querying RDAP data: " + e.message; }
 }
 
+/* ---------- fingerprint ---------- */
 
-/* =========================================================
-   FINGERPRINT
-========================================================= */
-
-function simpleHash(str, seed = 0) {
-
-    let h1 =
-        0xdeadbeef ^ seed;
-
-    let h2 =
-        0x41c6ce57 ^ seed;
-
-
-    for (
-        let i = 0, ch;
-        i < str.length;
-        i++
-    ) {
-
-        ch =
-            str.charCodeAt(i);
-
-        h1 =
-            Math.imul(
-                h1 ^ ch,
-                2654435761
-            );
-
-        h2 =
-            Math.imul(
-                h2 ^ ch,
-                1597334677
-            );
-
-    }
-
-
-    h1 =
-        Math.imul(
-            h1 ^ (h1 >>> 16),
-            2246822507
-        ) ^
-        Math.imul(
-            h2 ^ (h2 >>> 13),
-            3266489909
-        );
-
-
-    h2 =
-        Math.imul(
-            h2 ^ (h2 >>> 16),
-            2246822507
-        ) ^
-        Math.imul(
-            h1 ^ (h1 >>> 13),
-            3266489909
-        );
-
-
-    return (
-        4294967296 *
-        (2097151 & h2) +
-        (h1 >>> 0)
-    ).toString(16);
-
+function simpleHash(str) {
+  let h1 = 0xdeadbeef, h2 = 0x41c6ce57;
+  for (let i = 0; i < str.length; i++) {
+    const ch = str.charCodeAt(i);
+    h1 = Math.imul(h1 ^ ch, 2654435761); h2 = Math.imul(h2 ^ ch, 1597334677);
+  }
+  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+  return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(16);
 }
 
-
-function getCanvasFingerprint() {
-
-    try {
-
-        const canvas =
-            document.createElement("canvas");
-
-        const ctx =
-            canvas.getContext("2d");
-
-        canvas.width = 200;
-        canvas.height = 50;
-
-        ctx.textBaseline = "top";
-
-        ctx.font =
-            "14px Arial";
-
-        ctx.fillStyle =
-            "#f60";
-
-        ctx.fillRect(
-            125,
-            1,
-            62,
-            20
-        );
-
-        ctx.fillStyle =
-            "#069";
-
-        ctx.fillText(
-            "Gecko Gateway 🦎",
-            2,
-            15
-        );
-
-        ctx.fillStyle =
-            "rgba(102,204,0,.7)";
-
-        ctx.fillText(
-            "Fingerprint",
-            4,
-            17
-        );
-
-        return canvas.toDataURL();
-
-    } catch {
-
-        return "Canvas Blocked";
-
-    }
-
+function canvasFingerprint() {
+  try {
+    const c = document.createElement("canvas"), x = c.getContext("2d");
+    c.width = 200; c.height = 50;
+    x.textBaseline = "top"; x.font = "14px Arial";
+    x.fillStyle = "#f60"; x.fillRect(125, 1, 62, 20);
+    x.fillStyle = "#069"; x.fillText("Gecko Gateway 🦎", 2, 15);
+    x.fillStyle = "rgba(102,204,0,.7)"; x.fillText("Fingerprint", 4, 17);
+    return c.toDataURL();
+  } catch { return "Canvas Blocked"; }
 }
 
-
-function getWebGLInfo() {
-
-    try {
-
-        const canvas =
-            document.createElement("canvas");
-
-        const gl =
-            canvas.getContext("webgl") ||
-            canvas.getContext("experimental-webgl");
-
-
-        if (!gl) {
-
-            return {
-                vendor: "N/A",
-                renderer: "N/A"
-            };
-
-        }
-
-
-        const debugInfo =
-            gl.getExtension(
-                "WEBGL_debug_renderer_info"
-            );
-
-
-        return {
-
-            vendor:
-                debugInfo
-                    ? gl.getParameter(
-                        debugInfo.UNMASKED_VENDOR_WEBGL
-                    )
-                    : gl.getParameter(gl.VENDOR),
-
-            renderer:
-                debugInfo
-                    ? gl.getParameter(
-                        debugInfo.UNMASKED_RENDERER_WEBGL
-                    )
-                    : gl.getParameter(gl.RENDERER)
-
-        };
-
-    } catch {
-
-        return {
-            vendor: "Blocked",
-            renderer: "Blocked"
-        };
-
-    }
-
+function webglInfo() {
+  try {
+    const gl = document.createElement("canvas").getContext("webgl");
+    if (!gl) return { vendor: "N/A", renderer: "N/A" };
+    const d = gl.getExtension("WEBGL_debug_renderer_info");
+    return { vendor: gl.getParameter(d ? d.UNMASKED_VENDOR_WEBGL : gl.VENDOR), renderer: gl.getParameter(d ? d.UNMASKED_RENDERER_WEBGL : gl.RENDERER) };
+  } catch { return { vendor: "Blocked", renderer: "Blocked" }; }
 }
-
 
 function generateFingerprint() {
-
-    const output =
-        document.getElementById("fp-output");
-
-
-    const canvasData =
-        getCanvasFingerprint();
-
-    const webgl =
-        getWebGLInfo();
-
-    const screenRes =
-        `${screen.width}x${screen.height} (${screen.colorDepth}-bit)`;
-
-    const cores =
-        navigator.hardwareConcurrency ||
-        "N/A";
-
-    const memory =
-        navigator.deviceMemory
-            ? `${navigator.deviceMemory} GB`
-            : "N/A";
-
-    const language =
-        navigator.language ||
-        "N/A";
-
-    const timezone =
-        Intl.DateTimeFormat()
-            .resolvedOptions()
-            .timeZone ||
-        "N/A";
-
-    const touchSupport =
-        navigator.maxTouchPoints > 0
-            ? `Yes (${navigator.maxTouchPoints} points)`
-            : "No";
-
-    const cookiesEnabled =
-        navigator.cookieEnabled
-            ? "Enabled"
-            : "Disabled";
-
-    const doNotTrack =
-        navigator.doNotTrack ||
-        window.doNotTrack ||
-        "Unspecified";
-
-
-    const raw =
-        `${navigator.userAgent}|${screenRes}|${cores}|${memory}|${language}|${timezone}|${webgl.vendor}|${webgl.renderer}|${canvasData}`;
-
-
-    const hashID =
-        simpleHash(raw)
-            .toUpperCase();
-
-
-    output.innerHTML =
-
-`<span class="highlight">Fingerprint Hash:</span> #${hashID}
-
-<span class="highlight">GPU Vendor:</span> ${escapeHTML(webgl.vendor)}
-<span class="highlight">GPU Renderer:</span> ${escapeHTML(webgl.renderer)}
-<span class="highlight">Screen Size:</span> ${escapeHTML(screenRes)}
-<span class="highlight">CPU Cores:</span> ${escapeHTML(String(cores))}
-<span class="highlight">Device RAM:</span> ${escapeHTML(String(memory))}
-<span class="highlight">Language:</span> ${escapeHTML(language)}
-<span class="highlight">Timezone:</span> ${escapeHTML(timezone)}
-<span class="highlight">Touch Screen:</span> ${escapeHTML(touchSupport)}
-<span class="highlight">Cookies Enabled:</span> ${escapeHTML(cookiesEnabled)}
-<span class="highlight">Do Not Track:</span> ${escapeHTML(doNotTrack)}
-<span class="highlight">User Agent:</span> ${escapeHTML(navigator.userAgent)}`;
-
+  const gl = webglInfo(), res = `${screen.width}x${screen.height} (${screen.colorDepth}-bit)`;
+  const cores = navigator.hardwareConcurrency || "N/A", mem = navigator.deviceMemory ? `${navigator.deviceMemory} GB` : "N/A";
+  const lang = navigator.language || "N/A", tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "N/A";
+  const touch = navigator.maxTouchPoints > 0 ? `Yes (${navigator.maxTouchPoints} points)` : "No";
+  const raw = [navigator.userAgent, res, cores, mem, lang, tz, gl.vendor, gl.renderer, canvasFingerprint()].join("|");
+  fill($("fp-output"), [
+    ["Fingerprint Hash:", "#" + simpleHash(raw).toUpperCase()], [""],
+    ["GPU Vendor:", gl.vendor], ["GPU Renderer:", gl.renderer], ["Screen Size:", res], ["CPU Cores:", cores],
+    ["Device RAM:", mem], ["Language:", lang], ["Timezone:", tz], ["Touch Screen:", touch],
+    ["Cookies Enabled:", navigator.cookieEnabled ? "Enabled" : "Disabled"],
+    ["Do Not Track:", navigator.doNotTrack || "Unspecified"], ["User Agent:", navigator.userAgent]
+  ]);
 }
 
+/* ---------- password generator ---------- */
 
-/* =========================================================
-   PASSWORD GENERATOR
-========================================================= */
+const WORDS = ("anchor aperture beacon breeze cactus canyon castle cobalt comet compass crystal delta echo falcon fender forest fossil galaxy glacier harbor " +
+  "horizon island jungle lantern legend matrix meadow meteor mirage mountain nebula orbit oasis panther phantom planet pulse pyramid radar river rocket saddle " +
+  "shadow shield sierra silver solstice summit thunder timber titan torpedo valley velvet vertex vortex voyage whisper wilderness zenith zephyr zodiac aspen " +
+  "boulder circuit element glimmer haven monolith pioneer prism quarry").split(" ");
+const SYMBOLS = "!@#$%^&*()_+-=[]{}|;:,.<>?", WORD_SYMBOLS = "!@#$%^&*";
+const LEET = { a: "4", e: "3", i: "1", o: "0", s: "5", t: "7" };
 
-const WORD_LIST = [
-
-"anchor","aperture","beacon","breeze",
-"cactus","canyon","castle","cobalt",
-"comet","compass","crystal","delta",
-"echo","falcon","fender","forest",
-"fossil","galaxy","glacier","harbor",
-"horizon","island","jungle","lantern",
-"legend","matrix","meadow","meteor",
-"mirage","mountain","nebula","orbit",
-"oasis","panther","phantom","planet",
-"pulse","pyramid","radar","river",
-"rocket","saddle","shadow","shield",
-"sierra","silver","solstice","summit",
-"thunder","timber","titan","torpedo",
-"valley","velvet","vertex","vortex",
-"voyage","whisper","wilderness","zenith",
-"zephyr","zodiac","aspen","boulder",
-"circuit","element","glimmer","haven",
-"monolith","pioneer","prism","quarry"
-
-];
-
-
-const SYMBOL_SET =
-"!@#$%^&*()_+-=[]{}|;:,.<>?";
-
-
-function getRandomCryptoInt(max) {
-
-    if (max <= 0) {
-        return 0;
-    }
-
-
-    const array =
-        new Uint32Array(1);
-
-
-    window.crypto
-        .getRandomValues(array);
-
-
-    return (
-        array[0] %
-        max
-    );
-
+function syncPwdUI() {
+  const pass = $("pwd-mode").value === "passphrase";
+  document.querySelectorAll(".mode-char-option").forEach(e => e.hidden = pass);
+  document.querySelectorAll(".mode-word-option").forEach(e => e.hidden = !pass);
+  $("custom-sep-container").hidden = !(pass && $("pwd-separator").value === "custom");
+  $("pwd-len-val").textContent = $("pwd-length").value;
+  $("pwd-words-val").textContent = $("pwd-word-count").value;
 }
-
-
-function togglePasswordMode() {
-
-    const mode =
-        document.getElementById("pwd-mode")
-            .value;
-
-
-    const charOptions =
-        document.querySelectorAll(
-            ".mode-char-option"
-        );
-
-
-    const wordOptions =
-        document.querySelectorAll(
-            ".mode-word-option"
-        );
-
-
-    if (mode === "passphrase") {
-
-        charOptions.forEach(
-            el => el.style.display = "none"
-        );
-
-        wordOptions.forEach(
-            el => el.style.display = "flex"
-        );
-
-    } else {
-
-        charOptions.forEach(
-            el => el.style.display = "flex"
-        );
-
-        wordOptions.forEach(
-            el => el.style.display = "none"
-        );
-
-    }
-
-
-    toggleCustomSeparator();
-    generatePassword();
-
-}
-
-
-function toggleCustomSeparator() {
-
-    const select =
-        document.getElementById(
-            "pwd-separator"
-        );
-
-    const container =
-        document.getElementById(
-            "custom-sep-container"
-        );
-
-
-    if (
-        select &&
-        select.value === "custom"
-    ) {
-
-        container.style.display =
-            "flex";
-
-    } else if (container) {
-
-        container.style.display =
-            "none";
-
-    }
-
-}
-
 
 function generatePassword() {
-
-    const mode =
-        document.getElementById("pwd-mode")
-            .value;
-
-
-    const prefix =
-        document.getElementById("pwd-prefix")
-            .value;
-
-    const suffix =
-        document.getElementById("pwd-suffix")
-            .value;
-
-    const excludeSimilar =
-        document.getElementById("exc-similar")
-            .checked;
-
-
-    let password = "";
-    let poolSize = 0;
-
-
-    if (mode === "characters") {
-
-        const length =
-            parseInt(
-                document.getElementById("pwd-length")
-                    .value,
-                10
-            );
-
-
-        let upper =
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-        let lower =
-            "abcdefghijklmnopqrstuvwxyz";
-
-        let numbers =
-            "0123456789";
-
-        let symbols =
-            SYMBOL_SET;
-
-
-        if (excludeSimilar) {
-
-            upper =
-                upper.replace(/[IO]/g, "");
-
-            lower =
-                lower.replace(/[l]/g, "");
-
-            numbers =
-                numbers.replace(/[01]/g, "");
-
-        }
-
-
-        const customInclude =
-            document.getElementById(
-                "pwd-custom-include"
-            ).value;
-
-
-        const customExclude =
-            document.getElementById(
-                "pwd-custom-exclude"
-            ).value;
-
-
-        const incUpper =
-            document.getElementById(
-                "inc-uppercase"
-            ).checked;
-
-
-        const incLower =
-            document.getElementById(
-                "inc-lowercase"
-            ).checked;
-
-
-        const incNumbers =
-            document.getElementById(
-                "inc-numbers"
-            ).checked;
-
-
-        const incSymbols =
-            document.getElementById(
-                "inc-symbols"
-            ).checked;
-
-
-        const enforceAll =
-            document.getElementById(
-                "enforce-all-sets"
-            ).checked;
-
-
-        const noAdjacent =
-            document.getElementById(
-                "no-repeat-adjacent"
-            ).checked;
-
-
-        const caseStyle =
-            document.getElementById(
-                "pwd-case-style"
-            ).value;
-
-
-        const removeExcluded =
-            set => {
-
-                let result =
-                    set;
-
-                for (
-                    const char
-                    of customExclude
-                ) {
-
-                    result =
-                        result.split(char)
-                            .join("");
-
-                }
-
-                return result;
-
-            };
-
-
-        upper =
-            removeExcluded(upper);
-
-        lower =
-            removeExcluded(lower);
-
-        numbers =
-            removeExcluded(numbers);
-
-        symbols =
-            removeExcluded(symbols);
-
-
-        let mainPool = "";
-
-        const activeSets = [];
-
-
-        if (incUpper && upper) {
-
-            mainPool += upper;
-            activeSets.push(upper);
-
-        }
-
-
-        if (incLower && lower) {
-
-            mainPool += lower;
-            activeSets.push(lower);
-
-        }
-
-
-        if (incNumbers && numbers) {
-
-            mainPool += numbers;
-            activeSets.push(numbers);
-
-        }
-
-
-        if (incSymbols && symbols) {
-
-            mainPool += symbols;
-            activeSets.push(symbols);
-
-        }
-
-
-        if (customInclude) {
-
-            mainPool += customInclude;
-            activeSets.push(customInclude);
-
-        }
-
-
-        if (!mainPool) {
-
-            document.getElementById(
-                "pwd-result"
-            ).textContent =
-                "Select at least one character set!";
-
-            return;
-
-        }
-
-
-        poolSize =
-            [...new Set(mainPool)].length;
-
-
-        let chars = [];
-
-
-        if (
-            enforceAll &&
-            activeSets.length
-        ) {
-
-            activeSets.forEach(set => {
-
-                if (chars.length < length) {
-
-                    chars.push(
-                        set[
-                            getRandomCryptoInt(
-                                set.length
-                            )
-                        ]
-                    );
-
-                }
-
-            });
-
-        }
-
-
-        let attempts = 0;
-
-
-        while (
-            chars.length < length &&
-            attempts < 10000
-        ) {
-
-            attempts++;
-
-
-            const nextChar =
-                mainPool[
-                    getRandomCryptoInt(
-                        mainPool.length
-                    )
-                ];
-
-
-            if (
-                noAdjacent &&
-                chars.length &&
-                chars[chars.length - 1] ===
-                nextChar
-            ) {
-
-                continue;
-
-            }
-
-
-            chars.push(nextChar);
-
-        }
-
-
-        for (
-            let i = chars.length - 1;
-            i > 0;
-            i--
-        ) {
-
-            const j =
-                getRandomCryptoInt(i + 1);
-
-            [
-                chars[i],
-                chars[j]
-            ] =
-            [
-                chars[j],
-                chars[i]
-            ];
-
-        }
-
-
-        let generated =
-            chars.join("");
-
-
-        if (caseStyle === "lowercase") {
-
-            generated =
-                generated.toLowerCase();
-
-        } else if (
-            caseStyle === "uppercase"
-        ) {
-
-            generated =
-                generated.toUpperCase();
-
-        } else if (
-            caseStyle === "alternating"
-        ) {
-
-            generated =
-                generated
-                    .split("")
-                    .map(
-                        (char, index) =>
-                            index % 2 === 0
-                                ? char.toLowerCase()
-                                : char.toUpperCase()
-                    )
-                    .join("");
-
-        } else if (
-            caseStyle === "leetspeak"
-        ) {
-
-            const map = {
-                a:"4",
-                e:"3",
-                i:"1",
-                o:"0",
-                s:"5",
-                t:"7"
-            };
-
-
-            generated =
-                generated
-                    .split("")
-                    .map(
-                        char =>
-                            map[
-                                char.toLowerCase()
-                            ] || char
-                    )
-                    .join("");
-
-        }
-
-
-        password =
-            prefix +
-            generated +
-            suffix;
-
-
-    } else {
-
-        const wordCount =
-            parseInt(
-                document.getElementById(
-                    "pwd-word-count"
-                ).value,
-                10
-            );
-
-
-        const wordCase =
-            document.getElementById(
-                "pwd-word-case"
-            ).value;
-
-
-        const sepChoice =
-            document.getElementById(
-                "pwd-separator"
-            ).value;
-
-
-        const customSep =
-            document.getElementById(
-                "pwd-custom-sep"
-            ).value;
-
-
-        const numMode =
-            document.getElementById(
-                "pwd-word-numbers"
-            ).value;
-
-
-        const symMode =
-            document.getElementById(
-                "pwd-word-symbols"
-            ).value;
-
-
-        const separator =
-            sepChoice === "custom"
-                ? customSep
-                : sepChoice;
-
-
-        const selectedWords = [];
-
-
-        for (
-            let i = 0;
-            i < wordCount;
-            i++
-        ) {
-
-            let word =
-                WORD_LIST[
-                    getRandomCryptoInt(
-                        WORD_LIST.length
-                    )
-                ];
-
-
-            if (excludeSimilar) {
-
-                word =
-                    word.replace(
-                        /[iol]/g,
-                        ""
-                    );
-
-            }
-
-
-            if (wordCase === "title") {
-
-                word =
-                    word.charAt(0).toUpperCase() +
-                    word.slice(1);
-
-            } else if (
-                wordCase === "upper"
-            ) {
-
-                word =
-                    word.toUpperCase();
-
-            } else if (
-                wordCase === "lower"
-            ) {
-
-                word =
-                    word.toLowerCase();
-
-            } else if (
-                wordCase ===
-                "alternating-words"
-            ) {
-
-                word =
-                    i % 2 === 0
-                        ? word.charAt(0).toUpperCase() +
-                          word.slice(1)
-                        : word.toUpperCase();
-
-            } else if (
-                wordCase ===
-                "random-words"
-            ) {
-
-                word =
-                    getRandomCryptoInt(2)
-                        ? word.toUpperCase()
-                        : word.toLowerCase();
-
-            } else if (
-                wordCase ===
-                "random-letters"
-            ) {
-
-                word =
-                    word
-                        .split("")
-                        .map(
-                            char =>
-                                getRandomCryptoInt(2)
-                                    ? char.toUpperCase()
-                                    : char.toLowerCase()
-                        )
-                        .join("");
-
-            }
-
-
-            if (
-                numMode ===
-                "after-each-1"
-            ) {
-
-                word +=
-                    getRandomCryptoInt(10);
-
-            } else if (
-                numMode ===
-                "after-each-2"
-            ) {
-
-                word +=
-                    String(
-                        getRandomCryptoInt(90) +
-                        10
-                    );
-
-            }
-
-
-            if (
-                symMode ===
-                "symbol-after-each"
-            ) {
-
-                const symbols =
-                    "!@#$%^&*";
-
-                word +=
-                    symbols[
-                        getRandomCryptoInt(
-                            symbols.length
-                        )
-                    ];
-
-            }
-
-
-            selectedWords.push(word);
-
-        }
-
-
-        let phrase =
-            selectedWords.join(separator);
-
-
-        if (numMode === "end-1") {
-
-            phrase +=
-                separator +
-                getRandomCryptoInt(10);
-
-        } else if (
-            numMode === "end-2"
-        ) {
-
-            phrase +=
-                separator +
-                (
-                    getRandomCryptoInt(90) +
-                    10
-                );
-
-        } else if (
-            numMode === "end-4"
-        ) {
-
-            phrase +=
-                separator +
-                (
-                    getRandomCryptoInt(9000) +
-                    1000
-                );
-
-        }
-
-
-        if (
-            symMode === "symbol-end"
-        ) {
-
-            const symbols =
-                "!@#$%^&*";
-
-            phrase +=
-                symbols[
-                    getRandomCryptoInt(
-                        symbols.length
-                    )
-                ];
-
-        }
-
-
-        password =
-            prefix +
-            phrase +
-            suffix;
-
-
-        poolSize =
-            WORD_LIST.length;
-
+  syncPwdUI();
+  const mode = $("pwd-mode").value, prefix = $("pwd-prefix").value, suffix = $("pwd-suffix").value, noSim = $("exc-similar").checked;
+  let body = "", bits = 0;
+
+  if (mode === "characters") {
+    const len = +$("pwd-length").value, style = $("pwd-case-style").value, ex = $("pwd-custom-exclude").value;
+    let up = "ABCDEFGHIJKLMNOPQRSTUVWXYZ", lo = "abcdefghijklmnopqrstuvwxyz", nu = "0123456789";
+    if (noSim) { up = up.replace(/[IO]/g, ""); lo = lo.replace("l", ""); nu = nu.replace(/[01]/g, ""); }
+    const sets = [];
+    [["inc-uppercase", up], ["inc-lowercase", lo], ["inc-numbers", nu], ["inc-symbols", SYMBOLS]].forEach(([id, s]) => {
+      const a = [...s].filter(c => !ex.includes(c));
+      if ($(id).checked && a.length) sets.push(a);
+    });
+    const extra = [...new Set([...$("pwd-custom-include").value].filter(c => !ex.includes(c)))];
+    if (extra.length) sets.push(extra);
+    const pool = [...new Set(sets.flat())];
+    if (!pool.length) { $("pwd-result").textContent = "Select at least one character set!"; return; }
+
+    const noAdj = $("no-repeat-adjacent").checked && pool.length > 1, out = Array(len).fill(null);
+    if ($("enforce-all-sets").checked) {
+      const pos = [...out.keys()];
+      for (let i = pos.length - 1; i > 0; i--) { const j = rand(i + 1); [pos[i], pos[j]] = [pos[j], pos[i]]; }
+      sets.slice(0, len).forEach((s, k) => { out[pos[k]] = s[rand(s.length)]; });
     }
-
-
-    document.getElementById(
-        "pwd-result"
-    ).textContent =
-        password;
-
-
-    calculateEntropy(
-        password,
-        mode,
-        poolSize
-    );
-
+    for (let i = 0; i < len; i++) {
+      if (out[i] !== null) continue;
+      let c, n = 0;
+      do c = pool[rand(pool.length)]; while (noAdj && n++ < 50 && (c === out[i - 1] || c === out[i + 1]));
+      out[i] = c;
+    }
+    const tr = (c, i) => style === "lowercase" ? c.toLowerCase() : style === "uppercase" ? c.toUpperCase()
+      : style === "alternating" ? (i % 2 ? c.toUpperCase() : c.toLowerCase()) : style === "leetspeak" ? (LEET[c.toLowerCase()] || c) : c;
+    body = out.map(tr).join("");
+    bits = len * Math.log2(new Set(pool.map(c => tr(c, 0))).size);   // prefix/suffix are not random, so not counted
+  } else {
+    const n = +$("pwd-word-count").value, wc = $("pwd-word-case").value, nm = $("pwd-word-numbers").value, sm = $("pwd-word-symbols").value;
+    const sc = $("pwd-separator").value, sep = sc === "custom" ? $("pwd-custom-sep").value : sc;
+    const cap = s => s[0].toUpperCase() + s.slice(1), parts = [];
+    bits = n * Math.log2(WORDS.length);
+    for (let i = 0; i < n; i++) {
+      let w = WORDS[rand(WORDS.length)];
+      if (noSim) w = w.replace(/[iol]/g, "");
+      if (wc === "title") w = cap(w);
+      else if (wc === "upper") w = w.toUpperCase();
+      else if (wc === "alternating-words") w = i % 2 ? w.toUpperCase() : cap(w);
+      else if (wc === "random-words") { if (rand(2)) w = w.toUpperCase(); bits += 1; }
+      else if (wc === "random-letters") { w = [...w].map(c => rand(2) ? c.toUpperCase() : c).join(""); bits += w.length; }
+      if (nm === "after-each-1") { w += rand(10); bits += Math.log2(10); }
+      else if (nm === "after-each-2") { w += 10 + rand(90); bits += Math.log2(90); }
+      if (sm === "symbol-after-each") { w += WORD_SYMBOLS[rand(WORD_SYMBOLS.length)]; bits += 3; }
+      parts.push(w);
+    }
+    body = parts.join(sep);
+    if (nm === "end-1") { body += sep + rand(10); bits += Math.log2(10); }
+    else if (nm === "end-2") { body += sep + (10 + rand(90)); bits += Math.log2(90); }
+    else if (nm === "end-4") { body += sep + (1000 + rand(9000)); bits += Math.log2(9000); }
+    if (sm === "symbol-end") { body += WORD_SYMBOLS[rand(WORD_SYMBOLS.length)]; bits += 3; }
+  }
+  $("pwd-result").textContent = prefix + body + suffix;
+  showStrength(Math.round(bits));
 }
 
-
-function calculateEntropy(
-    password,
-    mode,
-    poolSize
-) {
-
-    let entropy = 0;
-
-
-    if (mode === "characters") {
-
-        entropy =
-            Math.round(
-                password.length *
-                Math.log2(
-                    Math.max(poolSize, 1)
-                )
-            );
-
-    } else {
-
-        const wordCount =
-            parseInt(
-                document.getElementById(
-                    "pwd-word-count"
-                ).value,
-                10
-            );
-
-
-        entropy =
-            Math.round(
-                wordCount *
-                Math.log2(
-                    WORD_LIST.length
-                ) +
-                12
-            );
-
-    }
-
-
-    document.getElementById(
-        "entropy-bits"
-    ).textContent =
-        `${entropy} bits`;
-
-
-    const strengthText =
-        document.getElementById(
-            "strength-text"
-        );
-
-    const strengthBar =
-        document.getElementById(
-            "strength-bar"
-        );
-
-
-    const percentage =
-        Math.min(
-            100,
-            Math.round(
-                entropy / 128 * 100
-            )
-        );
-
-
-    strengthBar.style.width =
-        `${percentage}%`;
-
-
-    if (entropy < 40) {
-
-        strengthText.textContent =
-            "Weak";
-
-        strengthText.style.color =
-            "var(--soft-red)";
-
-        strengthBar.style.backgroundColor =
-            "var(--soft-red)";
-
-    } else if (entropy < 65) {
-
-        strengthText.textContent =
-            "Moderate";
-
-        strengthText.style.color =
-            "var(--soft-amber)";
-
-        strengthBar.style.backgroundColor =
-            "var(--soft-amber)";
-
-    } else if (entropy < 90) {
-
-        strengthText.textContent =
-            "Strong";
-
-        strengthText.style.color =
-            "var(--soft-blue)";
-
-        strengthBar.style.backgroundColor =
-            "var(--soft-blue)";
-
-    } else {
-
-        strengthText.textContent =
-            "Very Strong 🛡️";
-
-        strengthText.style.color =
-            "var(--soft-green)";
-
-        strengthBar.style.backgroundColor =
-            "var(--soft-green)";
-
-    }
-
+function showStrength(bits) {
+  const [label, color] = bits < 40 ? ["Weak", "--red"] : bits < 65 ? ["Moderate", "--amber"] : bits < 90 ? ["Strong", "--blue"] : ["Very Strong 🛡️", "--green"];
+  $("entropy-bits").textContent = `${bits} bits`;
+  $("strength-text").textContent = label;
+  $("strength-text").style.color = `var(${color})`;
+  $("strength-bar").style.width = Math.min(100, Math.round(bits / 128 * 100)) + "%";
+  $("strength-bar").style.backgroundColor = `var(${color})`;
 }
 
-
-/* =========================================================
-   COPY PASSWORD
-========================================================= */
-
-function copyPassword() {
-
-    const password =
-        document.getElementById(
-            "pwd-result"
-        ).textContent;
-
-
-    const button =
-        document.getElementById(
-            "copy-btn"
-        );
-
-
-    if (
-        !password ||
-        password ===
-        "Click Generate below..."
-    ) {
-
-        return;
-
+async function copyPassword() {
+  const text = $("pwd-result").textContent, btn = $("copy-btn");
+  if (!text || text === "Click Generate below..." || text.startsWith("Select at least")) return;
+  try {
+    if (navigator.clipboard && window.isSecureContext) await navigator.clipboard.writeText(text);
+    else {
+      const t = document.createElement("textarea");
+      t.value = text; t.style.position = "fixed"; t.style.opacity = "0";
+      document.body.appendChild(t); t.select(); document.execCommand("copy"); t.remove();
     }
-
-
-    if (
-        navigator.clipboard &&
-        window.isSecureContext
-    ) {
-
-        navigator.clipboard
-            .writeText(password)
-            .then(() => {
-
-                button.textContent =
-                    "Copied! ✓";
-
-                setTimeout(
-                    () =>
-                        button.textContent =
-                            "Copy 📋",
-                    1800
-                );
-
-            })
-            .catch(() =>
-                fallbackCopy(password)
-            );
-
-    } else {
-
-        fallbackCopy(password);
-
-    }
-
+    btn.textContent = "Copied! ✓";
+  } catch { btn.textContent = "Copy failed"; }
+  setTimeout(() => btn.textContent = "Copy 📋", 1800);
 }
 
+/* ---------- wiring ---------- */
 
-function fallbackCopy(text) {
-
-    const textarea =
-        document.createElement(
-            "textarea"
-        );
-
-    textarea.value =
-        text;
-
-    textarea.style.position =
-        "fixed";
-
-    textarea.style.opacity =
-        "0";
-
-    document.body.appendChild(
-        textarea
-    );
-
-    textarea.select();
-
-    try {
-
-        document.execCommand(
-            "copy"
-        );
-
-        const button =
-            document.getElementById(
-                "copy-btn"
-            );
-
-        button.textContent =
-            "Copied! ✓";
-
-        setTimeout(
-            () =>
-                button.textContent =
-                    "Copy 📋",
-            1800
-        );
-
-    } finally {
-
-        textarea.remove();
-
-    }
-
-}
-
-
-/* =========================================================
-   HTML ESCAPING
-========================================================= */
-
-function escapeHTML(value) {
-
-    return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-
-}
-
-
-/* =========================================================
-   INITIALIZATION
-========================================================= */
-
-window.addEventListener(
-    "load",
-    () => {
-
-        generatePassword();
-
-    }
-);
+document.querySelectorAll(".tab-btn").forEach(b => b.addEventListener("click", () => switchTab(b)));
+$("dns-btn").addEventListener("click", lookupDNS);
+$("leak-btn").addEventListener("click", runLeakTest);
+$("ip-btn").addEventListener("click", fetchIPDetails);
+$("whois-btn").addEventListener("click", fetchWHOIS);
+$("fp-btn").addEventListener("click", generateFingerprint);
+$("gen-btn").addEventListener("click", generatePassword);
+$("copy-btn").addEventListener("click", copyPassword);
+$("pwd-panel").addEventListener("input", generatePassword);
+$("domain-input").addEventListener("keydown", e => { if (e.key === "Enter") lookupDNS(); });
+$("whois-input").addEventListener("keydown", e => { if (e.key === "Enter") fetchWHOIS(); });
+generatePassword();
 </script>
 </body>
 </html>
