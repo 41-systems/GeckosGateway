@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Branding Requirement: Title is Gecko's Gateway -->
+    <!-- Requirement: Title changed to Gecko's Gateway -->
     <title>Gecko's Gateway</title>
     <style>
         :root {
@@ -21,6 +21,7 @@
         }
 
         body {
+            /* Full white background */
             background-color: var(--bg-color);
             color: var(--text-color);
             font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -43,115 +44,82 @@
             overflow: hidden;
         }
 
-        /* Branding Requirement: MS Paint Header with Gecko in Overalls and Computer */
-        header style="text-align: center; padding: 20px; font-family: 'Courier New', monospace;">
-          <h1 style="font-size: 2.5rem; color: #008080; text-transform: uppercase; letter-spacing: 2px;">
-            🦎 Gecko's Gateway 🦎
-          </h1>
-          <p style="font-size: 1.1rem; color: #555;">Network & DNS Security Suite - Slightly Questionable V1.4</p>
+        /* Branding Requirement: Header with MS Paint drawing style cute gecko in overalls and computer */
+        header style="text-align: center; padding: 20px 28px; background-color: #ffffff; border-bottom: 1px solid var(--muted-border); font-family: 'Courier New', monospace;">
+          <h1 style="margin: 0; font-size: 2.2rem; color: #008080;">🦎 Gecko's Gateway 🦎</h1>
+          <p style="margin: 5px 0 15px 0; color: #555;">(Passive) Network & DNS Security Suite V1.5</p>
+
+          <!-- Embedded crude MS Paint style graphic -->
+          <div style="display: flex; justify-content: center; margin-bottom: 10px;">
+            <svg width="320" height="260" viewBox="0 0 320 260" xmlns="http://www.w3.org/2000/svg" style="border: 3px inset #c0c0c0; background-color: #ffffff;">
+              <defs>
+                <pattern id="spray" width="20" height="20" patternUnits="userSpaceOnUse">
+                  <circle cx="2" cy="3" r="1" fill="#00aa00"/>
+                  <circle cx="8" cy="12" r="1.5" fill="#008800"/>
+                  <circle cx="15" cy="5" r="1" fill="#00aa00"/>
+                  <circle cx="11" cy="17" r="1" fill="#006600"/>
+                  <circle cx="5" cy="18" r="1.2" fill="#00aa00"/>
+                </pattern>
+              </defs>
+              <rect width="320" height="260" fill="#ffffff" />
+              <rect x="180" y="80" width="110" height="90" fill="#e0e0d0" stroke="#000000" stroke-width="4" stroke-linejoin="bevel" />
+              <rect x="190" y="90" width="90" height="70" fill="#c0c0b0" stroke="#000000" stroke-width="3" />
+              <rect x="198" y="98" width="74" height="54" fill="#002200" stroke="#000000" stroke-width="2" />
+              <path d="M 204 108 L 240 108 M 204 116 L 260 116 M 204 124 L 230 124 M 204 132 L 250 132" stroke="#00ff00" stroke-width="3" stroke-linecap="square" />
+              <polygon points="210,170 260,170 270,190 200,190" fill="#c0c0b0" stroke="#000000" stroke-width="3" />
+              <rect x="250" y="140" width="50" height="80" fill="#d0d0c0" stroke="#000000" stroke-width="4" />
+              <line x1="260" y1="155" x2="290" y2="155" stroke="#000" stroke-width="3" />
+              <circle cx="285" cy="200" r="4" fill="#ff0000" />
+              <path d="M 50 190 Q 20 200 15 160 Q 10 120 40 150 Q 60 170 80 180" fill="none" stroke="#00aa00" stroke-width="14" stroke-linecap="round" />
+              <path d="M 50 190 Q 20 200 15 160 Q 10 120 40 150 Q 60 170 80 180" fill="none" stroke="#000000" stroke-width="3" />
+              <ellipse cx="100" cy="170" rx="35" ry="45" fill="#00cc00" stroke="#000000" stroke-width="4" />
+              <ellipse cx="100" cy="170" rx="35" ry="45" fill="url(#spray)" />
+              <polygon points="75,120 125,120 135,90 85,85" fill="#00cc00" stroke="#000000" stroke-width="4" stroke-linejoin="round" />
+              <circle cx="90" cy="90" r="14" fill="#ffffff" stroke="#000000" stroke-width="3" />
+              <circle cx="92" cy="88" r="4" fill="#000000" />
+              <circle cx="120" cy="95" r="14" fill="#ffffff" stroke="#000000" stroke-width="3" />
+              <circle cx="124" cy="97" r="4" fill="#000000" />
+              <path d="M 115 110 Q 135 115 140 125 Q 145 135 138 135 Q 130 135 120 115" fill="#ff3366" stroke="#000000" stroke-width="2" />
+              <path d="M 70 160 L 130 160 L 135 210 L 65 210 Z" fill="#0055ff" stroke="#000000" stroke-width="4" />
+              <rect x="80" y="135" width="40" height="30" fill="#0055ff" stroke="#000000" stroke-width="3" />
+              <line x1="82" y1="135" x2="75" y2="105" stroke="#0055ff" stroke-width="8" />
+              <line x1="82" y1="135" x2="75" y2="105" stroke="#000000" stroke-width="2" />
+              <line x1="118" y1="135" x2="125" y2="105" stroke="#0055ff" stroke-width="8" />
+              <line x1="118" y1="135" x2="125" y2="105" stroke="#000000" stroke-width="2" />
+              <circle cx="83" cy="138" r="3" fill="#ffff00" stroke="#000000" stroke-width="1" />
+              <circle cx="117" cy="138" r="3" fill="#ffff00" stroke="#000000" stroke-width="1" />
+              <rect x="92" y="142" width="16" height="15" fill="none" stroke="#000000" stroke-width="2" stroke-dasharray="2,2" />
+              <path d="M 120 150 Q 150 160 175 175" fill="none" stroke="#00aa00" stroke-width="8" stroke-linecap="round" />
+              <path d="M 120 150 Q 150 160 175 175" fill="none" stroke="#000000" stroke-width="3" stroke-linecap="round" />
+              <polygon points="160,185 240,185 230,205 150,205" fill="#d0d0c0" stroke="#000000" stroke-width="3" />
+              <path d="M 165 190 L 230 190 M 162 195 L 227 195 M 160 200 L 222 200" stroke="#555" stroke-width="2" stroke-dasharray="3,2" />
+              <circle cx="20" cy="25" r="1.5" fill="#ff0000" />
+              <circle cx="25" cy="22" r="2" fill="#ff0000" />
+              <circle cx="22" cy="30" r="1" fill="#ff0000" />
+              <text x="35" y="30" font-family="Comic Sans MS, Arial" font-size="12" fill="#ff0000" transform="rotate(-5, 35, 30)">gecko_v1_final_FINAL.bmp</text>
+            </svg>
+          </div>
         </header>
 
-        <div style="display: flex; justify-content: center; margin: 20px 0; border-bottom: 1px solid var(--muted-border); padding-bottom: 20px;">
-          <svg width="320" height="260" viewBox="0 0 320 260" xmlns="http://www.w3.org/2000/svg" style="border: 3px inset #c0c0c0; background-color: #ffffff;">
-            <defs>
-              <!-- MS Paint Spray Paint Pattern -->
-              <pattern id="spray" width="20" height="20" patternUnits="userSpaceOnUse">
-                <circle cx="2" cy="3" r="1" fill="#00aa00"/>
-                <circle cx="8" cy="12" r="1.5" fill="#008800"/>
-                <circle cx="15" cy="5" r="1" fill="#00aa00"/>
-                <circle cx="11" cy="17" r="1" fill="#006600"/>
-                <circle cx="5" cy="18" r="1.2" fill="#00aa00"/>
-              </pattern>
-            </defs>
-
-            <!-- Background Grid Lines (MS Paint Canvas vibe) -->
-            <rect width="320" height="260" fill="#ffffff" />
-            
-            <!-- Old CRT Monitor Body -->
-            <rect x="180" y="80" width="110" height="90" fill="#e0e0d0" stroke="#000000" stroke-width="4" stroke-linejoin="bevel" />
-            <!-- Monitor Bezel -->
-            <rect x="190" y="90" width="90" height="70" fill="#c0c0b0" stroke="#000000" stroke-width="3" />
-            <!-- Glowing Green Screen -->
-            <rect x="198" y="98" width="74" height="54" fill="#002200" stroke="#000000" stroke-width="2" />
-            <!-- Crude Code lines on monitor -->
-            <path d="M 204 108 L 240 108 M 204 116 L 260 116 M 204 124 L 230 124 M 204 132 L 250 132" stroke="#00ff00" stroke-width="3" stroke-linecap="square" />
-            <!-- Monitor Stand -->
-            <polygon points="210,170 260,170 270,190 200,190" fill="#c0c0b0" stroke="#000000" stroke-width="3" />
-            <!-- Computer Tower -->
-            <rect x="250" y="140" width="50" height="80" fill="#d0d0c0" stroke="#000000" stroke-width="4" />
-            <line x1="260" y1="155" x2="290" y2="155" stroke="#000" stroke-width="3" /> <!-- Floppy Drive -->
-            <circle cx="285" cy="200" r="4" fill="#ff0000" /> <!-- Power Button -->
-
-            <!-- Gecko Tail -->
-            <path d="M 50 190 Q 20 200 15 160 Q 10 120 40 150 Q 60 170 80 180" fill="none" stroke="#00aa00" stroke-width="14" stroke-linecap="round" />
-            <path d="M 50 190 Q 20 200 15 160 Q 10 120 40 150 Q 60 170 80 180" fill="none" stroke="#000000" stroke-width="3" />
-
-            <!-- Gecko Body (Green Spray/Fill) -->
-            <ellipse cx="100" cy="170" rx="35" ry="45" fill="#00cc00" stroke="#000000" stroke-width="4" />
-            <ellipse cx="100" cy="170" rx="35" ry="45" fill="url(#spray)" />
-
-            <!-- Gecko Head -->
-            <polygon points="75,120 125,120 135,90 85,85" fill="#00cc00" stroke="#000000" stroke-width="4" stroke-linejoin="round" />
-            <!-- Big Derpy Eyes -->
-            <circle cx="90" cy="90" r="14" fill="#ffffff" stroke="#000000" stroke-width="3" />
-            <circle cx="92" cy="88" r="4" fill="#000000" /> <!-- Pupil 1 -->
-            <circle cx="120" cy="95" r="14" fill="#ffffff" stroke="#000000" stroke-width="3" />
-            <circle cx="124" cy="97" r="4" fill="#000000" /> <!-- Pupil 2 (Derpy look) -->
-            <!-- Tongue sticking out -->
-            <path d="M 115 110 Q 135 115 140 125 Q 145 135 138 135 Q 130 135 120 115" fill="#ff3366" stroke="#000000" stroke-width="2" />
-
-            <!-- Overalls (Blue Denim with Yellow Buckles) -->
-            <!-- Main Pants Body -->
-            <path d="M 70 160 L 130 160 L 135 210 L 65 210 Z" fill="#0055ff" stroke="#000000" stroke-width="4" />
-            <!-- Overalls Bib -->
-            <rect x="80" y="135" width="40" height="30" fill="#0055ff" stroke="#000000" stroke-width="3" />
-            <!-- Left Strap -->
-            <line x1="82" y1="135" x2="75" y2="105" stroke="#0055ff" stroke-width="8" />
-            <line x1="82" y1="135" x2="75" y2="105" stroke="#000000" stroke-width="2" />
-            <!-- Right Strap -->
-            <line x1="118" y1="135" x2="125" y2="105" stroke="#0055ff" stroke-width="8" />
-            <line x1="118" y1="135" x2="125" y2="105" stroke="#000000" stroke-width="2" />
-            <!-- Strap Buttons -->
-            <circle cx="83" cy="138" r="3" fill="#ffff00" stroke="#000000" stroke-width="1" />
-            <circle cx="117" cy="138" r="3" fill="#ffff00" stroke="#000000" stroke-width="1" />
-            <!-- Center Pocket -->
-            <rect x="92" y="142" width="16" height="15" fill="none" stroke="#000000" stroke-width="2" stroke-dasharray="2,2" />
-
-            <!-- Gecko Arms/Hands reaching for keyboard -->
-            <path d="M 120 150 Q 150 160 175 175" fill="none" stroke="#00aa00" stroke-width="8" stroke-linecap="round" />
-            <path d="M 120 150 Q 150 160 175 175" fill="none" stroke="#000000" stroke-width="3" stroke-linecap="round" />
-
-            <!-- Keyboard -->
-            <polygon points="160,185 240,185 230,205 150,205" fill="#d0d0c0" stroke="#000000" stroke-width="3" />
-            <!-- Keyboard Keys (Scribbly lines) -->
-            <path d="M 165 190 L 230 190 M 162 195 L 227 195 M 160 200 L 222 200" stroke="#555" stroke-width="2" stroke-dasharray="3,2" />
-
-            <!-- MS Paint "Spray Paint" accidental splotches in corner -->
-            <circle cx="20" cy="25" r="1.5" fill="#ff0000" />
-            <circle cx="25" cy="22" r="2" fill="#ff0000" />
-            <circle cx="22" cy="30" r="1" fill="#ff0000" />
-            <text x="35" y="30" font-family="Comic Sans MS, Arial" font-size="12" fill="#ff0000" transform="rotate(-5, 35, 30)">gecko_v1_final_FINAL.bmp</text>
-          </svg>
-        </div>
-
-        <!-- Tab Navigation Bar - UI Requirement: SCROLLBAR FOR TABS -->
-        <div class="tab-header">
-            <button class="tab-btn active" onclick="switchTab(event, 'dns-panel')">⚡ Connection & DNS Checker</button>
+        <!-- Tab Navigation Bar -->
+        <!-- Requirement Fix: SCROLLBAR FOR TABS added via CSS -->
+        <div class="tab-header" style="overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch;">
+            <button class="tab-btn active" onclick="switchTab(event, 'dns-panel')">⚡ Provider Trace & DNS</button>
             <button class="tab-btn" onclick="switchTab(event, 'ip-panel')">🌐 My IP Info</button>
-            <button class="tab-btn" onclick="switchTab(event, 'whois-panel')">📋 WHOIS</button>
+            <button class="tab-btn" onclick="switchTab(event, 'whois-panel')">📋 WHOIS (RDAP)</button>
             <button class="tab-btn" onclick="switchTab(event, 'port-panel')">🔌 Port Scanner</button>
             <button class="tab-btn" onclick="switchTab(event, 'fp-panel')">🔍 Fingerprint</button>
             <button class="tab-btn" onclick="switchTab(event, 'pwd-panel')">🔑 Password Gen</button>
         </div>
 
         <div class="tab-content">
-            <!-- TAB 1: DNS CHECKER -->
+            <!-- TAB 1: DNS & PROVIDER TRACE -->
             <div id="dns-panel" class="tab-panel active">
                 <div class="section">
-                    <!-- DNS Requirement: Detect upstream DNS provider, not just local ASN -->
-                    <h2>1. Active Connection & Upstream Route Trace (Beta)</h2>
-                    <button class="action-btn" onclick="detectConnection()">Run Provider Trace</button>
-                    <div id="connection-output" class="output-box">Click the button above to trace connection parameters and identify upstream resolver infrastructure...</div>
+                    <!-- Fix: Identify DNS provider specifically e.g. Cloudflare, not just ISP -->
+                    <h2>1. Active Connection & Upstream Provider Trace (Beta)</h2>
+                    <button class="action-btn" onclick="detectConnection()">Trace DNS Provider</button>
+                    <div id="connection-output" class="output-box">Click the button above to trace connection routes, edge parameters, and attempt identification of your active upstream DNS provider...</div>
                 </div>
 
                 <div class="section">
@@ -188,7 +156,7 @@
             <!-- TAB 3: WHOIS LOOKUP -->
             <div id="whois-panel" class="tab-panel">
                 <div class="section">
-                    <!-- WHOIS Requirement: Clean Prohibited Information messages -->
+                    <!-- Fix: Updated parsing to reduce privacy redaction status generically breaking display -->
                     <h2>Domain Registration Data (RDAP)</h2>
                     <div class="input-group">
                         <input type="text" id="whois-input" placeholder="e.g. wikipedia.org" value="github.com">
@@ -201,13 +169,13 @@
             <!-- TAB 4: WAN PORT SCANNER -->
             <div id="port-panel" class="tab-panel">
                 <div class="section">
-                    <!-- Port Scanner Requirement: Clearer labels than Allowed/Blocked -->
-                    <h2>My WAN Port Scan</h2>
+                    <!-- Fix: Clearer port status labels than Allowed/Blocked -->
+                    <h2>Common WAN Port Scan (Beta)</h2>
                     <div class="input-group">
                         <input type="text" id="port-target" value="Target: Detecting WAN IP..." readonly>
                     </div>
-                    <button class="action-btn" onclick="scanMyWanPorts()">Check for common open ports</button>
-                    <div id="port-output" class="output-box">Click the button above to detect your public WAN IP and test common service ports...</div>
+                    <button class="action-btn" onclick="scanMyWanPorts()">Scan Common WAN Ports</button>
+                    <div id="port-output" class="output-box">Click the button above to detect your public WAN IP and passively probe select common alternate service ports for network accessibility...</div>
                 </div>
             </div>
 
@@ -283,4 +251,823 @@
                                 <option value="upper">UPPERCASE (WORD-WORD)</option>
                                 <option value="lower">lowercase (word-word)</option>
                                 <option value="alternating-words">Alternating Words (Word-WORD-Word)</option>
-                               I seem to be encountering an error. Can I try something else for you?
+                                <option value="random-words">Random Upper/Lower Words (WORD-word)</option>
+                                <option value="random-letters">Random Letter Case (wOrD-WoRd)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="controls-grid mode-word-option" style="display: none;">
+                        <div class="control-item">
+                            <label for="pwd-word-numbers">Number Insertion Mode</label>
+                            <select id="pwd-word-numbers" onchange="generatePassword()">
+                                <option value="none">No Extra Numbers</option>
+                                <option value="after-each-1" selected>1 Digit After Each Word (Word1-Pass8)</option>
+                                <option value="after-each-2">2 Digits After Each Word (Word42-Pass87)</option>
+                                <option value="end-1">1 Digit at End of Passphrase (Word-Pass-7)</option>
+                                <option value="end-2">2 Digits at End of Passphrase (Word-Pass-84)</option>
+                                <option value="end-4">4 Digits / PIN at End (Word-Pass-2026)</option>
+                            </select>
+                        </div>
+
+                        <div class="control-item">
+                            <label for="pwd-word-symbols">Symbol Insertion Mode</label>
+                            <select id="pwd-word-symbols" onchange="generatePassword()">
+                                <option value="none">None (Use Chosen Separator Only)</option>
+                                <option value="symbol-after-each">Random Symbol After Each Word</option>
+                                <option value="symbol-end">Random Symbol at End of Passphrase</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="controls-grid">
+                        <div class="control-item mode-word-option" style="display: none;">
+                            <label for="pwd-separator">Word Separator</label>
+                            <select id="pwd-separator" onchange="toggleCustomSeparator(); generatePassword();">
+                                <option value="-">Hyphen ( - )</option>
+                                <option value="_">Underscore ( _ )</option>
+                                <option value=".">Period ( . )</option>
+                                <option value=" ">Space (   )</option>
+                                <option value="@">At Sign ( @ )</option>
+                                <option value="#">Hash ( # )</option>
+                                <option value="custom">Custom Separator...</option>
+                            </select>
+                        </div>
+
+                        <div class="control-item" id="custom-sep-container" style="display: none;">
+                            <label for="pwd-custom-sep">Custom Separator Text</label>
+                            <input type="text" id="pwd-custom-sep" placeholder="e.g. + or ::" value="+" oninput="generatePassword()">
+                        </div>
+
+                        <div class="control-item">
+                            <label for="pwd-prefix">Optional Prefix</label>
+                            <input type="text" id="pwd-prefix" placeholder="e.g. App1!" oninput="generatePassword()">
+                        </div>
+
+                        <div class="control-item">
+                            <label for="pwd-suffix">Optional Suffix</label>
+                            <input type="text" id="pwd-suffix" placeholder="e.g. #2026" oninput="generatePassword()">
+                        </div>
+                    </div>
+
+                    <div class="controls-grid mode-char-option">
+                        <div class="control-item" style="grid-column: 1 / -1;">
+                            <label>Included Character Sets</label>
+                            <div class="checkbox-group">
+                                <label class="checkbox-label"><input type="checkbox" id="inc-uppercase" checked onchange="generatePassword()"> Uppercase (A-Z)</label>
+                                <label class="checkbox-label"><input type="checkbox" id="inc-lowercase" checked onchange="generatePassword()"> Lowercase (a-z)</label>
+                                <label class="checkbox-label"><input type="checkbox" id="inc-numbers" checked onchange="generatePassword()"> Numbers (0-9)</label>
+                                <label class="checkbox-label"><input type="checkbox" id="inc-symbols" checked onchange="generatePassword()"> Symbols (!@#$%...)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="controls-grid mode-char-option">
+                        <div class="control-item">
+                            <label for="pwd-custom-include">Extra Allowed Characters</label>
+                            <input type="text" id="pwd-custom-include" placeholder="e.g. ~`^" oninput="generatePassword()">
+                        </div>
+
+                        <div class="control-item">
+                            <label for="pwd-custom-exclude">Exclude Specific Characters</label>
+                            <input type="text" id="pwd-custom-exclude" placeholder="e.g. ' &quot; \ ; / space" oninput="generatePassword()">
+                        </div>
+                    </div>
+
+                    <div class="controls-grid">
+                        <div class="control-item" style="grid-column: 1 / -1;">
+                            <label>Security & Structure Rules</label>
+                            <div class="checkbox-group">
+                                <label class="checkbox-label"><input type="checkbox" id="exc-similar" onchange="generatePassword()"> Exclude Similar Characters (1, l, I, 0, O)</label>
+                                <label class="checkbox-label mode-char-option"><input type="checkbox" id="enforce-all-sets" checked onchange="generatePassword()"> Guarantee 1+ char from each selected set</label>
+                                <label class="checkbox-label mode-char-option"><input type="checkbox" id="no-repeat-adjacent" onchange="generatePassword()"> Prevent adjacent repeated characters</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="action-btn" onclick="generatePassword()">⚡ Generate New Password</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    function switchTab(evt, panelId) {
+        document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+
+        document.getElementById(panelId).classList.add('active');
+        evt.currentTarget.classList.add('active');
+
+        if (panelId === 'pwd-panel') {
+            generatePassword();
+        }
+    }
+
+    // Gecko Gateway Neocities Fixed: detectConnection
+    // Fix Requirement: Identify DNS provider e.g. Cloudflare, not just local ISP ASN
+    async function detectConnection() {
+        const output = document.getElementById('connection-output');
+        output.textContent = 'Tracing network route and analyzing connection parameters...';
+
+        let cfTraceData = {};
+        let ipData = {};
+        let latencyResults = [];
+
+        // 1. Query CDN Edge Trace Endpoint for protocol/PoP data
+        try {
+            const cfRes = await fetch('https://www.cloudflare.com/cdn-cgi/trace');
+            if (cfRes.ok) {
+                const text = await cfRes.text();
+                text.split('\n').forEach(line => {
+                    const [k, v] = line.split('=');
+                    if (k && v) cfTraceData[k.trim()] = v.trim();
+                });
+            }
+        } catch (e) {
+            console.warn('CDN Trace lookup blocked or unavailable.');
+        }
+
+        // 2. Fetch IP & ASN Details using ipwho.is (more Neocities compliant than ipapi.co)
+        try {
+            const ipRes = await fetch('https://ipwho.is/');
+            if (ipRes.ok) {
+                ipData = await ipRes.json();
+            }
+        } catch (e) {
+            console.warn('IP detail lookup unavailable.');
+        }
+
+        // 3. DNS Provider Identification Logic
+        let detectedProvider = 'Unable to definitely identify (Beta)';
+        const asnName = ipData.connection?.asn_org || ipData.asn_org || '';
+        const ispName = ipData.connection?.isp || ipData.isp || '';
+
+        // Check against known ASN names for major public DNS infrastructures
+        if (asnName.includes('CLOUDFLARE') || ispName.includes('Cloudflare')) {
+            detectedProvider = 'Cloudflare (1.1.1.1 infrastructure detected)';
+        } else if (asnName.includes('GOOGLE') || ispName.includes('Google LLC')) {
+            // Note: Google uses specific ASNs for public DNS (AS15169).
+            detectedProvider = 'Google Public DNS (8.8.8.8 infrastructure suspected)';
+        } else if (asnName.includes('QUAD9') || ispName.includes('Quad9')) {
+            detectedProvider = 'Quad9 (9.9.9.9 infrastructure detected)';
+        } else if (asnName.includes('Cisco') || ispName.includes('OpenDNS')) {
+            detectedProvider = 'OpenDNS (Cisco infrastructure suspected)';
+        } else if (asnName.includes('ADGUARD')) {
+            detectedProvider = 'AdGuard DNS infrastructure detected';
+        }
+
+        // 4. Test latency (RTT) to major DoH Endpoints
+        // Uses image loading to avoid strict fetch CORS requirements.
+        const resolvers = [
+            { name: 'Cloudflare (1.1.1.1)', url: 'https://cloudflare-dns.com/dns-query' },
+            { name: 'Google DNS (8.8.8.8)', url: 'https://dns.google/resolve' },
+            { name: 'Quad9 (9.9.9.9)', url: 'https://dns.quad9.net/dns-query' }
+        ];
+
+        for (const res of resolvers) {
+            latencyResults.push(await testLatency(res.name, res.url));
+        }
+
+        // Format Complete Detailed Diagnostic Output
+        let report = `<span class="highlight">=== 1. DNS PROVIDER & ASN IDENTIFICATION ===</span>\n`;
+        report += `Active Upstream Resolver: <strong style="color: var(--soft-pink);">${detectedProvider}</strong>\n`;
+        report += `ISP / Provider Name:      ${ispName || 'N/A'}\n`;
+        report += `ASN (System Number):      ${ipData.connection?.asn ? 'AS' + ipData.connection.asn : ipData.asn || 'N/A'}\n`;
+        report += `Geographic Node:          ${ipData.city || 'N/A'}, ${ipData.region || 'N/A'}, ${ipData.country || cfTraceData.loc || 'N/A'}\n\n`;
+
+        report += `<span class="highlight">=== 2. PUBLIC NETWORK & IP IDENTIFICATION ===</span>\n`;
+        report += `Public WAN IP:            ${ipData.ip || cfTraceData.ip || 'N/A'} (${ipData.type || 'IPv4/IPv6'})\n\n`;
+
+        report += `<span class="highlight">=== 3. CDN EDGE ROUTING & PROTOCOL ===</span>\n`;
+        report += `Edge Data Center:         ${cfTraceData.colo ? cfTraceData.colo + ' (CDN PoP)' : 'N/A'}\n`;
+        report += `HTTP Protocol:            ${cfTraceData.http || 'N/A'}\n`;
+        report += `TLS / SSL Ver:            ${cfTraceData.tls || 'N/A'}\n`;
+        report += `WARP Active:              ${cfTraceData.warp === 'on' ? ' Yes (Cloudflare network)' : ' No'}\n\n`;
+
+        report += `<span class="highlight">=== 4. MAJOR DOST RESOLVER LATENCY BENCHMARK ===</span>\n`;
+        latencyResults.forEach(item => {
+            report += `${item.name.padEnd(22)}: ${item.rtt}\n`;
+        });
+
+        output.innerHTML = report;
+    }
+
+    // Simple hashing function cyrb53
+    function simpleHash(str, seed = 0) {
+        let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
+        for (let i = 0, ch; i < str.length; i++) {
+            ch = str.charCodeAt(i);
+            h1 = Math.imul(h1 ^ ch, 2654435761);
+            h2 = Math.imul(h2 ^ ch, 1597334677);
+        }
+        h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+        h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+        return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(16);
+    }
+
+    function getCanvasFingerprint() {
+        try {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 200;
+            canvas.height = 50;
+            ctx.textBaseline = "top";
+            ctx.font = "14px 'Arial'";
+            ctx.fillStyle = "#f60";
+            ctx.fillRect(125, 1, 62, 20);
+            ctx.fillStyle = "#069";
+            ctx.fillText("Gecko Gateway 🦎", 2, 15);
+            ctx.fillStyle = "rgba(102, 204, 0, 0.7)";
+            ctx.fillText("Fingerprint", 4, 17);
+            return canvas.toDataURL();
+        } catch (e) {
+            return "Canvas Blocked";
+        }
+    }
+
+    function getWebGLInfo() {
+        try {
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+            if (!gl) return { vendor: 'N/A', renderer: 'N/A' };
+            const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+            return {
+                vendor: debugInfo ? gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL) : gl.getParameter(gl.VENDOR),
+                renderer: debugInfo ? gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER)
+            };
+        } catch (e) {
+            return { vendor: 'Blocked', renderer: 'Blocked' };
+        }
+    }
+
+    function generateFingerprint() {
+        const output = document.getElementById('fp-output');
+        
+        const canvasData = getCanvasFingerprint();
+        const webgl = getWebGLInfo();
+        const screenRes = `${screen.width}x${screen.height} (${screen.colorDepth}-bit)`;
+        const cores = navigator.hardwareConcurrency || 'N/A';
+        const memory = navigator.deviceMemory ? `${navigator.deviceMemory} GB` : 'N/A';
+        const language = navigator.language;
+        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const touchSupport = navigator.maxTouchPoints > 0 ? `Yes (${navigator.maxTouchPoints} points)` : 'No';
+        const cookiesEnabled = navigator.cookieEnabled ? 'Enabled' : 'Disabled';
+        const doNotTrack = navigator.doNotTrack || window.doNotTrack || 'Unspecified';
+
+        const rawFingerprintString = `${navigator.userAgent}|${screenRes}|${cores}|${memory}|${language}|${timezone}|${webgl.vendor}|${webgl.renderer}|${canvasData}`;
+        const hashID = simpleHash(rawFingerprintString).toUpperCase();
+
+        output.innerHTML = 
+`<span class="highlight">Fingerprint Hash:</span>  #${hashID}
+
+<span class="highlight">GPU Vendor:</span>        ${webgl.vendor}
+<span class="highlight">GPU Renderer:</span>      ${webgl.renderer}
+<span class="highlight">Screen Size:</span>       ${screenRes}
+<span class="highlight">CPU Cores:</span>         ${cores}
+<span class="highlight">Device RAM:</span>        ${memory}
+<span class="highlight">Language:</span>          ${language}
+<span class="highlight">Timezone:</span>          ${timezone}
+<span class="highlight">Touch Screen:</span>      ${touchSupport}
+<span class="highlight">Cookies Enabled:</span>   ${cookiesEnabled}
+<span class="highlight">Do Not Track:</span>      ${doNotTrack}
+<span class="highlight">User Agent:</span>        ${navigator.userAgent}`;
+    }
+
+    // WHOIS / RDAP Tab Logic
+    // Fix Requirement: update generic prohibited information messages
+    async function fetchWHOIS() {
+        let domain = document.getElementById('whois-input').value.trim();
+        const output = document.getElementById('whois-output');
+
+        if (!domain) {
+            output.textContent = 'Please enter a domain name.';
+            return;
+        }
+
+        domain = domain.replace(/^https?:\/\//i, '').split('/')[0];
+        output.textContent = `Querying RDAP registration records for ${domain}...`;
+
+        try {
+            const response = await fetch(`https://rdap.org/domain/${encodeURIComponent(domain)}`);
+            if (!response.ok) {
+                if (response.status === 404) throw new Error('Domain or RDAP record not found.');
+                throw new Error(`HTTP Error ${response.status}`);
+            }
+            const data = await response.json();
+
+            // Dates Parsing
+            let regDate = 'N/A', expDate = 'N/A', lastChanged = 'N/A';
+            if (data.events) {
+                data.events.forEach(e => {
+                    if (e.eventAction === 'registration') regDate = new Date(e.eventDate).toUTCString();
+                    if (e.eventAction === 'expiration') expDate = new Date(e.eventDate).toUTCString();
+                    if (e.eventAction === 'last changed') lastChanged = new Date(e.eventDate).toUTCString();
+                });
+            }
+
+            // Registrar Parsing
+            let registrar = 'N/A';
+            if (data.entities) {
+                const regEntity = data.entities.find(ent => ent.roles && ent.roles.includes('registrar'));
+                if (regEntity && regEntity.vcardArray) {
+                    const fn = regEntity.vcardArray[1].find(item => item[0] === 'fn');
+                    if (fn) registrar = fn[3];
+                } else if (regEntity && regEntity.handle) {
+                    registrar = regEntity.handle;
+                }
+            }
+
+            // Nameservers Parsing
+            let nsList = [];
+            if (data.nameservers) {
+                nsList = data.nameservers.map(ns => ns.ldhName || ns.handle);
+            }
+
+            // Standard RDAP Status list (may contain generic privacy messages)
+            const statusList = data.status || [];
+            let cleanStatusList = [];
+
+            // Standard statuses list from RFC
+            const knownRDAPStatuses = [
+                'validated', 'renewProhibited', 'transferProhibited', 'updateProhibited', 
+                'deleteProhibited', 'addPeriod', 'autoRenewPeriod', 'renewPeriod', 
+                'transferPeriod', 'pendingDelete', 'pendingRenew', 'pendingTransfer', 
+                'pendingUpdate', 'inactive', 'ok', 'serverDeleteProhibited', 
+                'serverRenewProhibited', 'serverTransferProhibited', 'serverUpdateProhibited', 
+                'clientDeleteProhibited', 'clientRenewProhibited', 'clientTransferProhibited', 
+                'clientUpdateProhibited'
+            ];
+
+            statusList.forEach(status => {
+                const lowerStatus = status.toLowerCase();
+                if (knownRDAPStatuses.includes(lowerStatus)) {
+                    cleanStatusList.push(status); // It's a standard status
+                } else {
+                    // Check if it's a generic "redacted for privacy" message
+                    if (lowerStatus.includes('redacted') || lowerStatus.includes('prohibited') || lowerStatus.includes('privacy')) {
+                        // Display but note privacy implications rather than "prohibited" generically
+                        cleanStatusList.push(`${status} (Commonly indicates privacy redaction)`);
+                    } else {
+                        cleanStatusList.push(status);
+                    }
+                }
+            });
+
+            output.innerHTML = 
+`<span class="highlight">Domain Name:</span>    ${data.ldhName || domain}
+<span class="highlight">Registrar:</span>      ${registrar}
+<span class="highlight">Registered On:</span>  ${regDate}
+<span class="highlight">Expires On:</span>     ${expDate}
+<span class="highlight">Last Updated:</span>   ${lastChanged}
+<span class="highlight">Nameservers:</span>    ${nsList.join(', ') || 'N/A'}
+<span class="highlight">RDAP Status(es):</span> 
+${cleanStatusList.length > 0 ? '• ' + cleanStatusList.join('\n• ') : 'N/A'}`;
+        } catch (err) {
+            output.textContent = `Error querying WHOIS/RDAP data: ` + err.message;
+        }
+    }
+
+    // Passive Port Scanner helper using image loading tricks (Neocities compliant)
+    function testLatency(name, url) {
+        return new Promise(resolve => {
+            const start = performance.now();
+            const img = new Image();
+            img.onload = () => resolve({ name: name, rtt: Math.round(performance.now() - start) + ' ms' });
+            img.onerror = () => resolve({ name: name, rtt: Math.round(performance.now() - start) + ' ms' });
+            img.src = `${url}?cachebuster=${Math.random()}`;
+            // Set timeout for resolvers that block this probe method
+            setTimeout(() => resolve({ name: name, rtt: 'Blocked / Timeout' }), 1000);
+        });
+    }
+
+    // Passphrase Generator word list
+    const WORD_LIST = [
+        "anchor", "aperture", "beacon", "breeze", "cactus", "canyon", "castle", "cobalt",
+        "comet", "compass", "crystal", "delta", "echo", "falcon", "fender", "forest",
+        "fossil", "galaxy", "glacier", "harbor", "horizon", "island", "jungle", "lantern",
+        "legend", "matrix", "meadow", "meteor", "mirage", "mountain", "nebula", "orbit",
+        "oasis", "panther", "phantom", "planet", "pulse", "pyramid", "radar", "river",
+        "rocket", "saddle", "shadow", "shield", "sierra", "silver", "solstice", "summit",
+        "thunder", "timber", "titan", "torpedo", "valley", "velvet", "vertex", "vortex",
+        "voyage", "whisper", "wilderness", "zenith", "zephyr", "zodiac", "aspen", "boulder",
+        "circuit", "element", "glimmer", "haven", "monolith", "pioneer", "prism", "quarry"
+    ];
+
+    const SYMBOL_SET = "!@#$%^&*()_+-=[]{}|;:,.<>?";
+
+    function getRandomCryptoInt(max) {
+        if (max <= 0) return 0;
+        const array = new Uint32Array(1);
+        window.crypto.getRandomValues(array);
+        return array[0] % max;
+    }
+
+    function togglePasswordMode() {
+        const mode = document.getElementById('pwd-mode').value;
+        const charOptions = document.querySelectorAll('.mode-char-option');
+        const wordOptions = document.querySelectorAll('.mode-word-option');
+
+        if (mode === 'passphrase') {
+            charOptions.forEach(el => el.style.display = 'none');
+            wordOptions.forEach(el => el.style.display = 'flex');
+        } else {
+            charOptions.forEach(el => el.style.display = 'flex');
+            wordOptions.forEach(el => el.style.display = 'none');
+        }
+        toggleCustomSeparator();
+        generatePassword();
+    }
+
+    function toggleCustomSeparator() {
+        const sepSelect = document.getElementById('pwd-separator');
+        const customContainer = document.getElementById('custom-sep-container');
+        if (sepSelect.value === 'custom') {
+            customContainer.style.display = 'flex';
+        } else {
+            customContainer.style.display = 'none';
+        }
+    }
+
+    function generatePassword() {
+        const mode = document.getElementById('pwd-mode').value;
+        const prefix = document.getElementById('pwd-prefix').value;
+        const suffix = document.getElementById('pwd-suffix').value;
+        const excludeSimilar = document.getElementById('exc-similar').checked;
+
+        let password = '';
+        let poolSize = 0;
+
+        if (mode === 'characters') {
+            const length = parseInt(document.getElementById('pwd-length').value, 10);
+            const incUpper = document.getElementById('inc-uppercase').checked;
+            const incLower = document.getElementById('inc-lowercase').checked;
+            const incNum = document.getElementById('inc-numbers').checked;
+            const incSym = document.getElementById('inc-symbols').checked;
+            const customInc = document.getElementById('pwd-custom-include').value;
+            const customExc = document.getElementById('pwd-custom-exclude').value;
+            const enforceAll = document.getElementById('enforce-all-sets').checked;
+            const noAdjacent = document.getElementById('no-repeat-adjacent').checked;
+            const caseStyle = document.getElementById('pwd-case-style').value;
+
+            let upperSet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            let lowerSet = 'abcdefghijklmnopqrstuvwxyz';
+            let numSet = '0123456789';
+            let symSet = '!@#$%^&*()_+-=[]{}|;:,.<>?';
+
+            if (excludeSimilar) {
+                upperSet = upperSet.replace(/[IO]/g, '');
+                lowerSet = lowerSet.replace(/[l]/g, '');
+                numSet = numSet.replace(/[01]/g, '');
+            }
+
+            if (customExc) {
+                const excArr = customExc.split('');
+                excArr.forEach(c => {
+                    upperSet = upperSet.split(c).join('');
+                    lowerSet = lowerSet.split(c).join('');
+                    numSet = numSet.split(c).join('');
+                    symSet = symSet.split(c).join('');
+                });
+            }
+
+            let mainPool = '';
+            const activeSets = [];
+
+            if (incUpper && upperSet) { mainPool += upperSet; activeSets.push(upperSet); }
+            if (incLower && lowerSet) { mainPool += lowerSet; activeSets.push(lowerSet); }
+            if (incNum && numSet) { mainPool += numSet; activeSets.push(numSet); }
+            if (incSym && symSet) { mainPool += symSet; activeSets.push(symSet); }
+            if (customInc) { mainPool += customInc; activeSets.push(customInc); }
+
+            if (!mainPool) {
+                document.getElementById('pwd-result').textContent = 'Select at least one character set!';
+                return;
+            }
+
+            poolSize = mainPool.length;
+
+            let chars = [];
+            if (enforceAll && activeSets.length > 0) {
+                activeSets.forEach(set => {
+                    const rIdx = getRandomCryptoInt(0, set.length - 1);
+                    chars.push(set[rIdx]);
+                });
+            }
+
+            while (chars.length < length) {
+                const rIdx = getRandomCryptoInt(0, mainPool.length - 1);
+                const nextChar = mainPool[rIdx];
+                if (noAdjacent && chars.length > 0 && chars[chars.length - 1] === nextChar) {
+                    continue;
+                }
+                chars.push(nextChar);
+            }
+
+            for (let i = chars.length - 1; i > 0; i--) {
+                const j = getRandomCryptoInt(0, i);
+                [chars[i], chars[j]] = [chars[j], chars[i]];
+            }
+
+            let generated = chars.join('');
+
+            if (caseStyle === 'lowercase') generated = generated.toLowerCase();
+            else if (caseStyle === 'uppercase') generated = generated.toUpperCase();
+            else if (caseStyle === 'alternating') {
+                generated = generated.split('').map((c, idx) => idx % 2 === 0 ? c.toLowerCase() : c.toUpperCase()).join('');
+            } else if (caseStyle === 'leetspeak') {
+                const leetMap = { 'a': '4', 'e': '3', 'i': '1', 'o': '0', 's': '5', 't': '7' };
+                generated = generated.split('').map(c => leetMap[c.toLowerCase()] || c).join('');
+            }
+
+            password = prefix + generated + suffix;
+
+        } else {
+            // Passphrase Mode
+            const wordCount = parseInt(document.getElementById('pwd-word-count').value, 10);
+            const wordCase = document.getElementById('pwd-word-case').value;
+            const sepChoice = document.getElementById('pwd-separator').value;
+            const customSep = document.getElementById('pwd-custom-sep').value;
+            const numMode = document.getElementById('pwd-word-numbers').value;
+            const symMode = document.getElementById('pwd-word-symbols').value;
+
+            let separator = sepChoice === 'custom' ? customSep : sepChoice;
+
+            const selectedWords = [];
+            for (let i = 0; i < wordCount; i++) {
+                const wIdx = getRandomCryptoInt(0, WORD_LIST.length - 1);
+                let word = WORD_LIST[wIdx];
+
+                if (excludeSimilar) {
+                    word = word.replace(/[iol]/g, '');
+                }
+
+                if (wordCase === 'title') word = word.charAt(0).toUpperCase() + word.slice(1);
+                else if (wordCase === 'upper') word = word.toUpperCase();
+                else if (wordCase === 'lower') word = word.toLowerCase();
+                else if (wordCase === 'alternating-words') word = (i % 2 === 0) ? word.charAt(0).toUpperCase() + word.slice(1) : word.toUpperCase();
+                else if (wordCase === 'random-words') word = (getRandomCryptoInt(0, 1) === 1) ? word.toUpperCase() : word.toLowerCase();
+                else if (wordCase === 'random-letters') {
+                    word = word.split('').map(c => getRandomCryptoInt(0, 1) === 1 ? c.toUpperCase() : c.toLowerCase()).join('');
+                }
+
+                if (numMode === 'after-each-1') word += getRandomCryptoInt(0, 9);
+                else if (numMode === 'after-each-2') word += getRandomCryptoInt(10, 99);
+
+                if (symMode === 'symbol-after-each') {
+                    const symbols = '!@#$%^&*';
+                    word += symbols[getRandomCryptoInt(0, symbols.length - 1)];
+                }
+
+                selectedWords.push(word);
+            }
+
+            let phrase = selectedWords.join(separator);
+
+            if (numMode === 'end-1') phrase += separator + getRandomCryptoInt(0, 9);
+            else if (numMode === 'end-2') phrase += separator + getRandomCryptoInt(10, 99);
+            else if (numMode === 'end-4') phrase += separator + getRandomCryptoInt(1000, 9999);
+
+            if (symMode === 'symbol-end') {
+                const symbols = '!@#$%^&*';
+                phrase += symbols[getRandomCryptoInt(0, symbols.length - 1)];
+            }
+
+            password = prefix + phrase + suffix;
+            poolSize = WORD_LIST.length;
+        }
+
+        document.getElementById('pwd-result').textContent = password;
+        calculateEntropy(password, mode, poolSize);
+    }
+
+    // Modern Neocities compatible port probe logic using AbortController.
+    // Fixed: Labels are now Open, Blocked by Browser Safety, or Closed/Timeout
+    async function probeWebPort(target, port) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 2000);
+        const url = `https://${target}:${port}/gecko_probe`;
+
+        try {
+            await fetch(url, { mode: 'no-cors', signal: controller.signal });
+            clearTimeout(timeoutId);
+            return 'open';
+        } catch (err) {
+            clearTimeout(timeoutId);
+            if (err.name === 'AbortError') {
+                return 'timeout';
+            }
+            return 'closed';
+        }
+    }
+
+    // Standard forbidden ports by browsers for fetch/XHR
+    const BROWSER_FORBIDDEN_PORTS = [20, 21, 22, 23, 25, 53, 110, 119, 135, 139, 143, 445, 563, 587, 993, 995, 1080, 1723];
+
+    async function scanMyWanPorts() {
+        const inputEl = document.getElementById('port-target');
+        const output = document.getElementById('port-output');
+
+        output.textContent = 'Detecting public WAN address...';
+
+        let wanIp = '';
+        try {
+            const res = await fetch('https://ipwho.is/');
+            if (!res.ok) throw new Error('Could not retrieve IP.');
+            const data = await res.json();
+            wanIp = data.ip;
+            inputEl.value = `Target WAN: ${wanIp}`;
+        } catch (err) {
+            output.textContent = 'IP lookup blocked or unavailable: ' + err.message;
+            return;
+        }
+
+        output.textContent = `Probing selection of alternate service ports on WAN IP ${wanIp}...\n\n`;
+
+        const portsToTest = [
+            { port: 21, name: 'FTP' },
+            { port: 22, name: 'SSH' },
+            { port: 23, name: 'Telnet' },
+            { port: 80, name: 'HTTP' },
+            { port: 81, name: 'HTTP Alt' },
+            { port: 443, name: 'HTTPS' },
+            { port: 1433, name: 'SQL Server' },
+            { port: 3306, name: 'MySQL' },
+            { port: 3389, name: 'RDP' },
+            { port: 8080, name: 'HTTP Alt 2' },
+            { port: 8443, name: 'HTTPS Alt' }
+        ];
+
+        let resultsHTML = `<span class="highlight">Passive Port Probe Results for ${wanIp}:</span>\n`;
+        resultsHTML += `-------------------------------------------------\n`;
+
+        for (const service of portsToTest) {
+            if (BROWSER_FORBIDDEN_PORTS.includes(service.port)) {
+                output.innerHTML = resultsHTML + `Skipping forbidden port ${service.port}...`;
+                resultsHTML += `Port ${service.port.toString().padEnd(5)} | ${service.name.padEnd(16)} : <span class="badge-amber">[ BLOCKED BY BROWSER SAFETY ]</span>\n`;
+                continue;
+            }
+
+            output.innerHTML = resultsHTML + `Probing Port ${service.port} (${service.name})...`;
+            const status = await probeWebPort(wanIp, service.port);
+            
+            let statusBadge = '';
+            if (status === 'open') {
+                statusBadge = `<span class="badge-open">[ OPEN / RESPONDING ]</span>`;
+            } else if (status === 'timeout') {
+                statusBadge = `<span class="badge-amber">[ CLOSED / TIMEOUT ]</span>`;
+            } else {
+                statusBadge = `<span class="badge-closed">[ CLOSED / REFUSED ]</span>`;
+            }
+
+            const portStr = service.port.toString().padEnd(5);
+            const nameStr = service.name.padEnd(16);
+            resultsHTML += `Port ${portStr} | ${nameStr} : ${statusBadge}\n`;
+        }
+
+        resultsHTML += `-------------------------------------------------\n<span class="highlight">Note:</span> Browsers security strictly limits alternate port probes. Skip list includes FTP, SSH, Telnet, SMTP, DNS, etc. 'Timeout' may indicate target is filtering traffic silent (stealth mode).`;
+        output.innerHTML = resultsHTML;
+    }
+
+    // IP Tab Logic
+    async function fetchIPDetails() {
+        const output = document.getElementById('ip-output');
+        const mapContainer = document.getElementById('ip-map-container');
+        const mapIframe = document.getElementById('ip-map');
+
+        output.textContent = 'Fetching IP information and geolocation data...';
+
+        try {
+            const response = await fetch('https://ipwho.is/');
+            if (!response.ok) throw new Error('Failed to retrieve IP details.');
+            const data = await response.json();
+
+            const lat = data.latitude;
+            const lon = data.longitude;
+
+            if (lat && lon) {
+                const bboxOffset = 0.04;
+                const bbox = `${lon - bboxOffset}%2C${lat - bboxOffset}%2C${lon + bboxOffset}%2C${lat + bboxOffset}`;
+                mapIframe.src = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat}%2C${lon}`;
+                mapContainer.style.display = 'block';
+            }
+
+            const gmapsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
+
+            output.innerHTML = 
+`<span class="highlight">Public WAN IP:</span>  ${data.ip} (${data.type})
+<span class="highlight">Network / ASN:</span>  AS${data.asn} - ${data.connection?.asn_org || data.asn_org}
+<span class="highlight">ISP:</span>             ${data.connection?.isp || data.isp}
+
+<span class="highlight">--- GEO LOCATION DETAILS ---</span>
+<span class="highlight">City / Region:</span>  ${data.city}, ${data.region} (${data.postal || 'N/A'})
+<span class="highlight">Country:</span>        ${data.country} (${data.country_code})
+<span class="highlight">Coordinates:</span>    ${lat}, ${lon} (<a href="${gmapsUrl}" target="_blank" rel="noopener" class="map-link">View in Google Maps ↗</a>)
+<span class="highlight">User Agent:</span>     ${navigator.userAgent}`;
+        } catch (err) {
+            output.textContent = 'Error fetching IP details: ' + err.message + '\nNote: Neocities/Github Pages restricts strict rate limits/CORS on common APIs.';
+            mapContainer.style.display = 'none';
+        }
+    }
+
+    // DNS Tab Lookup Logic
+    async function lookupDNS() {
+        const domain = document.getElementById('domain-input').value.trim();
+        const type = document.getElementById('record-type').value;
+        const output = document.getElementById('dns-output');
+
+        if (!domain) {
+            output.textContent = 'Please enter a domain name.';
+            return;
+        }
+
+        output.textContent = `Fetching ${type} record for ${domain}...`;
+
+        try {
+            const response = await fetch(`https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(domain)}&type=${type}`, {
+                headers: { 'Accept': 'application/dns-json' }
+            });
+
+            if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
+            const data = await response.json();
+
+            if (!data.Answer || data.Answer.length === 0) {
+                output.textContent = `No ${type} records found for ${domain}.`;
+                return;
+            }
+
+            let result = `Results for ${domain} (${type}):\n\n`;
+            data.Answer.forEach(rec => {
+                const typeName = typeIdToString(rec.type);
+                result += `Name: ${rec.name}\nType: ${typeName}\nTTL:  ${rec.TTL}s\nData: ${rec.data}\n-------------------------------\n`;
+            });
+
+            output.textContent = result.trim();
+        } catch (err) {
+            output.textContent = 'Error querying DNS: ' + err.message;
+        }
+    }
+
+    // Helper DNS type convert
+    function typeIdToString(typeId) {
+        const types = { 1: 'A', 2: 'NS', 5: 'CNAME', 15: 'MX', 16: 'TXT', 28: 'AAAA' };
+        return types[typeId] || typeId;
+    }
+
+    // Copy helper
+    function copyPassword() {
+        const pwdText = document.getElementById('pwd-result').textContent;
+        const copyBtn = document.getElementById('copy-btn');
+        if (!pwdText || pwdText.startsWith('Error:') || pwdText.startsWith('Click Generate')) return;
+        navigator.clipboard.writeText(pwdText).then(() => {
+            copyBtn.textContent = 'Copied! ✓';
+            setTimeout(() => copyBtn.textContent = 'Copy 📋', 1800);
+        });
+    }
+
+    // Entropy calculation
+    function calculateEntropy(password, mode, poolSize) {
+        let entropy = 0;
+        if (mode === 'characters') {
+            entropy = Math.round(password.length * Math.log2(poolSize));
+        } else {
+            const wordCount = parseInt(document.getElementById('pwd-word-count').value, 10);
+            entropy = Math.round(wordCount * Math.log2(WORD_LIST.length) + 12);
+        }
+
+        document.getElementById('entropy-bits').textContent = `${entropy} bits`;
+
+        const strengthText = document.getElementById('strength-text');
+        const strengthBar = document.getElementById('strength-bar');
+
+        let percentage = Math.min(100, Math.round((entropy / 128) * 100));
+        strengthBar.style.width = `${percentage}%`;
+
+        if (entropy < 40) {
+            strengthText.textContent = 'Weak';
+            strengthText.style.color = 'var(--soft-red)';
+            strengthBar.style.backgroundColor = 'var(--soft-red)';
+        } else if (entropy < 65) {
+            strengthText.textContent = 'Moderate';
+            strengthText.style.color = 'var(--soft-amber)';
+            strengthBar.style.backgroundColor = 'var(--soft-amber)';
+        } else if (entropy < 90) {
+            strengthText.textContent = 'Strong';
+            strengthText.style.color = 'var(--soft-blue)';
+            strengthBar.style.backgroundColor = 'var(--soft-blue)';
+        } else {
+            strengthText.textContent = 'Very Strong 🛡️';
+            strengthText.style.color = 'var(--soft-green)';
+            strengthBar.style.backgroundColor = 'var(--soft-green)';
+        }
+    }
+
+    // Run Fingerprint on load
+    window.addEventListener('load', () => {
+        generatePassword();
+        generateFingerprint();
+    });
+</script>
+
+</body>
+</html>
