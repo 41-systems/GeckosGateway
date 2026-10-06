@@ -120,6 +120,7 @@ body{padding:10px}header{padding:22px 16px 18px}.tab-content{padding:14px}.secti
 <button class="tab-btn" data-tab="whois-panel">📋 RDAP</button>
 <button class="tab-btn" data-tab="fp-panel">🔍 Fingerprint</button>
 <button class="tab-btn" data-tab="pwd-panel">🔑 Passwords</button>
+<button class="tab-btn" data-tab="news-panel">📰 News</button>
 </nav>
 
 <div class="tab-content">
@@ -174,6 +175,23 @@ body{padding:10px}header{padding:22px 16px 18px}.tab-content{padding:14px}.secti
 <button class="action-btn" id="fp-btn">🔍 Generate Fingerprint</button>
 <div id="fp-output" class="output-box">Click the button above to calculate browser identity signals...</div>
 </div>
+</section>
+
+<section id="news-panel" class="tab-panel">
+<div class="section">
+<h2>News</h2>
+<p class="help-text">Live headlines pulled straight from public APIs in your browser. Links open in a new tab.</p>
+<div class="input-group">
+<select id="news-source" aria-label="News source">
+<option value="hn-top">Hacker News · Top stories</option>
+<option value="hn-sec">Hacker News · Security stories (past week)</option>
+<option value="ghsa">GitHub · Newest security advisories</option>
+</select>
+<button class="action-btn" id="news-btn">🔄 Refresh</button>
+</div>
+<div id="news-list" class="output-box" aria-live="polite">Open this tab or press Refresh to load headlines...</div>
+</div>
+<div class="notice">ℹ️ Sites like Malwarebytes, BleepingComputer and Krebs only offer RSS feeds that browsers can't read directly from another website. Adding them needs a small proxy.</div>
 </section>
 
 <section id="pwd-panel" class="tab-panel">
@@ -320,6 +338,7 @@ function switchTab(btn) {
   document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
   $(btn.dataset.tab).classList.add("active");
   btn.classList.add("active");
+  if (btn.dataset.tab === "news-panel" && !newsLoaded) loadNews();
 }
 
 /* ---------- DNS lookup ---------- */
@@ -585,6 +604,56 @@ async function copyPassword() {
   setTimeout(() => btn.textContent = "Copy 📋", 1800);
 }
 
+/* ---------- news ---------- */
+
+let newsLoaded = false;
+const HTTPS = /^https:\/\//;
+const ago = t => { const m = Math.max(0, Math.round((Date.now() / 1000 - t) / 60)); return m < 60 ? m + "m ago" : m < 1440 ? Math.round(m / 60) + "h ago" : Math.round(m / 1440) + "d ago"; };
+const hostOf = u => { try { return new URL(u).hostname.replace(/^www\./, ""); } catch { return "news.ycombinator.com"; } };
+const hnItem = (id, title, url, pts, com, t) => ({
+  title: String(title || "(untitled)"),
+  url: HTTPS.test(url || "") ? url : `https://news.ycombinator.com/item?id=${encodeURIComponent(id)}`,
+  meta: `${pts ?? 0} points · ${com ?? 0} comments · ${hostOf(url || "")} · ${ago(t)}`,
+  discuss: `https://news.ycombinator.com/item?id=${encodeURIComponent(id)}`
+});
+
+const NEWS = {
+  "hn-top": async () => {
+    const ids = (await getJSON("https://hacker-news.firebaseio.com/v0/topstories.json")).slice(0, 20);
+    const items = await Promise.all(ids.map(id => getJSON(`https://hacker-news.firebaseio.com/v0/item/${encodeURIComponent(id)}.json`).catch(() => null)));
+    return items.filter(i => i && i.title).map(i => hnItem(i.id, i.title, i.url, i.score, i.descendants, i.time));
+  },
+  "hn-sec": async () => {
+    const since = Math.floor(Date.now() / 1000) - 7 * 86400;
+    const j = await getJSON("https://hn.algolia.com/api/v1/search?tags=story&query=security&hitsPerPage=20&numericFilters=" + encodeURIComponent("created_at_i>" + since));
+    return (j.hits || []).filter(h => h.title).map(h => hnItem(h.objectID, h.title, h.url, h.points, h.num_comments, h.created_at_i));
+  },
+  "ghsa": async () => {
+    const j = await getJSON("https://api.github.com/advisories?type=reviewed&per_page=20&sort=published&direction=desc", { headers: { Accept: "application/vnd.github+json" } });
+    return j.map(a => ({ title: `[${String(a.severity || "unknown").toUpperCase()}] ${a.summary}`, url: a.html_url, meta: `${a.cve_id || a.ghsa_id} · ${ago(Date.parse(a.published_at) / 1000)}` }));
+  }
+};
+
+async function loadNews() {
+  const out = $("news-list"), btn = $("news-btn"), src = $("news-source").value;
+  if (!NEWS[src]) return;
+  newsLoaded = true;
+  btn.disabled = true;
+  out.textContent = "Loading headlines...";
+  try {
+    const items = await NEWS[src]();
+    out.textContent = "";
+    if (!items.length) { out.textContent = "Nothing found."; return; }
+    for (const it of items) {
+      if (HTTPS.test(it.url || "")) addLink(out, it.url, it.title); else out.append(it.title + "\n");
+      out.append(it.meta + "\n");
+      if (it.discuss) addLink(out, it.discuss, "💬 Discussion ↗");
+      out.append("\n");
+    }
+  } catch (e) { out.textContent = "Could not load news: " + e.message; }
+  finally { btn.disabled = false; }
+}
+
 /* ---------- wiring ---------- */
 
 document.querySelectorAll(".tab-btn").forEach(b => b.addEventListener("click", () => switchTab(b)));
@@ -598,6 +667,8 @@ $("copy-btn").addEventListener("click", copyPassword);
 $("pwd-panel").addEventListener("input", generatePassword);
 $("domain-input").addEventListener("keydown", e => { if (e.key === "Enter") lookupDNS(); });
 $("whois-input").addEventListener("keydown", e => { if (e.key === "Enter") fetchWHOIS(); });
+$("news-btn").addEventListener("click", loadNews);
+$("news-source").addEventListener("change", loadNews);
 generatePassword();
 </script>
 </body>
