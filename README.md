@@ -4,7 +4,7 @@ Network Reconnaissance & Security Tools — Built with a Little Help from SHODAN
 
 Welcome to Gecko's Gateway, a collection of network and security utilities wrapped in a deliberately retro, MS Paint-inspired interface featuring our resident gecko.
 
-These tools were created and refined with the help of SHODAN and are designed to make common network-security and reconnaissance tasks easier to explore from a single dashboard.
+These tools were created and refined with the help of AI and are designed to make common network-security and reconnaissance tasks easier to explore from a single dashboard.
 
 🖥️ What's Inside
 
