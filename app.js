@@ -68,7 +68,7 @@ function switchTab(btn) {
   if (btn.dataset.tab === "news-panel" && !newsLoaded) loadNews();
 }
 
-const RR = { 1: "A", 2: "NS", 5: "CNAME", 15: "MX", 16: "TXT", 28: "AAAA" };
+const RR = { 1: "A", 2: "NS", 5: "CNAME", 6: "SOA", 15: "MX", 16: "TXT", 28: "AAAA", 43: "DS", 33: "SRV", 257: "CAA", 48: "DNSKEY", 65: "HTTPS" };
 
 async function lookupDNS() {
   const out = $("dns-output"), d = cleanDomain($("domain-input").value), t = $("record-type").value;
@@ -222,6 +222,75 @@ async function fetchWHOIS() {
       ["RDAP Status(es):", st.length ? "" : "N/A"], ...st.map(s => ["• " + s])
     ]);
   } catch (e) { out.textContent = "Error querying RDAP data: " + e.message; }
+}
+
+function analyzePhishingURL() {
+  const out = $("phish-output");
+  let u;
+  try {
+    const raw = $("phish-input").value.trim();
+    if (!raw) throw new Error("Enter a URL.");
+    u = new URL(/^[a-z][a-z0-9+.-]:\\/\\//i.test(raw) ? raw : "https://" + raw);
+    if (!["http:", "https:"].includes(u.protocol)) throw new Error("Only HTTP and HTTPS URLs are supported.");
+  } catch (e) {
+    out.textContent = e.message;
+    return;
+  }
+
+  const host = u.hostname;
+  const labels = host.split(".").filter(Boolean);
+  const flags = [];
+  const observations = [];
+
+  if (u.protocol !== "https:") flags.push("Connection is not HTTPS.");
+  if (u.username || u.password) flags.push("Embedded username/password detected.");
+  if (/^\\d+(?:\\.\\d+){3}$/.test(host)) flags.push("The host is an IPv4 address instead of a normal domain.");
+  if (host.startsWith("xn--") || host.includes(".xn--") || /[\\u0080-\\uFFFF]/.test(u.hostname)) flags.push("Internationalized/punycode hostname detected; inspect the displayed domain carefully.");
+  if (u.port && !["80", "443"].includes(u.port)) flags.push("Non-standard port: " + u.port);
+  if (labels.length >= 5) flags.push("The hostname contains many subdomain levels.");
+  if (u.hostname.length > 50) flags.push("The hostname is unusually long.");
+  if (u.pathname.length > 100) flags.push("The URL path is unusually long.");
+  if (u.search.length > 150) flags.push("The query string is unusually long.");
+  if (u.hash) observations.push("A fragment (#...) is present; it is not normally sent to the server.");
+  if (u.searchParams.has("redirect") || u.searchParams.has("url") || u.searchParams.has("next") || u.searchParams.has("continue")) {
+    flags.push("A redirect-style parameter is present.");
+  }
+
+  observations.push("Hostname: " + host);
+  observations.push("Protocol: " + u.protocol.replace(":", "").toUpperCase());
+  observations.push("Subdomains: " + Math.max(0, labels.length - 2));
+  observations.push("Path: " + (u.pathname || "/"));
+  observations.push("Query parameters: " + [...u.searchParams.keys()].length);
+  observations.push("Credentials in URL: " + (u.username || u.password ? "Yes" : "No"));
+
+  const verdict = flags.length === 0 ? "No obvious structural red flags found." :
+    flags.length <= 2 ? "Some structural indicators deserve a closer look." :
+    "Multiple structural indicators deserve a closer look.";
+
+  fill(out, [
+    ["Local triage:", verdict],
+    [""],
+    ["Indicators:", flags.length ? "" : "None detected"],
+    ...flags.map(x => ["• " + x]),
+    [""],
+    ["URL details:", ""],
+    ...observations.map(x => ["• " + x]),
+    [""],
+    ["Important:", "This is a heuristic URL-structure check. It does not determine whether a site is malicious or safe. Use an external reputation scanner for a second opinion."]
+  ]);
+}
+
+async function copyPhishingURL() {
+  const value = $("phish-input").value.trim();
+  if (!value) return;
+  try {
+    await navigator.clipboard.writeText(value);
+    $("phish-copy-btn").textContent = "Copied ✓";
+    setTimeout(() => $("phish-copy-btn").textContent = "Copy URL", 1500);
+  } catch {
+    $("phish-copy-btn").textContent = "Copy failed";
+    setTimeout(() => $("phish-copy-btn").textContent = "Copy URL", 1500);
+  }
 }
 
 function simpleHash(str) {
@@ -414,6 +483,7 @@ const NEWS = {
     const j = await getJSON("https://hn.algolia.com/api/v1/search?tags=story&query=security&hitsPerPage=20&numericFilters=" + encodeURIComponent("created_at_i>" + since));
     return (j.hits || []).filter(h => h.title).map(h => hnItem(h.objectID, h.title, h.url, h.points, h.num_comments, h.created_at_i));
   },
+  "malwaretips": async () => [{ title: "Open MalwareTips security news", url: "https://malwaretips.com/blogs/", meta: "MalwareTips · external site" }],
   "ghsa": async () => {
     const j = await getJSON("https://api.github.com/advisories?type=reviewed&per_page=20&sort=published&direction=desc", { headers: { Accept: "application/vnd.github+json" } });
     return j.map(a => ({ title: `[${String(a.severity || "unknown").toUpperCase()}] ${a.summary}`, url: a.html_url, meta: `${a.cve_id || a.ghsa_id} · ${ago(Date.parse(a.published_at) / 1000)}` }));
@@ -473,5 +543,8 @@ $("whois-input").addEventListener("keydown", e => { if (e.key === "Enter") fetch
 $("news-btn").addEventListener("click", loadNews);
 $("news-source").addEventListener("change", loadNews);
 $("file-input").addEventListener("change", checkFile);
+$("phish-analyze-btn").addEventListener("click", analyzePhishingURL);
+$("phish-copy-btn").addEventListener("click", copyPhishingURL);
+$("phish-input").addEventListener("keydown", e => { if (e.key === "Enter") analyzePhishingURL(); });
 setAccent(document.querySelector(".tab-btn.active"));
 syncPwdUI();
