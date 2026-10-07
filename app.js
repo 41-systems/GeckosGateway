@@ -248,7 +248,7 @@ function analyzePhishingURL() {
   try {
     const raw = $("phish-input").value.trim();
     if (!raw) throw new Error("Enter a URL.");
-    u = new URL(/^[a-z][a-z0-9+.-]:\\/\\//i.test(raw) ? raw : "https://" + raw);
+    u = new URL(/^[a-z][a-z0-9+.-]:\/\//i.test(raw) ? raw : "https://" + raw);
     if (!["http:", "https:"].includes(u.protocol)) throw new Error("Only HTTP and HTTPS URLs are supported.");
   } catch (e) {
     out.textContent = e.message;
@@ -262,8 +262,8 @@ function analyzePhishingURL() {
 
   if (u.protocol !== "https:") flags.push("Connection is not HTTPS.");
   if (u.username || u.password) flags.push("Embedded username/password detected.");
-  if (/^\\d+(?:\\.\\d+){3}$/.test(host)) flags.push("The host is an IPv4 address instead of a normal domain.");
-  if (host.startsWith("xn--") || host.includes(".xn--") || /[\\u0080-\\uFFFF]/.test(u.hostname)) flags.push("Internationalized/punycode hostname detected; inspect the displayed domain carefully.");
+  if (/^\d+(?:\.\d+){3}$/.test(host)) flags.push("The host is an IPv4 address instead of a normal domain.");
+  if (host.startsWith("xn--") || host.includes(".xn--") || /[^\x00-\x7F]/.test(u.hostname)) flags.push("Internationalized/punycode hostname detected; inspect the displayed domain carefully.");
   if (u.port && !["80", "443"].includes(u.port)) flags.push("Non-standard port: " + u.port);
   if (labels.length >= 5) flags.push("The hostname contains many subdomain levels.");
   if (u.hostname.length > 50) flags.push("The hostname is unusually long.");
