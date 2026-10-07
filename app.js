@@ -156,11 +156,7 @@ function inspectURL(){
   const b64=btoa(unescape(encodeURIComponent(u.href))).replace(/=+$/,"").replace(/\+/g,"-").replace(/\//g,"_");
   vt.href="https://www.virustotal.com/gui/url/"+b64; us.href="https://urlscan.io/search/#domain:"+encodeURIComponent(host);
 }
-function quickGo(target){
-  const input=($("quick-input").value||"").trim();
-  if(input){if(target==="reach-panel")$("reach-input").value=input;if(target==="audit-panel")$("audit-input").value=/^[a-z][a-z0-9+.-]*:\/\//i.test(input)?input:"https://"+input;if(target==="dns-domain-panel")$("domain-suite-input").value=cleanDomain(input)||input;if(target==="url-panel")$("url-inspect-input").value=input;}
-  const btn=[...document.querySelectorAll(".tab-btn")].find(b=>b.dataset.tab===target); if(btn)switchTab(btn);
-}
+
 const RR = { 1: "A", 2: "NS", 5: "CNAME", 6: "SOA", 15: "MX", 16: "TXT", 28: "AAAA", 43: "DS", 33: "SRV", 257: "CAA", 48: "DNSKEY", 65: "HTTPS" };
 
 async function lookupDNS() {
@@ -274,17 +270,29 @@ async function checkReachability() {
     clearTimeout(timer);
     btn.disabled = false;
   }
-}async function fetchIPDetails() {
-  const out = $("ip-output"), box = $("ip-map-container"), map = $("ip-map");
+}function validIPAddress(value) {
+  const v = String(value || "").trim();
+  if (!v) return false;
+  if (v.includes(":")) {
+    try { new URL("http://[" + v + "]"); return true; } catch { return false; }
+  }
+  const parts = v.split(".");
+  return parts.length === 4 && parts.every(p => /^\d{1,3}$/.test(p) && Number(p) <= 255);
+}
+
+async function fetchIPDetailsFor(ip, manualLookup) {
+  const out = $("ip-output"), box = $("ip-map-container"), map = $("ip-map"), intel = $("ip-intel-links");
   out.textContent = "Fetching IP information and geolocation data...";
   box.classList.remove("visible");
+  intel.hidden = true;
   try {
-    const d = await getJSON("https://ipwho.is/", { cache: "no-store" });
+    const endpoint = ip ? "https://ipwho.is/" + encodeURIComponent(ip) : "https://ipwho.is/";
+    const d = await getJSON(endpoint, { cache: "no-store" });
     if (d.success === false) throw new Error(d.message || "Lookup failed");
     const c = d.connection || {}, lat = Number(d.latitude), lon = Number(d.longitude);
     const ok = d.latitude != null && d.longitude != null && Number.isFinite(lat) && Number.isFinite(lon);
     fill(out, [
-      ["Public WAN IP:", d.ip],
+      [manualLookup ? "IP Address:" : "Your Public WAN IP:", d.ip],
       ["Network / ASN:", `AS${c.asn ?? d.asn ?? "N/A"} - ${c.org ?? d.asn_org ?? "N/A"}`],
       ["ISP:", c.isp ?? d.isp],
       ["Connection Type:", c.type ?? "N/A"],
@@ -304,11 +312,28 @@ async function checkReachability() {
       box.classList.add("visible");
       addLink(out, `https://www.google.com/maps?q=${lat},${lon}`, "View in Google Maps ↗");
     }
-    if (d.ip) { const intel=$("ip-intel-links"); intel.hidden=false; $("ip-arin-link").href="https://search.arin.net/rdap/?query="+encodeURIComponent(d.ip); $("ip-abuse-link").href="https://www.abuseipdb.com/check/"+encodeURIComponent(d.ip); }
+    if (manualLookup && d.ip) {
+      intel.hidden = false;
+      $("ip-arin-link").href = "https://search.arin.net/rdap/?query=" + encodeURIComponent(d.ip);
+      $("ip-abuse-link").href = "https://www.abuseipdb.com/check/" + encodeURIComponent(d.ip);
+    }
     out.append("\n");
-    const s = document.createElement("span"); s.className = "highlight"; s.textContent = "User Agent: ";
-    out.append(s, navigator.userAgent);
+    const s = document.createElement("span"); s.className = "highlight"; s.textContent = manualLookup ? "Lookup complete." : "Detected from your current public connection.";
+    out.append(s);
   } catch (e) { out.textContent = "Error fetching IP details: " + e.message; }
+}
+
+async function lookupIPAddress() {
+  const input = $("ip-lookup-input"), ip = input.value.trim();
+  if (!validIPAddress(ip)) {
+    $("ip-output").textContent = "Enter a valid IPv4 or IPv6 address.";
+    return;
+  }
+  await fetchIPDetailsFor(ip, true);
+}
+
+async function checkMyIP() {
+  await fetchIPDetailsFor("", false);
 }
 
 async function fetchWHOIS() {
@@ -729,7 +754,6 @@ $("domain-suite-btn").addEventListener("click",runDomainSuite);
 $("privacy-btn").addEventListener("click",runBrowserPrivacy);
 $("webrtc-btn").addEventListener("click",runWebRTCCheck);
 $("url-inspect-btn").addEventListener("click",inspectURL);
-document.querySelectorAll(".quick-action").forEach(b=>b.addEventListener("click",()=>quickGo(b.dataset.go)));
 $("audit-input").addEventListener("keydown",e=>{if(e.key==="Enter")runWebsiteAudit();});
 $("domain-suite-input").addEventListener("keydown",e=>{if(e.key==="Enter")runDomainSuite();});
 $("url-inspect-input").addEventListener("keydown",e=>{if(e.key==="Enter")inspectURL();});
@@ -737,7 +761,8 @@ $("url-inspect-input").addEventListener("keydown",e=>{if(e.key==="Enter")inspect
 $("dns-btn").addEventListener("click", lookupDNS);
 $("reach-btn").addEventListener("click", checkReachability);
 $("leak-btn").addEventListener("click", runLeakTest);
-$("ip-btn").addEventListener("click", fetchIPDetails);
+$("ip-lookup-btn").addEventListener("click", lookupIPAddress);
+$("my-ip-btn").addEventListener("click", checkMyIP);
 $("whois-btn").addEventListener("click", fetchWHOIS);
 $("fp-btn").addEventListener("click", generateFingerprint);
 $("gen-btn").addEventListener("click", generatePassword);
@@ -745,6 +770,7 @@ $("copy-btn").addEventListener("click", copyPassword);
 $("pwd-panel").addEventListener("input", syncPwdUI);
 $("domain-input").addEventListener("keydown", e => { if (e.key === "Enter") lookupDNS(); });
 $("reach-input").addEventListener("keydown", e => { if (e.key === "Enter") checkReachability(); });
+$("ip-lookup-input").addEventListener("keydown", e => { if (e.key === "Enter") lookupIPAddress(); });
 $("whois-input").addEventListener("keydown", e => { if (e.key === "Enter") fetchWHOIS(); });
 $("news-btn").addEventListener("click", loadNews);
 $("news-source").addEventListener("change", loadNews);

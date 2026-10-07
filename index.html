@@ -17,7 +17,6 @@
 </header>
 
 <nav class="tab-header" aria-label="Gateway tools">
-<button class="tab-btn active" data-tab="quick-panel">⚡ Quick Check</button>
 <button class="tab-btn" data-tab="dns-panel">🧭 DNS</button>
 <button class="tab-btn" data-tab="reach-panel"><span class="tab-icon">📡</span> Reachability</button>
 <button class="tab-btn" data-tab="ip-panel">🌐 IP Info</button>
@@ -32,29 +31,7 @@
 </nav>
 
 <div class="tab-content">
-<section id="quick-panel" class="tab-panel active">
-<div class="section">
-<h2>⚡ Quick Check</h2>
-<p class="help-text">Start with the symptom instead of guessing which tool you need. Enter a website, URL, domain, or leave the box empty for browser/file checks.</p>
-<div class="input-group"><input type="text" id="quick-input" placeholder="e.g. example.com or https://example.com/login" autocomplete="off" spellcheck="false" aria-label="Quick check target"></div>
-<div class="quick-grid">
-<button class="action-btn quick-action" data-go="reach-panel">📡 Site won't load</button>
-<button class="action-btn quick-action" data-go="audit-panel">🛡️ Website security</button>
-<button class="action-btn quick-action" data-go="dns-domain-panel">🧩 DNS &amp; domain</button>
-<button class="action-btn quick-action" data-go="url-panel">🔗 Suspicious URL</button>
-<button class="action-btn quick-action" data-go="privacy-panel">🔒 Browser privacy</button>
-<button class="action-btn quick-action" data-go="status-panel">📡 Is a service down?</button>
-<button class="secondary-btn quick-action" data-go="network-panel">🔌 Check exposed ports</button>
-<button class="secondary-btn quick-action" data-go="file-panel">📁 Check a file/hash</button>
-</div>
-</div>
-<div class="section">
-<h2>Suggested workflow</h2>
-<p class="help-text">Website not loading → Reachability → DNS &amp; Domain → Service Status. Suspicious link → URL Inspector → Phishing Tools. Your own website → Website Security Audit → DNS &amp; Domain → Network Safety.</p>
-</div>
-</section>
-
-<section id="dns-panel" class="tab-panel">
+<section id="dns-panel" class="tab-panel active">
 <div class="section">
 <h2>DNS Record Lookup</h2>
 <p class="help-text">Look up DNS records through Cloudflare's DNS-over-HTTPS service.</p>
@@ -120,14 +97,30 @@
 <section id="ip-panel" class="tab-panel">
 <div class="section">
 <h2>Public IP &amp; Geolocation</h2>
-<p class="help-text">Your public IP address and approximate location, from ipwho.is.</p>
-<button class="action-btn" id="ip-btn">🌐 Check IP Information</button>
-<div id="ip-output" class="output-box" aria-live="polite">Click the button above to view public IP details...</div>
+<p class="help-text">Look up any IP address, or check the public IP address seen from your current connection. Geolocation is approximate.</p>
+
+<div class="ip-check-grid">
+<div class="ip-check-card">
+<h3>🔎 Look Up an IP Address</h3>
+<p class="help-text">Use this for an IP you want to investigate. Reputation tools are available for manual lookups.</p>
+<div class="input-group"><input type="text" id="ip-lookup-input" placeholder="e.g. 1.1.1.1 or 2606:4700:4700::1111" autocomplete="off" spellcheck="false" aria-label="IP address to look up"></div>
+<button class="action-btn" id="ip-lookup-btn">🔎 Look Up IP</button>
+</div>
+
+<div class="ip-check-card">
+<h3>🌐 Check My IP Address</h3>
+<p class="help-text">Find the public IP address your current browser connection presents to the service.</p>
+<button class="action-btn" id="my-ip-btn">🌐 Check My IP</button>
+</div>
+</div>
+
+<div id="ip-output" class="output-box" aria-live="polite">Choose an IP lookup above...</div>
 <div id="ip-map-container" class="map-container"><iframe id="ip-map" title="Approximate IP geolocation map" loading="lazy" referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin"></iframe></div>
 <div id="ip-intel-links" class="tool-grid" hidden>
 <a class="secondary-btn tool-link" id="ip-arin-link" href="https://search.arin.net/rdap/" target="_blank" rel="noopener noreferrer">📋 ARIN RDAP ↗</a>
 <a class="secondary-btn tool-link" id="ip-abuse-link" href="https://www.abuseipdb.com/" target="_blank" rel="noopener noreferrer">🛡️ AbuseIPDB ↗</a>
 </div>
+<p class="help-text small-note">Reputation links are shown only for manual IP lookups, not when using <strong>Check My IP</strong>.</p>
 </div>
 </section>
 
