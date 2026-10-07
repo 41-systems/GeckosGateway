@@ -7,7 +7,9 @@
 <meta name="referrer" content="no-referrer">
 <meta name="description" content="Gecko's Gateway: DNS, network reachability, IP, RDAP, fingerprint and password tools.">
 <title>Gecko's Gateway</title>
-<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="./favicon.svg" type="image/svg+xml" sizes="any">
+<link rel="shortcut icon" href="./favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="./favicon.svg">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -109,9 +111,9 @@
 <div class="input-group">
 <input type="url" id="phish-input" placeholder="e.g. https://example.com/login" autocomplete="off" spellcheck="false" aria-label="URL to triage">
 </div>
-<div class="input-group">
+<div class="input-group phish-actions">
 <button class="action-btn" id="phish-analyze-btn">🔎 Analyze Locally</button>
-<button class="secondary-btn" id="phish-copy-btn" type="button">Copy URL</button>
+<button class="action-btn" id="phish-copy-btn" type="button">📋 Copy URL</button>
 </div>
 <div id="phish-output" class="output-box" aria-live="polite">Enter a URL to inspect its structure locally...</div>
 </div>
@@ -119,14 +121,14 @@
 <div class="section">
 <h2>External Phishing Scanners</h2>
 <p class="help-text">These open the service directly in a new tab. Paste the URL or domain there when prompted. Results come from the external provider, not Gecko's Gateway.</p>
-<div class="input-group">
+<div class="input-group phish-tools">
 <a class="action-btn tool-link" href="https://checkphish.bolster.ai/live-url-scan/" target="_blank" rel="noopener noreferrer">🛡️ CheckPhish URL Scanner ↗</a>
 <a class="action-btn tool-link" href="https://dnstwist.it/" target="_blank" rel="noopener noreferrer">🔀 dnstwist ↗</a>
 <a class="action-btn tool-link" href="https://www.phishtank.com/" target="_blank" rel="noopener noreferrer">🐟 PhishTank ↗</a>
 <a class="action-btn tool-link" href="https://isitphishing.org/" target="_blank" rel="noopener noreferrer">🎣 IsItPhishing ↗</a>
 </div>
-<div class="input-group">
-<a class="secondary-btn tool-link" href="https://phish.ly/" target="_blank" rel="noopener noreferrer">📨 phish.ly ↗</a>
+<div class="input-group phish-tools">
+<a class="action-btn tool-link" href="https://phish.ly/" target="_blank" rel="noopener noreferrer">📨 phish.ly ↗</a>
 <a class="secondary-btn tool-link" href="https://analyzer.sublimesecurity.com/" target="_blank" rel="noopener noreferrer">📄 Sublime EML Analyzer ↗</a>
 <a class="secondary-btn tool-link" href="https://eml-analyzer.herokuapp.com/" target="_blank" rel="noopener noreferrer">📄 EML Analyzer ↗</a>
 <a class="secondary-btn tool-link" href="https://emailrep.io/" target="_blank" rel="noopener noreferrer">✉️ EmailRep ↗</a>
@@ -143,7 +145,7 @@
 <select id="news-source" aria-label="News source">
 <option value="hn-top">Hacker News · Top stories</option>
 <option value="hn-sec">Hacker News · Security stories (past week)</option>
-<option value="ghsa">GitHub · Newest security advisories</option><option value="malwaretips">MalwareTips · Security News</option>
+<option value="ghsa">GitHub · Newest security advisories</option><option value="malwaretips">MalwareTips · Security News</option><option value="bleeping">BleepingComputer · Security News</option><option value="securityweek">SecurityWeek · Cybersecurity</option><option value="therecord">The Record · Cybersecurity</option><option value="cisa">CISA · Cybersecurity Advisories</option>
 </select>
 <button class="action-btn" id="news-btn">🔄 Refresh</button>
 </div>
