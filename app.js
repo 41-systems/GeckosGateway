@@ -286,43 +286,56 @@ async function fetchIPDetailsFor(ip, manualLookup) {
   box.classList.remove("visible");
   intel.hidden = true;
   try {
-    const endpoint = ip ? "https://ipwho.is/" + encodeURIComponent(ip) : "https://ipwho.is/";
+    const endpoint = ip
+      ? "https://ipapi.co/" + encodeURIComponent(ip) + "/json/"
+      : "https://ipapi.co/json/";
     const d = await getJSON(endpoint, { cache: "no-store" });
-    if (d.success === false) throw new Error(d.message || "Lookup failed");
-    const c = d.connection || {}, lat = Number(d.latitude), lon = Number(d.longitude);
-    const ok = d.latitude != null && d.longitude != null && Number.isFinite(lat) && Number.isFinite(lon);
+    if (d.error) throw new Error(d.reason || "IP lookup failed");
+
+    const lat = Number(d.latitude), lon = Number(d.longitude);
+    const ok = Number.isFinite(lat) && Number.isFinite(lon);
+
     fill(out, [
       [manualLookup ? "IP Address:" : "Your Public WAN IP:", d.ip],
-      ["Network / ASN:", `AS${c.asn ?? d.asn ?? "N/A"} - ${c.org ?? d.asn_org ?? "N/A"}`],
-      ["ISP:", c.isp ?? d.isp],
-      ["Connection Type:", c.type ?? "N/A"],
-      ["Reverse DNS / Domain:", c.domain ?? "N/A"],
-      [""], ["--- GEO LOCATION DETAILS ---"],
-      ["City / Region:", `${d.city ?? "N/A"}, ${d.region ?? "N/A"} (${d.postal ?? "N/A"})`],
-      ["Country:", `${d.country ?? "N/A"} (${d.country_code ?? "N/A"})`],
-      ["Timezone:", d.timezone?.id ?? "N/A"],
+      ["Network / ASN:", d.asn ? `${d.asn} - ${d.org || "N/A"}` : (d.org || "N/A")],
+      ["ISP / Organization:", d.org || "N/A"],
+      ["Reverse DNS / Domain:", d.hostname || "N/A"],
+      [""],
+      ["--- GEO LOCATION DETAILS ---"],
+      ["City / Region:", `${d.city || "N/A"}, ${d.region || "N/A"} (${d.postal || "N/A"})`],
+      ["Country:", `${d.country_name || "N/A"} (${d.country_code || "N/A"})`],
+      ["Timezone:", d.timezone || "N/A"],
       ["Coordinates:", ok ? `${lat}, ${lon}` : "N/A"],
-      ["Currency:", d.currency?.name ? `${d.currency.name} (${d.currency.code ?? "N/A"})` : "N/A"],
+      ["Currency:", d.currency_name ? `${d.currency_name} (${d.currency || "N/A"})` : "N/A"],
       [""]
     ]);
+
     if (ok) {
       const o = 0.04;
-      map.src = "https://www.openstreetmap.org/export/embed.html?bbox=" + encodeURIComponent(`${lon - o},${lat - o},${lon + o},${lat + o}`) +
+      map.src = "https://www.openstreetmap.org/export/embed.html?bbox=" +
+        encodeURIComponent(`${lon - o},${lat - o},${lon + o},${lat + o}`) +
         "&layer=mapnik&marker=" + encodeURIComponent(`${lat},${lon}`);
       box.classList.add("visible");
       addLink(out, `https://www.google.com/maps?q=${lat},${lon}`, "View in Google Maps ↗");
     }
+
     if (manualLookup && d.ip) {
       intel.hidden = false;
       $("ip-arin-link").href = "https://search.arin.net/rdap/?query=" + encodeURIComponent(d.ip);
       $("ip-abuse-link").href = "https://www.abuseipdb.com/check/" + encodeURIComponent(d.ip);
     }
-    out.append("\n");
-    const s = document.createElement("span"); s.className = "highlight"; s.textContent = manualLookup ? "Lookup complete." : "Detected from your current public connection.";
-    out.append(s);
-  } catch (e) { out.textContent = "Error fetching IP details: " + e.message; }
-}
 
+    out.append("\n");
+    const s = document.createElement("span");
+    s.className = "highlight";
+    s.textContent = manualLookup
+      ? "Lookup complete. Reputation tools are available below for this IP."
+      : "Detected from your current public connection. Reputation tools are intentionally hidden for your own IP.";
+    out.append(s);
+  } catch (e) {
+    out.textContent = "IP lookup failed: " + e.message;
+  }
+}
 async function lookupIPAddress() {
   const input = $("ip-lookup-input"), ip = input.value.trim();
   if (!validIPAddress(ip)) {
