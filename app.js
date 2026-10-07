@@ -271,10 +271,21 @@ function generateFingerprint() {
   ]);
 }
 
-const WORDS = ("anchor aperture beacon breeze cactus canyon castle cobalt comet compass crystal delta echo falcon fender forest fossil galaxy glacier harbor " +
-  "horizon island jungle lantern legend matrix meadow meteor mirage mountain nebula orbit oasis panther phantom planet pulse pyramid radar river rocket saddle " +
-  "shadow shield sierra silver solstice summit thunder timber titan torpedo valley velvet vertex vortex voyage whisper wilderness zenith zephyr zodiac aspen " +
-  "boulder circuit element glimmer haven monolith pioneer prism quarry").split(" ");
+// Passphrase words are generated procedurally from cryptographically random letters.
+// There is intentionally no dictionary or precompiled word list.
+const WORD_CONSONANTS = "bcdfghjklmnpqrstvwxyz";
+const WORD_VOWELS = "aeiou";
+const WORD_PATTERNS = ["CVC", "CVCC", "CVCV", "CVVC", "CCVC", "CVCVC", "CVCCV", "CVCVCV"];
+
+function randomWord() {
+  const pattern = WORD_PATTERNS[rand(WORD_PATTERNS.length)];
+  let word = "";
+  for (const type of pattern) {
+    const pool = type === "C" ? WORD_CONSONANTS : WORD_VOWELS;
+    word += pool[rand(pool.length)];
+  }
+  return word;
+}
 const SYMBOLS = "!@#$%^&*()_+-=[]{}|;:,.<>?", WORD_SYMBOLS = "!@#$%^&*";
 const LEET = { a: "4", e: "3", i: "1", o: "0", s: "5", t: "7" };
 
@@ -326,10 +337,16 @@ function generatePassword() {
     const n = +$("pwd-word-count").value, wc = $("pwd-word-case").value, nm = $("pwd-word-numbers").value, sm = $("pwd-word-symbols").value;
     const sc = $("pwd-separator").value, sep = sc === "custom" ? $("pwd-custom-sep").value : sc;
     const cap = s => s[0].toUpperCase() + s.slice(1), parts = [];
-    bits = n * Math.log2(WORDS.length);
+    // Each word is independently generated from fresh crypto-random characters.
+    // Entropy is estimated from the character choices rather than a dictionary size.
+    const avgPatternEntropy = Math.log2(WORD_PATTERNS.length) +
+      (WORD_PATTERNS.reduce((sum, p) => sum + [...p].filter(c => c === "C").length, 0) / WORD_PATTERNS.length) * Math.log2(WORD_CONSONANTS.length) +
+      (WORD_PATTERNS.reduce((sum, p) => sum + [...p].filter(c => c === "V").length, 0) / WORD_PATTERNS.length) * Math.log2(WORD_VOWELS.length);
+    bits = n * avgPatternEntropy;
     for (let i = 0; i < n; i++) {
-      let w = WORDS[rand(WORDS.length)];
-      if (noSim) w = w.replace(/[iol]/g, "");
+      let w;
+      do w = randomWord(); while (noSim && /[iol]/i.test(w));
+
       if (wc === "title") w = cap(w);
       else if (wc === "upper") w = w.toUpperCase();
       else if (wc === "alternating-words") w = i % 2 ? w.toUpperCase() : cap(w);
@@ -449,7 +466,7 @@ $("whois-btn").addEventListener("click", fetchWHOIS);
 $("fp-btn").addEventListener("click", generateFingerprint);
 $("gen-btn").addEventListener("click", generatePassword);
 $("copy-btn").addEventListener("click", copyPassword);
-$("pwd-panel").addEventListener("input", generatePassword);
+$("pwd-panel").addEventListener("input", syncPwdUI);
 $("domain-input").addEventListener("keydown", e => { if (e.key === "Enter") lookupDNS(); });
 $("reach-input").addEventListener("keydown", e => { if (e.key === "Enter") checkReachability(); });
 $("whois-input").addEventListener("keydown", e => { if (e.key === "Enter") fetchWHOIS(); });
@@ -457,4 +474,4 @@ $("news-btn").addEventListener("click", loadNews);
 $("news-source").addEventListener("change", loadNews);
 $("file-input").addEventListener("change", checkFile);
 setAccent(document.querySelector(".tab-btn.active"));
-generatePassword();
+syncPwdUI();
