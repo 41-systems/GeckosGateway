@@ -473,7 +473,5 @@ $("whois-input").addEventListener("keydown", e => { if (e.key === "Enter") fetch
 $("news-btn").addEventListener("click", loadNews);
 $("news-source").addEventListener("change", loadNews);
 $("file-input").addEventListener("change", checkFile);
-$("phish-btn").addEventListener("click", checkPhishingEmail);
-$("phish-input").addEventListener("keydown", e => { if (e.key === "Enter") checkPhishingEmail(); });
 setAccent(document.querySelector(".tab-btn.active"));
 syncPwdUI();
