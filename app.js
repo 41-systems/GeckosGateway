@@ -442,6 +442,64 @@ async function loadNews() {
 
 const FILE_LIMIT = 256 * 1024 * 1024;
 
+async function checkPhishingEmail() {
+  const out = $("phish-output"), btn = $("phish-btn");
+  const email = $("phish-input").value.trim();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    out.className = "output-box";
+    out.textContent = "Enter a valid email address.";
+    return;
+  }
+
+  btn.disabled = true;
+  out.className = "output-box";
+  out.textContent = "Checking email reputation...";
+  try {
+    const data = await getJSON("https://emailrep.io/" + encodeURIComponent(email));
+
+    const d = data.details || {};
+    let risk = 0;
+    if (data.suspicious) risk += 35;
+    if (d.blacklisted) risk += 30;
+    if (d.malicious_activity) risk += 30;
+    if (d.malicious_activity_recent) risk += 15;
+    if (d.data_breach) risk += 10;
+    if (d.credentials_leaked) risk += 15;
+    if (d.spam) risk += 15;
+    if (d.disposable) risk += 10;
+    if (d.suspicious_tld) risk += 10;
+    if (d.spoofable) risk += 10;
+    if (d.domain_reputation === "low") risk += 15;
+    if (d.domain_reputation === "none") risk += 8;
+    risk = Math.min(100, risk);
+
+    const level = risk >= 70 ? "High Risk" : risk >= 40 ? "Elevated Risk" : risk >= 15 ? "Low Risk" : "Minimal Known Risk";
+    out.classList.add(risk >= 40 ? "reach-failure" : "reach-success");
+
+    fill(out, [
+      ["Risk estimate:", level + " (" + risk + "/100)"],
+      ["Reputation:", data.reputation || "Unknown"],
+      ["Suspicious:", data.suspicious ? "Yes" : "No"],
+      ["References:", data.references ?? "N/A"],
+      [""],
+      ["Phishing-related signals:", d.malicious_activity ? "Detected" : "None reported"],
+      ["Blacklist:", d.blacklisted ? "Listed" : "Not listed"],
+      ["Data breach:", d.data_breach ? "Found" : "Not reported"],
+      ["Credentials leaked:", d.credentials_leaked ? "Reported" : "Not reported"],
+      ["Spam:", d.spam ? "Reported" : "Not reported"],
+      ["Disposable:", d.disposable ? "Yes" : "No"],
+      ["Domain reputation:", d.domain_reputation || "Unknown"],
+      [""],
+      ["Important:", "This is a reputation-based risk estimate, not proof that an email is phishing or safe. A legitimate account can be compromised or spoofed, and a new malicious address may have little reputation history."]
+    ]);
+  } catch (e) {
+    out.className = "output-box reach-failure";
+    out.textContent = "Could not check this address: " + e.message;
+  } finally {
+    btn.disabled = false;
+  }
+}
+
 async function checkFile() {
   const out = $("file-output"), f = $("file-input").files[0];
   if (!f) return;
@@ -473,5 +531,7 @@ $("whois-input").addEventListener("keydown", e => { if (e.key === "Enter") fetch
 $("news-btn").addEventListener("click", loadNews);
 $("news-source").addEventListener("change", loadNews);
 $("file-input").addEventListener("change", checkFile);
+$("phish-btn").addEventListener("click", checkPhishingEmail);
+$("phish-input").addEventListener("keydown", e => { if (e.key === "Enter") checkPhishingEmail(); });
 setAccent(document.querySelector(".tab-btn.active"));
 syncPwdUI();
