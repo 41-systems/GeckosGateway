@@ -190,7 +190,7 @@ async function runLeakTest() {
   btn.disabled = true;
   try {
     out.textContent = "Step 1/3: triggering 10 unique DNS lookups...";
-    await Promise.all(Array.from({ length: 10 }, (_, i) => ping(`https://${i + 1}.${id}.bash.ws/`)));
+    for (let i = 1; i <= 10; i++) { await ping(`https://${i}.${id}.bash.ws/`, 7000); }
     out.textContent = "Step 2/3: waiting for the test server to collect resolver data...";
     let rows = [];
     for (let i = 0; i < 4; i++) {
