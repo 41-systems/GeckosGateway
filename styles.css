@@ -277,3 +277,20 @@ body{padding:10px}header{padding:22px 16px 18px}.tab-content{padding:14px}.secti
 @media(prefers-reduced-motion:reduce){
   .mcgecko-tab::after{animation:none}
 }
+
+/* mcGecko in-game HUD */
+.mcgecko-game-shell{position:relative;width:min(100%,560px)}
+.mcgecko-game-hud{
+  position:absolute;left:8px;right:8px;top:8px;z-index:3;
+  display:grid;grid-template-columns:repeat(4,1fr);gap:6px;pointer-events:none
+}
+.mcgecko-game-hud .game-stat{
+  padding:6px 7px;text-align:center;border:1px solid rgba(255,255,255,.28);
+  border-radius:8px;background:rgba(3,12,8,.82);color:#fff;
+  font-size:.76rem;text-shadow:0 1px 2px #000;backdrop-filter:blur(3px)
+}
+.mcgecko-game-hud .game-stat strong{display:block;font-size:.9rem;color:#b8ffd0}
+.mcgecko-game-hud .game-power strong{color:#bdefff}
+@media(max-width:520px){
+  .mcgecko-game-hud{grid-template-columns:repeat(2,1fr)}
+}
