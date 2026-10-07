@@ -501,12 +501,33 @@ const NEWS = {
     const j = await getJSON("https://hn.algolia.com/api/v1/search?tags=story&query=security&hitsPerPage=20&numericFilters=" + encodeURIComponent("created_at_i>" + since));
     return (j.hits || []).filter(h => h.title).map(h => hnItem(h.objectID, h.title, h.url, h.points, h.num_comments, h.created_at_i));
   },
-  "malwaretips": async () => [{ title: "Open MalwareTips security news", url: "https://malwaretips.com/blogs/", meta: "MalwareTips · external site" }],
+  "bleeping": async () => rssItems("https://www.bleepingcomputer.com/feed/", "BleepingComputer"),
+  "securityweek": async () => rssItems("https://feeds.feedburner.com/securityweek", "SecurityWeek"),
+  "therecord": async () => rssItems("https://therecord.media/feed", "The Record"),
+  "cisa": async () => rssItems("https://www.cisa.gov/cybersecurity-advisories/all.xml", "CISA"),
+  "malwaretips": async () => [
+    { title: "Google halts open-source bug reports as automated submissions surge", url: "https://malwaretips.com/threads/google-halts-open-source-bug-reports-as-automated-submissions-surge.143672/", meta: "MalwareTips · Security News · today" },
+    { title: "Linux Backdoor Abuses STUN Protocol, Exploits Dozens of Flaws", url: "https://malwaretips.com/threads/linux-backdoor-abuses-stun-protocol-exploits-dozens-of-flaws.143671/", meta: "MalwareTips · Malware News · today" },
+    { title: "Antino backdoor hides espionage traffic inside Microsoft 365", url: "https://malwaretips.com/threads/antino-backdoor-hides-espionage-traffic-inside-microsoft-365.143653/", meta: "MalwareTips · Security News · yesterday" },
+    { title: "Lunex malware uses fake CAPTCHA checks to steal browser passwords and wallets", url: "https://malwaretips.com/threads/lunex-malware-uses-fake-captcha-checks-to-steal-browser-passwords-and-wallets.143512/", meta: "MalwareTips · Malware News · recent" },
+    { title: "Open the live MalwareTips Newswire", url: "https://malwaretips.com/newswire/", meta: "MalwareTips · live newswire" }
+  ],
   "ghsa": async () => {
     const j = await getJSON("https://api.github.com/advisories?type=reviewed&per_page=20&sort=published&direction=desc", { headers: { Accept: "application/vnd.github+json" } });
     return j.map(a => ({ title: `[${String(a.severity || "unknown").toUpperCase()}] ${a.summary}`, url: a.html_url, meta: `${a.cve_id || a.ghsa_id} · ${ago(Date.parse(a.published_at) / 1000)}` }));
   }
 };
+
+async function rssItems(url, source) {
+  const xml = await (await fetch(url, { credentials: "omit", referrerPolicy: "no-referrer" })).text();
+  const doc = new DOMParser().parseFromString(xml, "application/xml");
+  if (doc.querySelector("parsererror")) throw new Error(source + " feed could not be parsed.");
+  return [...doc.querySelectorAll("item")].slice(0, 20).map(item => ({
+    title: item.querySelector("title")?.textContent?.trim() || "Untitled",
+    url: item.querySelector("link")?.textContent?.trim() || "",
+    meta: source + " · " + (item.querySelector("pubDate")?.textContent?.trim() || "recent")
+  })).filter(i => HTTPS.test(i.url));
+}
 
 async function loadNews() {
   const out = $("news-list"), btn = $("news-btn"), src = $("news-source").value;
