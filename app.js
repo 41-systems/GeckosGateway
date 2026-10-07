@@ -68,6 +68,99 @@ function switchTab(btn) {
   if (btn.dataset.tab === "news-panel" && !newsLoaded) loadNews();
 }
 
+
+function cleanURL(raw) {
+  try {
+    const u = new URL(/^[a-z][a-z0-9+.-]*:\/\//i.test(String(raw).trim()) ? String(raw).trim() : "https://" + String(raw).trim());
+    if (!["http:", "https:"].includes(u.protocol)) throw new Error("Only HTTP and HTTPS URLs are supported.");
+    if (u.username || u.password) throw new Error("URLs containing embedded credentials are not allowed.");
+    return u;
+  } catch (e) { throw new Error(e.message || "Enter a valid HTTP(S) URL."); }
+}
+function addToolLink(el, href, text, className) {
+  const a=document.createElement("a"); a.href=href; a.target="_blank"; a.rel="noopener noreferrer"; a.className=className||"action-btn tool-link"; a.textContent=text; el.append(a); return a;
+}
+function runWebsiteAudit() {
+  const out=$("audit-output");
+  try {
+    const u=cleanURL($("audit-input").value), host=u.hostname;
+    out.textContent="";
+    const summary=document.createElement("div"); summary.className="audit-summary"; summary.textContent="Prepared checks for "+u.href+" — open each scanner in a new tab."; out.append(summary);
+    const grid=document.createElement("div"); grid.className="tool-grid audit-links";
+    addToolLink(grid,"https://www.ssllabs.com/ssltest/analyze.html?d="+encodeURIComponent(host),"🔐 SSL Labs TLS");
+    addToolLink(grid,"https://securityheaders.com/?q="+encodeURIComponent(u.href)+"&followRedirects=on","🧱 SecurityHeaders.com");
+    addToolLink(grid,"https://developer.mozilla.org/en-US/observatory/analyze?host="+encodeURIComponent(host),"🦊 MDN HTTP Observatory");
+    addToolLink(grid,"https://internet.nl/site/"+encodeURIComponent(host)+"/","🌐 Internet.nl");
+    addToolLink(grid,"https://sitecheck.sucuri.net/results/"+encodeURIComponent(host),"🛡️ Sucuri SiteCheck");
+    addToolLink(grid,"https://www.hardenize.com/report/"+encodeURIComponent(host),"🔎 Hardenize","secondary-btn tool-link");
+    out.append(grid);
+    const note=document.createElement("p"); note.className="help-text small-note"; note.textContent="These remote checks see only what the public service can observe; they do not prove application code, authentication, database, or business-logic security."; out.append(note);
+  } catch(e){out.textContent=e.message;}
+}
+async function queryDoH(name,type){
+  return getJSON("https://cloudflare-dns.com/dns-query?name="+encodeURIComponent(name)+"&type="+encodeURIComponent(type)+"&do=true",{headers:{Accept:"application/dns-json"},cache:"no-store"});
+}
+function answerData(j,type){return (j.Answer||[]).filter(r=>RR[r.type]===type||String(r.type)===type).map(r=>String(r.data||""));}
+async function runDomainSuite(){
+  const out=$("domain-suite-output"), d=cleanDomain($("domain-suite-input").value), selector=$("dkim-selector").value.trim();
+  if(!d){out.textContent="Enter a valid domain name, e.g. example.com";return;}
+  if(selector&&!/^[a-z0-9._-]{1,63}$/i.test(selector)){out.textContent="DKIM selector contains unsupported characters.";return;}
+  out.textContent="Querying DNS, DNSSEC and email-security records...";
+  const names=[["A",d,"A"],["AAAA",d,"AAAA"],["MX",d,"MX"],["NS",d,"NS"],["TXT",d,"TXT"],["CAA",d,"CAA"],["DS",d,"DS"],["DNSKEY",d,"DNSKEY"],["DMARC","_dmarc."+d,"TXT"]];
+  if(selector)names.push(["DKIM",selector+"._domainkey."+d,"TXT"]);
+  try{
+    const results=await Promise.all(names.map(async x=>[x[0],await queryDoH(x[1],x[2]).catch(e=>({error:e.message}))]));
+    const by=Object.fromEntries(results), txt=answerData(by.TXT,"TXT"), dmarc=answerData(by.DMARC,"TXT");
+    const spf=txt.filter(x=>/^"?v=spf1\b/i.test(x)), dmarcRecord=dmarc.find(x=>/^"?v=dmarc1\b/i.test(x));
+    const dkim=selector?answerData(by.DKIM,"TXT"):[], mx=answerData(by.MX,"MX");
+    fill(out,[["Domain:",d],["DNSSEC validated:",by.DNSKEY?.AD||by.DS?.AD?"Yes — resolver authenticated the response":"Not authenticated in this response"],["DNSSEC records:","DS "+answerData(by.DS,"DS").length+" · DNSKEY "+answerData(by.DNSKEY,"DNSKEY").length],["A records:",answerData(by.A,"A").join(", ")||"None"],["AAAA records:",answerData(by.AAAA,"AAAA").join(", ")||"None"],["Nameservers:",answerData(by.NS,"NS").join(", ")||"None"],["MX records:",mx.join(" | ")||"None"],[""],["SPF:",spf.length?spf.join(" | "):"Not found"],["DMARC:",dmarcRecord||"Not found"],["DKIM:",selector?(dkim.length?dkim.join(" | "):"No TXT record found for selector"):"Selector not supplied — cannot reliably test DKIM"],["CAA records:",answerData(by.CAA,"CAA").join(" | ")||"None"],[""],["Tip:","A published SPF/DMARC record is not the same as a fully secure mail configuration. Review policy strength, alignment, DKIM signing, TLS and provider settings."]]);
+  }catch(e){out.textContent="Error checking domain: "+e.message;}
+}
+async function runBrowserPrivacy(){
+  const out=$("privacy-output");
+  const storage=(()=>{try{return!!window.localStorage;}catch{return false;}})(), session=(()=>{try{return!!window.sessionStorage;}catch{return false;}})();
+  let geo="Unavailable"; try{if(navigator.permissions?.query)geo=(await navigator.permissions.query({name:"geolocation"})).state;}catch{}
+  const gl=webglInfo();
+  fill(out,[["User Agent:",navigator.userAgent],["Do Not Track:",navigator.doNotTrack||"Unspecified"],["Global Privacy Control:",navigator.globalPrivacyControl===true?"Enabled":"Not enabled / unavailable"],["Cookies Enabled:",navigator.cookieEnabled?"Yes":"No"],["WebDriver:",navigator.webdriver?"Detected":"Not reported"],["Local Storage API:",storage?"Available":"Blocked/unavailable"],["Session Storage API:",session?"Available":"Blocked/unavailable"],["Geolocation Permission:",geo],["JavaScript:","Enabled (this tool requires it)"],["Screen:",screen.width+"×"+screen.height+" · "+screen.colorDepth+"-bit · DPR "+(window.devicePixelRatio||1)],["CPU Cores:",navigator.hardwareConcurrency||"N/A"],["Device Memory:",navigator.deviceMemory?navigator.deviceMemory+" GB":"N/A"],["Language:",navigator.language||"N/A"],["Timezone:",Intl.DateTimeFormat().resolvedOptions().timeZone||"N/A"],["Touch:",navigator.maxTouchPoints?"Yes ("+navigator.maxTouchPoints+")":"No"],["WebGL:",gl.vendor==="N/A"?"Unavailable":gl.vendor+" · "+gl.renderer],[""],["Privacy note:","These signals are shown locally. A website can combine many of them into a browser fingerprint."]]);
+}
+async function runWebRTCCheck(){
+  const out=$("webrtc-output");
+  if(!window.RTCPeerConnection){out.textContent="WebRTC is not exposed by this browser.";return;}
+  out.textContent="Checking local WebRTC support...";
+  const pc=new RTCPeerConnection({iceServers:[]}), candidates=[];
+  try{
+    pc.onicecandidate=e=>{if(e.candidate)candidates.push(e.candidate.candidate);};
+    const offer=await pc.createOffer({offerToReceiveAudio:false,offerToReceiveVideo:false}); await pc.setLocalDescription(offer); await sleep(1200);
+    const types=[...new Set(candidates.map(c=>{const m=c.match(/\btyp\s+(\w+)/);return m?m[1]:"unknown";}))];
+    fill(out,[["RTCPeerConnection:","Available"],["RTCDataChannel:","Available"],["Candidate types seen:",types.length?types.join(", "):"None exposed"],["Candidates collected:",candidates.length],[""],["Interpretation:","This local check does not contact an external STUN server, so it is not a full public-IP leak test. Modern browsers may also mask host addresses with mDNS."]]);
+  }catch(e){out.textContent="WebRTC check failed: "+e.message;} finally{pc.close();}
+}
+function inspectURL(){
+  const out=$("url-inspect-output"), vt=$("url-vt-link"), us=$("urlscan-link"); let u;
+  try{u=cleanURL($("url-inspect-input").value);}catch(e){out.textContent=e.message;return;}
+  const host=u.hostname, labels=host.split(".").filter(Boolean), flags=[], notes=[];
+  if(u.protocol!=="https:")flags.push("URL is not HTTPS.");
+  if(/^\d+(?:\.\d+){3}$/.test(host))flags.push("Host is an IPv4 address.");
+  if(host.includes("xn--")||/[^\x00-\x7F]/.test(host))flags.push("Internationalized/punycode hostname detected.");
+  if(u.port&&!["80","443"].includes(u.port))flags.push("Non-standard port: "+u.port);
+  if(labels.length>=5)flags.push("Many hostname labels/subdomains.");
+  if(host.length>50)flags.push("Unusually long hostname.");
+  if(u.href.length>200)flags.push("Long URL (over 200 characters).");
+  if(u.search.length>150)flags.push("Long query string.");
+  if(u.pathname.length>100)flags.push("Long path.");
+  if(u.searchParams.has("redirect")||u.searchParams.has("url")||u.searchParams.has("next")||u.searchParams.has("continue")||u.searchParams.has("return"))flags.push("Redirect-style parameter present.");
+  if(u.hash)notes.push("Fragment present (#...); it is normally not sent to the server.");
+  if(u.href.includes("%"))notes.push("Percent-encoded characters are present; inspect decoded-looking text carefully.");
+  if(labels.some(x=>x.length>30))notes.push("At least one hostname label is unusually long.");
+  fill(out,[["Local verdict:",flags.length?"Structural indicators deserve a closer look.":"No obvious structural red flags found."],["Hostname:",host],["Protocol:",u.protocol.replace(":","").toUpperCase()],["Port:",u.port||(u.protocol==="https:"?"443":"80")],["Subdomains:",Math.max(0,labels.length-2)],["Path:",u.pathname||"/"],["Query parameters:",[...u.searchParams.keys()].length],["Credentials:",u.username||u.password?"Yes":"No"],["Flags:",flags.length?flags.join(" · "):"None"],["Notes:",notes.length?notes.join(" · "):"None"],[""],["Important:","This is a local structure check, not a malware verdict. Do not treat a clean result as proof that a URL is safe."]]);
+  const b64=btoa(unescape(encodeURIComponent(u.href))).replace(/=+$/,"").replace(/\+/g,"-").replace(/\//g,"_");
+  vt.href="https://www.virustotal.com/gui/url/"+b64; us.href="https://urlscan.io/search/#domain:"+encodeURIComponent(host);
+}
+function quickGo(target){
+  const input=($("quick-input").value||"").trim();
+  if(input){if(target==="reach-panel")$("reach-input").value=input;if(target==="audit-panel")$("audit-input").value=/^[a-z][a-z0-9+.-]*:\/\//i.test(input)?input:"https://"+input;if(target==="dns-domain-panel")$("domain-suite-input").value=cleanDomain(input)||input;if(target==="url-panel")$("url-inspect-input").value=input;}
+  const btn=[...document.querySelectorAll(".tab-btn")].find(b=>b.dataset.tab===target); if(btn)switchTab(btn);
+}
 const RR = { 1: "A", 2: "NS", 5: "CNAME", 6: "SOA", 15: "MX", 16: "TXT", 28: "AAAA", 43: "DS", 33: "SRV", 257: "CAA", 48: "DNSKEY", 65: "HTTPS" };
 
 async function lookupDNS() {
@@ -211,6 +304,7 @@ async function checkReachability() {
       box.classList.add("visible");
       addLink(out, `https://www.google.com/maps?q=${lat},${lon}`, "View in Google Maps ↗");
     }
+    if (d.ip) { const intel=$("ip-intel-links"); intel.hidden=false; $("ip-arin-link").href="https://search.arin.net/rdap/?query="+encodeURIComponent(d.ip); $("ip-abuse-link").href="https://www.abuseipdb.com/check/"+encodeURIComponent(d.ip); }
     out.append("\n");
     const s = document.createElement("span"); s.className = "highlight"; s.textContent = "User Agent: ";
     out.append(s, navigator.userAgent);
@@ -612,21 +706,34 @@ async function loadNews() {
 const FILE_LIMIT = 256 * 1024 * 1024;
 
 async function checkFile() {
-  const out = $("file-output"), f = $("file-input").files[0];
-  if (!f) return;
-  if (f.size > FILE_LIMIT) { out.textContent = "File is too large to hash here (limit 256 MB)."; return; }
-  if (!crypto.subtle) { out.textContent = "Hashing needs a secure (https) connection."; return; }
-  out.textContent = "Calculating SHA-256...";
-  try {
-    const digest = await crypto.subtle.digest("SHA-256", await f.arrayBuffer());
-    const hash = [...new Uint8Array(digest)].map(b => b.toString(16).padStart(2, "0")).join("");
-    fill(out, [["File:", f.name], ["Type:", f.type || "Unknown"], ["Size:", f.size.toLocaleString() + " bytes"], ["Last Modified:", new Date(f.lastModified).toLocaleString()], ["SHA-256:", hash], [""]]);
-    addLink(out, `https://www.virustotal.com/gui/file/${hash}`, "🛡️ Open VirusTotal report ↗");
-    addLink(out, `https://hybrid-analysis.com/sample/${hash}`, "🔬 Open Hybrid Analysis report ↗");
-  } catch (e) { out.textContent = "Could not read file: " + e.message; }
+  const out=$("file-output"), f=$("file-input").files[0]; if(!f)return;
+  if(f.size>FILE_LIMIT){out.textContent="File is too large to hash here (limit 256 MB).";return;}
+  if(!crypto.subtle){out.textContent="Hashing needs a secure (https) connection.";return;}
+  out.textContent="Reading file and calculating hashes...";
+  try{
+    const buf=await f.arrayBuffer(), bytes=new Uint8Array(buf);
+    const [d256,d512]=await Promise.all([crypto.subtle.digest("SHA-256",buf),crypto.subtle.digest("SHA-512",buf)]);
+    const hex=a=>[...new Uint8Array(a)].map(b=>b.toString(16).padStart(2,"0")).join("");
+    const freq=new Uint32Array(256); for(const b of bytes)freq[b]++;
+    let entropy=0; for(const n of freq)if(n){const p=n/bytes.length;entropy-=p*Math.log2(p);}
+    const h256=hex(d256), h512=hex(d512), ext=(f.name.match(/\.([^.]+)$/)?.[1]||"").toLowerCase()||"none";
+    fill(out,[["File:",f.name],["Extension:",ext],["MIME Type:",f.type||"Unknown"],["Size:",f.size.toLocaleString()+" bytes"],["Last Modified:",new Date(f.lastModified).toLocaleString()],["SHA-256:",h256],["SHA-512:",h512],["Byte Entropy:",entropy.toFixed(3)+" bits/byte"],[""],["Interpretation:","Higher byte entropy can be seen in compressed/encrypted data, but entropy alone does not identify malware."]]);
+    addLink(out,"https://www.virustotal.com/gui/file/"+h256,"🛡️ Open VirusTotal report ↗");
+    addLink(out,"https://hybrid-analysis.com/sample/"+h256,"🔬 Open Hybrid Analysis report ↗");
+  }catch(e){out.textContent="Could not read file: "+e.message;}
 }
 
 document.querySelectorAll(".tab-btn").forEach(b => b.addEventListener("click", () => switchTab(b)));
+$("audit-btn").addEventListener("click",runWebsiteAudit);
+$("domain-suite-btn").addEventListener("click",runDomainSuite);
+$("privacy-btn").addEventListener("click",runBrowserPrivacy);
+$("webrtc-btn").addEventListener("click",runWebRTCCheck);
+$("url-inspect-btn").addEventListener("click",inspectURL);
+document.querySelectorAll(".quick-action").forEach(b=>b.addEventListener("click",()=>quickGo(b.dataset.go)));
+$("audit-input").addEventListener("keydown",e=>{if(e.key==="Enter")runWebsiteAudit();});
+$("domain-suite-input").addEventListener("keydown",e=>{if(e.key==="Enter")runDomainSuite();});
+$("url-inspect-input").addEventListener("keydown",e=>{if(e.key==="Enter")inspectURL();});
+
 $("dns-btn").addEventListener("click", lookupDNS);
 $("reach-btn").addEventListener("click", checkReachability);
 $("leak-btn").addEventListener("click", runLeakTest);

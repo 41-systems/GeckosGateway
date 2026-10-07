@@ -17,7 +17,8 @@
 </header>
 
 <nav class="tab-header" aria-label="Gateway tools">
-<button class="tab-btn active" data-tab="dns-panel">🧭 DNS</button>
+<button class="tab-btn active" data-tab="quick-panel">⚡ Quick Check</button>
+<button class="tab-btn" data-tab="dns-panel">🧭 DNS</button>
 <button class="tab-btn" data-tab="reach-panel"><span class="tab-icon">📡</span> Reachability</button>
 <button class="tab-btn" data-tab="ip-panel">🌐 IP Info</button>
 <button class="tab-btn" data-tab="whois-panel">📋 RDAP</button>
@@ -31,7 +32,29 @@
 </nav>
 
 <div class="tab-content">
-<section id="dns-panel" class="tab-panel active">
+<section id="quick-panel" class="tab-panel active">
+<div class="section">
+<h2>⚡ Quick Check</h2>
+<p class="help-text">Start with the symptom instead of guessing which tool you need. Enter a website, URL, domain, or leave the box empty for browser/file checks.</p>
+<div class="input-group"><input type="text" id="quick-input" placeholder="e.g. example.com or https://example.com/login" autocomplete="off" spellcheck="false" aria-label="Quick check target"></div>
+<div class="quick-grid">
+<button class="action-btn quick-action" data-go="reach-panel">📡 Site won't load</button>
+<button class="action-btn quick-action" data-go="audit-panel">🛡️ Website security</button>
+<button class="action-btn quick-action" data-go="dns-domain-panel">🧩 DNS &amp; domain</button>
+<button class="action-btn quick-action" data-go="url-panel">🔗 Suspicious URL</button>
+<button class="action-btn quick-action" data-go="privacy-panel">🔒 Browser privacy</button>
+<button class="action-btn quick-action" data-go="status-panel">📡 Is a service down?</button>
+<button class="secondary-btn quick-action" data-go="network-panel">🔌 Check exposed ports</button>
+<button class="secondary-btn quick-action" data-go="file-panel">📁 Check a file/hash</button>
+</div>
+</div>
+<div class="section">
+<h2>Suggested workflow</h2>
+<p class="help-text">Website not loading → Reachability → DNS &amp; Domain → Service Status. Suspicious link → URL Inspector → Phishing Tools. Your own website → Website Security Audit → DNS &amp; Domain → Network Safety.</p>
+</div>
+</section>
+
+<section id="dns-panel" class="tab-panel">
 <div class="section">
 <h2>DNS Record Lookup</h2>
 <p class="help-text">Look up DNS records through Cloudflare's DNS-over-HTTPS service.</p>
@@ -54,6 +77,20 @@
 </div>
 </section>
 
+<section id="dns-domain-panel" class="tab-panel">
+<div class="section">
+<h2>🧩 DNS &amp; Domain Toolbox</h2>
+<p class="help-text">Run a compact DNS/DNSSEC and email-domain posture check using Cloudflare DNS-over-HTTPS. Results are read in your browser.</p>
+<div class="input-group"><input type="text" id="domain-suite-input" value="example.com" placeholder="example.com" autocomplete="off" aria-label="Domain for DNS and email checks"><input type="text" id="dkim-selector" placeholder="DKIM selector (optional)" autocomplete="off" aria-label="Optional DKIM selector"></div>
+<button class="action-btn" id="domain-suite-btn">🧩 Check Domain Security</button>
+<div id="domain-suite-output" class="output-box" aria-live="polite">Enter a domain and run the combined DNS, DNSSEC, SPF, DMARC, MX and optional DKIM check...</div>
+</div>
+<div class="section">
+<h2>Email security notes</h2>
+<p class="help-text"><strong>SPF</strong> and <strong>DMARC</strong> can be checked directly from DNS. <strong>DKIM</strong> needs the provider's selector, so this tool only checks it when you supply one. For a broader standards report, use Internet.nl's website/email tests.</p>
+</div>
+</section>
+
 <section id="reach-panel" class="tab-panel">
 <div class="section">
 <h2>Network Reachability</h2>
@@ -66,6 +103,20 @@
 </div>
 </section>
 
+<section id="audit-panel" class="tab-panel">
+<div class="section">
+<h2>🛡️ Website Security Audit</h2>
+<p class="help-text">Launch several reputable passive scanners against a public website. Gecko's Gateway does not proxy or modify the target.</p>
+<div class="input-group"><input type="url" id="audit-input" value="https://cobaltmoth0.github.io/GeckosGateway/" placeholder="https://example.com" autocomplete="off" spellcheck="false" aria-label="Website to audit"></div>
+<button class="action-btn" id="audit-btn">🛡️ Build Security Audit Links</button>
+<div id="audit-output" class="output-box" aria-live="polite">Enter a public website and build a set of security checks...</div>
+</div>
+<div class="section">
+<h2>What these checks cover</h2>
+<p class="help-text">TLS/certificate configuration, HTTP security headers, modern Internet standards, and remote malware/blacklist checks. A good score is useful evidence, not proof that an application is vulnerability-free.</p>
+</div>
+</section>
+
 <section id="ip-panel" class="tab-panel">
 <div class="section">
 <h2>Public IP &amp; Geolocation</h2>
@@ -73,6 +124,10 @@
 <button class="action-btn" id="ip-btn">🌐 Check IP Information</button>
 <div id="ip-output" class="output-box" aria-live="polite">Click the button above to view public IP details...</div>
 <div id="ip-map-container" class="map-container"><iframe id="ip-map" title="Approximate IP geolocation map" loading="lazy" referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin"></iframe></div>
+<div id="ip-intel-links" class="tool-grid" hidden>
+<a class="secondary-btn tool-link" id="ip-arin-link" href="https://search.arin.net/rdap/" target="_blank" rel="noopener noreferrer">📋 ARIN RDAP ↗</a>
+<a class="secondary-btn tool-link" id="ip-abuse-link" href="https://www.abuseipdb.com/" target="_blank" rel="noopener noreferrer">🛡️ AbuseIPDB ↗</a>
+</div>
 </div>
 </section>
 
@@ -95,10 +150,29 @@
 </div>
 </section>
 
+<section id="privacy-panel" class="tab-panel">
+<div class="section">
+<h2>🔒 Browser Privacy Check</h2>
+<p class="help-text">Inspect privacy-relevant browser signals locally. Nothing from this panel is uploaded to Gecko's Gateway.</p>
+<button class="action-btn" id="privacy-btn">🔒 Check Browser Privacy Signals</button>
+<div id="privacy-output" class="output-box" aria-live="polite">Click the button to inspect browser privacy signals...</div>
+</div>
+<div class="section">
+<h2>WebRTC exposure</h2>
+<p class="help-text">This local check detects WebRTC support and candidate types without configuring an external STUN server. For a deeper public-IP leak test, use the external BrowserLeaks check.</p>
+<button class="secondary-btn" id="webrtc-btn">📡 Check WebRTC Support</button>
+<div id="webrtc-output" class="output-box" aria-live="polite">WebRTC results will appear here...</div>
+<div class="tool-grid privacy-links">
+<a class="action-btn tool-link" href="https://coveryourtracks.eff.org/" target="_blank" rel="noopener noreferrer">🕵️ EFF Cover Your Tracks ↗</a>
+<a class="action-btn tool-link" href="https://browserleaks.com/webrtc" target="_blank" rel="noopener noreferrer">📡 BrowserLeaks WebRTC ↗</a>
+</div>
+</div>
+</section>
+
 <section id="file-panel" class="tab-panel">
 <div class="section">
 <h2>File Check</h2>
-<p class="help-text">Hashes a file in your browser and links to VirusTotal and Hybrid Analysis reports. The file is never uploaded.</p>
+<p class="help-text">Calculates SHA-256/SHA-512 hashes and basic file metadata locally, plus a simple byte-entropy estimate. The file is never uploaded.</p>
 <input type="file" id="file-input" aria-label="File to check">
 <div id="file-output" class="output-box" aria-live="polite">Choose a file to calculate its SHA-256...</div>
 </div>
@@ -134,6 +208,24 @@
 <a class="secondary-btn tool-link" href="https://emailrep.io/" target="_blank" rel="noopener noreferrer">✉️ EmailRep ↗</a>
 </div>
 <p class="help-text small-note"><strong>Privacy:</strong> Don't submit passwords, private correspondence, confidential school/work data, or other sensitive information to third-party scanners. External services have their own retention and privacy policies.</p>
+</div>
+</section>
+
+<section id="url-panel" class="tab-panel">
+<div class="section">
+<h2>🔗 URL Inspector</h2>
+<p class="help-text">Parse a URL locally and flag structural indicators such as credentials, punycode, IP hosts, unusual ports, redirect parameters and long query strings.</p>
+<div class="input-group"><input type="url" id="url-inspect-input" placeholder="https://example.com/path?next=..." autocomplete="off" spellcheck="false" aria-label="URL to inspect"></div>
+<button class="action-btn" id="url-inspect-btn">🔗 Inspect URL</button>
+<div id="url-inspect-output" class="output-box" aria-live="polite">Enter a URL to inspect it locally...</div>
+</div>
+<div class="section">
+<h2>External reputation checks</h2>
+<p class="help-text"><strong>Privacy warning:</strong> public reputation services may log or publish submitted indicators. Do not submit private tokens, password-reset links, personal data, or confidential URLs.</p>
+<div class="tool-grid">
+<a class="action-btn tool-link" id="url-vt-link" href="https://www.virustotal.com/" target="_blank" rel="noopener noreferrer">🛡️ VirusTotal URL ↗</a>
+<a class="action-btn tool-link" id="urlscan-link" href="https://urlscan.io/" target="_blank" rel="noopener noreferrer">🔬 urlscan.io ↗</a>
+</div>
 </div>
 </section>
 
