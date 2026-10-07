@@ -555,17 +555,58 @@ async function loadNews() {
   btn.disabled = true;
   out.textContent = "Loading headlines...";
   try {
-    const items = await NEWS[src]();
+    const items = (await NEWS[src]()).slice(0, 12);
     out.textContent = "";
-    if (!items.length) { out.textContent = "Nothing found."; return; }
-    for (const it of items) {
-      if (HTTPS.test(it.url || "")) addLink(out, it.url, it.title); else out.append(it.title + "\n");
-      out.append(it.meta + "\n");
-      if (it.discuss) addLink(out, it.discuss, "💬 Discussion ↗");
-      out.append("\n");
+    if (!items.length) {
+      out.textContent = "Nothing found.";
+      return;
     }
-  } catch (e) { out.textContent = "Could not load news: " + e.message; }
-  finally { btn.disabled = false; }
+
+    for (const it of items) {
+      const row = document.createElement("article");
+      row.className = "news-item";
+
+      if (HTTPS.test(it.url || "")) {
+        const title = document.createElement("a");
+        title.href = it.url;
+        title.target = "_blank";
+        title.rel = "noopener noreferrer";
+        title.className = "news-title";
+        title.textContent = it.title;
+        row.append(title);
+      } else {
+        const title = document.createElement("div");
+        title.className = "news-title";
+        title.textContent = it.title;
+        row.append(title);
+      }
+
+      const meta = document.createElement("div");
+      meta.className = "news-meta";
+      meta.textContent = it.meta || "";
+      row.append(meta);
+
+      if (it.discuss) {
+        const discuss = document.createElement("a");
+        discuss.href = it.discuss;
+        discuss.target = "_blank";
+        discuss.rel = "noopener noreferrer";
+        discuss.className = "news-discuss";
+        discuss.textContent = "Discussion ↗";
+        row.append(discuss);
+      }
+
+      out.append(row);
+    }
+  } catch (e) {
+    out.innerHTML = "";
+    const err = document.createElement("div");
+    err.className = "news-error";
+    err.textContent = "Could not load news: " + e.message;
+    out.append(err);
+  } finally {
+    btn.disabled = false;
+  }
 }
 
 const FILE_LIMIT = 256 * 1024 * 1024;
