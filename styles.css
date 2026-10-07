@@ -122,3 +122,15 @@ body{padding:10px}header{padding:22px 16px 18px}.tab-content{padding:14px}.secti
 .reach-failure {
   color: #ef4444;
 }
+
+
+.tool-link{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex:1 1 180px;
+  min-width:0;
+  text-decoration:none;
+  text-align:center;
+}
+.small-note{font-size:.82rem;margin-top:10px}
