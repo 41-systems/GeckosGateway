@@ -25,8 +25,8 @@ function fill(el, rows) {
       const s = document.createElement("span");
       s.className = "highlight";
       s.textContent = r[0] + " ";
-      el.append(s, String(r[1] ?? "N/A") + "\n");
-    } else el.append(r[0] + "\n");
+      el.append(s, document.createTextNode(String(r[1] ?? "N/A") + "\n"));
+    } else el.append(document.createTextNode(String(r[0] ?? "") + "\n"));
   }
 }
 
