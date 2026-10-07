@@ -442,6 +442,11 @@ async function loadNews() {
 
 const FILE_LIMIT = 256 * 1024 * 1024;
 
+// EmailRep is intentionally accessed through a user-owned proxy.
+// Browser JavaScript cannot safely call EmailRep directly because its API does not
+// provide the CORS behavior needed by a static GitHub Pages site.
+const EMAILREP_PROXY_URL = window.GECKOS_EMAILREP_ENDPOINT || "";
+
 async function checkPhishingEmail() {
   const out = $("phish-output"), btn = $("phish-btn");
   const email = $("phish-input").value.trim();
@@ -450,12 +455,20 @@ async function checkPhishingEmail() {
     out.textContent = "Enter a valid email address.";
     return;
   }
+  if (!EMAILREP_PROXY_URL) {
+    out.className = "output-box reach-failure";
+    out.textContent = "EmailRep is not configured yet. Deploy the included EmailRep proxy and set GECKOS_EMAILREP_ENDPOINT to its HTTPS URL.";
+    return;
+  }
 
   btn.disabled = true;
   out.className = "output-box";
   out.textContent = "Checking email reputation...";
   try {
-    const data = await getJSON("https://emailrep.io/" + encodeURIComponent(email));
+    const data = await getJSON(EMAILREP_PROXY_URL + "?email=" + encodeURIComponent(email), {
+      cache: "no-store",
+      headers: { Accept: "application/json" }
+    });
 
     const d = data.details || {};
     let risk = 0;
@@ -490,7 +503,7 @@ async function checkPhishingEmail() {
       ["Disposable:", d.disposable ? "Yes" : "No"],
       ["Domain reputation:", d.domain_reputation || "Unknown"],
       [""],
-      ["Important:", "This is a reputation-based risk estimate, not proof that an email is phishing or safe. A legitimate account can be compromised or spoofed, and a new malicious address may have little reputation history."]
+      ["Privacy:", "The email is sent to your configured EmailRep proxy over HTTPS. The included proxy does not log or store lookup addresses."]
     ]);
   } catch (e) {
     out.className = "output-box reach-failure";
