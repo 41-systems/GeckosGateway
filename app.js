@@ -123,11 +123,16 @@ async function checkReachability() {
     target = new URL(/^[a-z][a-z0-9+.-]*:\/\//i.test(raw) ? raw : "https://" + raw);
     if (!["http:", "https:"].includes(target.protocol)) throw new Error("Only HTTP and HTTPS URLs are supported.");
     if (target.username || target.password) throw new Error("URLs containing embedded credentials are not allowed.");
-  } catch (e) { out.textContent = e.message; return; }
+  } catch (e) {
+    out.classList.remove("reach-success", "reach-failure");
+    out.textContent = e.message;
+    return;
+  }
 
   btn.disabled = true;
-  const started = performance.now();
+  out.classList.remove("reach-success", "reach-failure");
   out.textContent = "Testing from this browser...\n\nResolving the host and attempting a network connection.";
+  const started = performance.now();
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 8000);
 
@@ -137,8 +142,9 @@ async function checkReachability() {
       referrerPolicy: "no-referrer", signal: controller.signal
     });
     const elapsed = Math.round(performance.now() - started);
+    out.classList.add("reach-success");
     fill(out, [
-      ["Result:", "Reachable from this browser/network"],
+      ["Result:", "✓ Reachable from this browser/network"],
       ["URL:", target.href], ["Host:", target.hostname], ["Time:", elapsed + " ms"], [""],
       ["What this means:", "The browser completed a network request to the host. The response is intentionally unreadable here because this is a cross-origin browser test."],
       [""],
@@ -151,17 +157,20 @@ async function checkReachability() {
   } catch (e) {
     const elapsed = Math.round(performance.now() - started);
     const reason = e.name === "AbortError" ? "Timed out" : "Network request failed";
+    out.classList.add("reach-failure");
     fill(out, [
-      ["Result:", "Not reachable from this browser/network"],
+      ["Result:", "✗ Not reachable from this browser/network"],
       ["URL:", target.href], ["Host:", target.hostname], ["Time:", elapsed + " ms"], [""],
       ["Browser result:", reason], [""],
       ["Possible causes:", "DNS filtering/blocking, firewall or content filtering, TLS failure, captive portal, offline connectivity, or a browser policy."],
       [""],
       ["Important:", "Browser JavaScript cannot directly tell us which DNS server was used or reliably distinguish DNS blocking from every other network failure."]
     ]);
-  } finally { clearTimeout(timer); btn.disabled = false; }
-}
-async function fetchIPDetails() {
+  } finally {
+    clearTimeout(timer);
+    btn.disabled = false;
+  }
+}async function fetchIPDetails() {
   const out = $("ip-output"), box = $("ip-map-container"), map = $("ip-map");
   out.textContent = "Fetching IP information and geolocation data...";
   box.classList.remove("visible");
