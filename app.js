@@ -282,47 +282,70 @@ async function checkReachability() {
 
 async function fetchIPDetailsFor(ip, manualLookup) {
   const out = $("ip-output"), box = $("ip-map-container"), map = $("ip-map"), intel = $("ip-intel-links");
-  out.textContent = "Fetching IP information and geolocation data...";
+  out.textContent = "Looking up IP information...";
   box.classList.remove("visible");
   intel.hidden = true;
-  try {
-    const endpoint = ip
-      ? "https://ipapi.co/" + encodeURIComponent(ip) + "/json/"
-      : "https://ipapi.co/json/";
-    const d = await getJSON(endpoint, { cache: "no-store" });
-    if (d.error) throw new Error(d.reason || "IP lookup failed");
 
-    const lat = Number(d.latitude), lon = Number(d.longitude);
+  try {
+    let target = ip;
+    if (!target) {
+      const own = await getJSON("https://api64.ipify.org?format=json", { cache: "no-store" });
+      target = own.ip;
+    }
+    if (!validIPAddress(target)) throw new Error("The service returned an invalid IP address.");
+
+    let rdap = null;
+    try {
+      rdap = await getJSON("https://rdap.org/ip/" + encodeURIComponent(target), { headers: { Accept: "application/rdap+json" }, cache: "no-store" }, 12000);
+    } catch (_) {}
+
+    // Geolocation is best-effort. A CORS/rate-limit failure must not break the IP tool.
+    let geo = null;
+    try {
+      geo = await getJSON("https://ipapi.co/" + encodeURIComponent(target) + "/json/", { cache: "no-store" }, 8000);
+      if (geo.error) geo = null;
+    } catch (_) {}
+
+    const org = geo?.org || rdap?.name || "N/A";
+    const asn = geo?.asn || "N/A";
+    const city = geo?.city || "N/A";
+    const region = geo?.region || "N/A";
+    const country = geo?.country_name || "N/A";
+    const cc = geo?.country_code || "N/A";
+    const timezone = geo?.timezone || "N/A";
+    const hostname = geo?.hostname || "N/A";
+    const lat = Number(geo?.latitude), lon = Number(geo?.longitude);
     const ok = Number.isFinite(lat) && Number.isFinite(lon);
 
     fill(out, [
-      [manualLookup ? "IP Address:" : "Your Public WAN IP:", d.ip],
-      ["Network / ASN:", d.asn ? `${d.asn} - ${d.org || "N/A"}` : (d.org || "N/A")],
-      ["ISP / Organization:", d.org || "N/A"],
-      ["Reverse DNS / Domain:", d.hostname || "N/A"],
+      [manualLookup ? "IP Address:" : "Your Public WAN IP:", target],
+      ["Network / ASN:", asn + (org !== "N/A" ? " - " + org : "")],
+      ["Organization:", org],
+      ["Reverse DNS / Hostname:", hostname],
       [""],
       ["--- GEO LOCATION DETAILS ---"],
-      ["City / Region:", `${d.city || "N/A"}, ${d.region || "N/A"} (${d.postal || "N/A"})`],
-      ["Country:", `${d.country_name || "N/A"} (${d.country_code || "N/A"})`],
-      ["Timezone:", d.timezone || "N/A"],
-      ["Coordinates:", ok ? `${lat}, ${lon}` : "N/A"],
-      ["Currency:", d.currency_name ? `${d.currency_name} (${d.currency || "N/A"})` : "N/A"],
-      [""]
+      ["City / Region:", city + ", " + region],
+      ["Country:", country + " (" + cc + ")"],
+      ["Timezone:", timezone],
+      ["Coordinates:", ok ? lat + ", " + lon : "Unavailable"],
+      ["RDAP Network:", rdap?.handle || rdap?.name || "Available via RDAP"],
+      [""],
+      ["Note:", geo ? "Geolocation data loaded." : "Geolocation service was unavailable; core IP/RDAP lookup still completed."]
     ]);
 
     if (ok) {
       const o = 0.04;
       map.src = "https://www.openstreetmap.org/export/embed.html?bbox=" +
-        encodeURIComponent(`${lon - o},${lat - o},${lon + o},${lat + o}`) +
-        "&layer=mapnik&marker=" + encodeURIComponent(`${lat},${lon}`);
+        encodeURIComponent((lon-o)+","+(lat-o)+","+(lon+o)+","+(lat+o)) +
+        "&layer=mapnik&marker=" + encodeURIComponent(lat+","+lon);
       box.classList.add("visible");
-      addLink(out, `https://www.google.com/maps?q=${lat},${lon}`, "View in Google Maps ↗");
+      addLink(out, "https://www.google.com/maps?q="+lat+","+lon, "View in Google Maps ↗");
     }
 
-    if (manualLookup && d.ip) {
+    if (manualLookup) {
       intel.hidden = false;
-      $("ip-arin-link").href = "https://search.arin.net/rdap/?query=" + encodeURIComponent(d.ip);
-      $("ip-abuse-link").href = "https://www.abuseipdb.com/check/" + encodeURIComponent(d.ip);
+      $("ip-arin-link").href = "https://search.arin.net/rdap/?query=" + encodeURIComponent(target);
+      $("ip-abuse-link").href = "https://www.abuseipdb.com/check/" + encodeURIComponent(target);
     }
 
     out.append("\n");
@@ -767,6 +790,10 @@ $("domain-suite-btn").addEventListener("click",runDomainSuite);
 $("privacy-btn").addEventListener("click",runBrowserPrivacy);
 $("webrtc-btn").addEventListener("click",runWebRTCCheck);
 $("url-inspect-btn").addEventListener("click",inspectURL);
+$("phish-analyze-btn").addEventListener("click", analyzePhishingURL);
+$("phish-copy-btn").addEventListener("click", copyPhishingURL);
+$("phish-input").addEventListener("keydown", e => { if (e.key === "Enter") analyzePhishingURL(); });
+
 $("audit-input").addEventListener("keydown",e=>{if(e.key==="Enter")runWebsiteAudit();});
 $("domain-suite-input").addEventListener("keydown",e=>{if(e.key==="Enter")runDomainSuite();});
 $("url-inspect-input").addEventListener("keydown",e=>{if(e.key==="Enter")inspectURL();});
