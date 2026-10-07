@@ -7,7 +7,7 @@
 <meta name="referrer" content="no-referrer">
 <meta name="description" content="Gecko's Gateway: DNS, network reachability, IP, RDAP, fingerprint and password tools.">
 <title>Gecko's Gateway</title>
-<link rel="icon" href="./favicon.svg?v=4" type="image/svg+xml">
+<link rel="icon" href="./favicon.svg?v=5" type="image/svg+xml">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -25,6 +25,8 @@
 <button class="tab-btn" data-tab="pwd-panel">🔑 Passwords</button>
 <button class="tab-btn" data-tab="file-panel">📁 File Check</button>
 <button class="tab-btn" data-tab="phish-panel">🎣 Phishing Tools</button>
+<button class="tab-btn" data-tab="network-panel">🛡️ Network Safety</button>
+<button class="tab-btn" data-tab="status-panel">📡 Service Status</button>
 <button class="tab-btn" data-tab="news-panel">📰 News</button>
 </nav>
 
@@ -132,6 +134,39 @@
 <a class="secondary-btn tool-link" href="https://emailrep.io/" target="_blank" rel="noopener noreferrer">✉️ EmailRep ↗</a>
 </div>
 <p class="help-text small-note"><strong>Privacy:</strong> Don't submit passwords, private correspondence, confidential school/work data, or other sensitive information to third-party scanners. External services have their own retention and privacy policies.</p>
+</div>
+</section>
+
+<section id="network-panel" class="tab-panel">
+<div class="section">
+<h2>Network Safety &amp; Port Testing</h2>
+<p class="help-text">Check how your own internet connection or authorized systems appear from the public internet. These tests are performed by the external services below; Gecko's Gateway does not run a port scan itself.</p>
+<div class="tool-grid">
+<a class="action-btn tool-link" href="https://www.grc.com/shieldsup" target="_blank" rel="noopener noreferrer">🛡️ GRC ShieldsUP! ↗</a>
+<a class="action-btn tool-link" href="https://www.yougetsignal.com/tools/open-ports/" target="_blank" rel="noopener noreferrer">🔌 YouGetSignal Port Checker ↗</a>
+<a class="action-btn tool-link" href="https://portchecker.co/" target="_blank" rel="noopener noreferrer">🔎 Port Checker ↗</a>
+</div>
+</div>
+<div class="section">
+<h2>What the results mean</h2>
+<p class="help-text"><strong>Open</strong> means a service accepted an inbound connection. <strong>Closed</strong> means the host responded but no service accepted the connection. <strong>Stealth/filtered</strong> generally means probes were dropped or no response was received.</p>
+<p class="help-text small-note"><strong>Use only on systems you own or have permission to test.</strong> For your home connection, these tools are useful for checking router/firewall exposure and unexpected internet-facing services.</p>
+</div>
+</section>
+
+<section id="status-panel" class="tab-panel">
+<div class="section">
+<h2>Service Status &amp; Outage Check</h2>
+<p class="help-text">Use Downdetector's live user-report data to see whether a website, app, ISP, or online service may be experiencing a broader outage.</p>
+<div class="status-card">
+<div class="status-card-icon">📡</div>
+<div>
+<strong>Downdetector</strong>
+<p class="help-text">Search for the service you're having trouble with, then compare the current report volume with its normal baseline.</p>
+</div>
+</div>
+<a class="action-btn external-wide-link" href="https://downdetector.com/" target="_blank" rel="noopener noreferrer">📡 Open Downdetector ↗</a>
+<p class="help-text small-note">Tip: If a service looks normal there but you still cannot connect, the problem may be local to your device, DNS, ISP, firewall, or network path. Gecko's Gateway's Reachability tab can help with the next step.</p>
 </div>
 </section>
 
