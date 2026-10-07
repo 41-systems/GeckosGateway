@@ -301,10 +301,35 @@ async function fetchIPDetailsFor(ip, manualLookup) {
 
     // Geolocation is best-effort. A CORS/rate-limit failure must not break the IP tool.
     let geo = null;
-    try {
-      geo = await getJSON("https://ipapi.co/" + encodeURIComponent(target) + "/json/", { cache: "no-store" }, 8000);
-      if (geo.error) geo = null;
-    } catch (_) {}
+    const geoSources = [
+      async () => {
+        const data = await getJSON("https://ipapi.co/" + encodeURIComponent(target) + "/json/", { cache: "no-store" }, 8000);
+        return data?.error ? null : data;
+      },
+      async () => {
+        const data = await getJSON("https://ipwho.is/" + encodeURIComponent(target), { cache: "no-store" }, 8000);
+        if (!data?.success) return null;
+        return {
+          ip: data.ip,
+          city: data.city,
+          region: data.region,
+          country_name: data.country,
+          country_code: data.country_code,
+          latitude: data.latitude,
+          longitude: data.longitude,
+          timezone: data.timezone?.id || data.timezone,
+          asn: data.connection?.asn ? "AS" + data.connection.asn : "",
+          org: data.connection?.org || data.connection?.isp || "",
+          hostname: data.hostname || ""
+        };
+      }
+    ];
+    for (const source of geoSources) {
+      try {
+        geo = await source();
+        if (geo) break;
+      } catch (_) {}
+    }
 
     const org = geo?.org || rdap?.name || "N/A";
     const asn = geo?.asn || "N/A";
