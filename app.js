@@ -435,7 +435,8 @@ async function checkFile() {
     const digest = await crypto.subtle.digest("SHA-256", await f.arrayBuffer());
     const hash = [...new Uint8Array(digest)].map(b => b.toString(16).padStart(2, "0")).join("");
     fill(out, [["File:", f.name], ["Size:", f.size.toLocaleString() + " bytes"], ["SHA-256:", hash], [""]]);
-    addLink(out, `https://www.virustotal.com/gui/file/${hash}`, "Open VirusTotal report ↗");
+    addLink(out, `https://www.virustotal.com/gui/file/${hash}`, "🛡️ Open VirusTotal report ↗");
+    addLink(out, `https://www.hybrid-analysis.com/search?query=${hash}`, "🔬 Open Hybrid Analysis report ↗");
   } catch (e) { out.textContent = "Could not read file: " + e.message; }
 }
 
