@@ -1,21 +1,11 @@
 # Security Policy
 
-## Supported Versions
+## Supported versions
 
-Use this section to tell people about which versions of your project are
-currently being supported with security updates.
+Gecko's Gateway is a static website. Security fixes are made on the default branch and published with the site. There are no versioned releases with separate maintenance windows.
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 5.1.x   | :white_check_mark: |
-| 5.0.x   | :x:                |
-| 4.0.x   | :white_check_mark: |
-| < 4.0   | :x:                |
+## Reporting a vulnerability
 
-## Reporting a Vulnerability
+Please report vulnerabilities privately through the repository's **Security** tab using **Report a vulnerability**, when private vulnerability reporting is available. If that option is unavailable, contact the maintainer through their GitHub profile to request a private reporting channel. Please do not open a public issue for an unpatched vulnerability.
 
-Use this section to tell people how to report a vulnerability.
-
-Tell them where to go, how often they can expect to get an update on a
-reported vulnerability, what to expect if the vulnerability is accepted or
-declined, etc.
+We will acknowledge a report within seven days and provide updates as the issue is investigated. We will coordinate a fix and disclosure with the reporter.
