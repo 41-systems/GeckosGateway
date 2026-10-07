@@ -501,32 +501,51 @@ const NEWS = {
     const j = await getJSON("https://hn.algolia.com/api/v1/search?tags=story&query=security&hitsPerPage=20&numericFilters=" + encodeURIComponent("created_at_i>" + since));
     return (j.hits || []).filter(h => h.title).map(h => hnItem(h.objectID, h.title, h.url, h.points, h.num_comments, h.created_at_i));
   },
+  "ghsa": async () => {
+    const j = await getJSON("https://api.github.com/advisories?type=reviewed&per_page=20&sort=published&direction=desc", { headers: { Accept: "application/vnd.github+json" } });
+    return j.map(a => ({ title: `[${String(a.severity || "unknown").toUpperCase()}] ${a.summary}`, url: a.html_url, meta: `${a.cve_id || a.ghsa_id} · ${ago(Date.parse(a.published_at) / 1000)}` }));
+  },
+  "malwaretips": async () => rssItems("https://malwaretips.com/blogs/feed", "MalwareTips"),
   "bleeping": async () => rssItems("https://www.bleepingcomputer.com/feed/", "BleepingComputer"),
   "securityweek": async () => rssItems("https://feeds.feedburner.com/securityweek", "SecurityWeek"),
   "therecord": async () => rssItems("https://therecord.media/feed", "The Record"),
   "cisa": async () => rssItems("https://www.cisa.gov/cybersecurity-advisories/all.xml", "CISA"),
-  "malwaretips": async () => [
-    { title: "Google halts open-source bug reports as automated submissions surge", url: "https://malwaretips.com/threads/google-halts-open-source-bug-reports-as-automated-submissions-surge.143672/", meta: "MalwareTips · Security News · today" },
-    { title: "Linux Backdoor Abuses STUN Protocol, Exploits Dozens of Flaws", url: "https://malwaretips.com/threads/linux-backdoor-abuses-stun-protocol-exploits-dozens-of-flaws.143671/", meta: "MalwareTips · Malware News · today" },
-    { title: "Antino backdoor hides espionage traffic inside Microsoft 365", url: "https://malwaretips.com/threads/antino-backdoor-hides-espionage-traffic-inside-microsoft-365.143653/", meta: "MalwareTips · Security News · yesterday" },
-    { title: "Lunex malware uses fake CAPTCHA checks to steal browser passwords and wallets", url: "https://malwaretips.com/threads/lunex-malware-uses-fake-captcha-checks-to-steal-browser-passwords-and-wallets.143512/", meta: "MalwareTips · Malware News · recent" },
-    { title: "Open the live MalwareTips Newswire", url: "https://malwaretips.com/newswire/", meta: "MalwareTips · live newswire" }
-  ],
-  "ghsa": async () => {
-    const j = await getJSON("https://api.github.com/advisories?type=reviewed&per_page=20&sort=published&direction=desc", { headers: { Accept: "application/vnd.github+json" } });
-    return j.map(a => ({ title: `[${String(a.severity || "unknown").toUpperCase()}] ${a.summary}`, url: a.html_url, meta: `${a.cve_id || a.ghsa_id} · ${ago(Date.parse(a.published_at) / 1000)}` }));
-  }
+  "krebs": async () => rssItems("https://krebsonsecurity.com/feed/", "Krebs on Security"),
+  "darkreading": async () => rssItems("https://www.darkreading.com/rss.xml", "Dark Reading"),
+  "theregister": async () => rssItems("https://www.theregister.com/security/headlines.atom", "The Register Security"),
+  "infosecurity": async () => rssItems("https://www.infosecurity-magazine.com/rss/news/", "Infosecurity Magazine"),
+  "malwarebytes": async () => rssItems("https://www.malwarebytes.com/blog/feed/index.xml", "Malwarebytes Labs"),
+  "sophos": async () => rssItems("https://news.sophos.com/en-us/category/security-operations/feed/", "Sophos"),
+  "securelist": async () => rssItems("https://securelist.com/feed/", "Securelist")
 };
 
 async function rssItems(url, source) {
-  const xml = await (await fetch(url, { credentials: "omit", referrerPolicy: "no-referrer" })).text();
-  const doc = new DOMParser().parseFromString(xml, "application/xml");
-  if (doc.querySelector("parsererror")) throw new Error(source + " feed could not be parsed.");
-  return [...doc.querySelectorAll("item")].slice(0, 20).map(item => ({
-    title: item.querySelector("title")?.textContent?.trim() || "Untitled",
-    url: item.querySelector("link")?.textContent?.trim() || "",
-    meta: source + " · " + (item.querySelector("pubDate")?.textContent?.trim() || "recent")
-  })).filter(i => HTTPS.test(i.url));
+  const api = "https://api.rss2json.com/v1/api.json?rss_url=" + encodeURIComponent(url);
+  try {
+    const data = await getJSON(api, { cache: "no-store" }, 12000);
+    if (data.status && data.status !== "ok") throw new Error(data.message || "Feed conversion failed.");
+    const items = Array.isArray(data.items) ? data.items : [];
+    const parsed = items.slice(0, 15).map(item => ({
+      title: String(item.title || "Untitled").trim(),
+      url: String(item.link || item.guid || "").trim(),
+      meta: source + " · " + (item.pubDate ? new Date(item.pubDate).toLocaleString() : "recent")
+    })).filter(i => HTTPS.test(i.url));
+    if (parsed.length) return parsed;
+    throw new Error("No readable headlines were returned.");
+  } catch (firstError) {
+    const response = await fetch("https://proxy.cors.dev/" + url, { credentials: "omit", referrerPolicy: "no-referrer", cache: "no-store" });
+    if (!response.ok) throw firstError;
+    const xml = await response.text();
+    const doc = new DOMParser().parseFromString(xml, "application/xml");
+    if (doc.querySelector("parsererror")) throw firstError;
+    return [...doc.querySelectorAll("item, entry")].slice(0, 15).map(item => {
+      const title = item.querySelector("title")?.textContent?.trim() || "Untitled";
+      const linkEl = item.querySelector("link[rel='alternate']") || item.querySelector("link");
+      const link = linkEl?.getAttribute("href") || linkEl?.textContent?.trim() || "";
+      const date = item.querySelector("pubDate")?.textContent?.trim() || item.querySelector("published")?.textContent?.trim() || item.querySelector("updated")?.textContent?.trim() || "recent";
+      return { title, url: link, meta: source + " · " + date };
+    }).filter(i => HTTPS.test(i.url));
+  }
 }
 
 async function loadNews() {
@@ -582,8 +601,5 @@ $("whois-input").addEventListener("keydown", e => { if (e.key === "Enter") fetch
 $("news-btn").addEventListener("click", loadNews);
 $("news-source").addEventListener("change", loadNews);
 $("file-input").addEventListener("change", checkFile);
-$("phish-analyze-btn").addEventListener("click", analyzePhishingURL);
-$("phish-copy-btn").addEventListener("click", copyPhishingURL);
-$("phish-input").addEventListener("keydown", e => { if (e.key === "Enter") analyzePhishingURL(); });
 setAccent(document.querySelector(".tab-btn.active"));
 syncPwdUI();
