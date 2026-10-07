@@ -442,32 +442,6 @@ async function loadNews() {
 
 const FILE_LIMIT = 256 * 1024 * 1024;
 
-// EmailRep is intentionally accessed through a user-owned proxy.
-// Browser JavaScript cannot safely call EmailRep directly because its API does not
-// provide the CORS behavior needed by a static GitHub Pages site.
-const CHECKPHISH_PROXY_URL = "https://geckos-phishing.cobaltmoth0.workers.dev";
-async function checkPhishingURL() {
-  const out = $("phish-output"), btn = $("phish-btn");
-  let target;
-  try {
-    const raw = $("phish-input").value.trim();
-    if (!raw) throw new Error("Enter a website URL.");
-    target = new URL(/^[a-z][a-z0-9+.-]:\/\//i.test(raw) ? raw : "https://" + raw);
-    if (!["http:", "https:"].includes(target.protocol)) throw new Error("Only HTTP and HTTPS URLs are supported.");
-    if (target.username || target.password) throw new Error("URLs containing embedded credentials are not allowed.");
-  } catch (e) { out.textContent = e.message; return; }
-  btn.disabled = true;
-  out.textContent = "Submitting URL to CheckPhish...\n\nThis may take a few seconds.";
-  try {
-    const j = await getJSON(CHECKPHISH_PROXY_URL + "?url=" + encodeURIComponent(target.href), {}, 45000);
-    if (j.status === 202 || j.status === "PROCESSING") {
-      fill(out, [["Result:", "Scan is still processing."], ["URL:", target.href], ["Job ID:", j.jobID || "N/A"], [""], ["Note:", "Run the check again in a moment to retrieve the completed result."]]);
-      return;
-    }
-    fill(out, [["URL:", target.href], ["CheckPhish result:", j.disposition || j.verdict || j.status || "No verdict returned"], ["Job ID:", j.jobID || "N/A"], [""], ["Important:", "This is a reputation/analysis result, not proof that a site is safe or malicious."]]);
-  } catch (e) { out.textContent = "CheckPhish error: " + e.message; }
-  finally { btn.disabled = false; }
-}
 async function checkFile() {
   const out = $("file-output"), f = $("file-input").files[0];
   if (!f) return;
