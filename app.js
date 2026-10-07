@@ -114,6 +114,53 @@ async function runLeakTest() {
   } finally { btn.disabled = false; }
 }
 
+async function checkReachability() {
+  const out = $("reach-output"), btn = $("reach-btn");
+  let target;
+  try {
+    const raw = $("reach-input").value.trim();
+    if (!raw) throw new Error("Enter a website or URL.");
+    target = new URL(/^[a-z][a-z0-9+.-]*:\/\//i.test(raw) ? raw : "https://" + raw);
+    if (!["http:", "https:"].includes(target.protocol)) throw new Error("Only HTTP and HTTPS URLs are supported.");
+    if (target.username || target.password) throw new Error("URLs containing embedded credentials are not allowed.");
+  } catch (e) { out.textContent = e.message; return; }
+
+  btn.disabled = true;
+  const started = performance.now();
+  out.textContent = "Testing from this browser...\n\nResolving the host and attempting a network connection.";
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 8000);
+
+  try {
+    const response = await fetch(target.href, {
+      method: "GET", mode: "no-cors", cache: "no-store", credentials: "omit",
+      referrerPolicy: "no-referrer", signal: controller.signal
+    });
+    const elapsed = Math.round(performance.now() - started);
+    fill(out, [
+      ["Result:", "Reachable from this browser/network"],
+      ["URL:", target.href], ["Host:", target.hostname], ["Time:", elapsed + " ms"], [""],
+      ["What this means:", "The browser completed a network request to the host. The response is intentionally unreadable here because this is a cross-origin browser test."],
+      [""],
+      ["Note:", "A successful test proves the host was reachable, but cannot prove that every page/resource is allowed. A DNS filter that returns a block page can also appear reachable."]
+    ]);
+    if (response.type !== "opaque") {
+      out.append("\n");
+      fill(out, [["Response:", response.status + (response.statusText ? " " + response.statusText : "")]]);
+    }
+  } catch (e) {
+    const elapsed = Math.round(performance.now() - started);
+    const reason = e.name === "AbortError" ? "Timed out" : "Network request failed";
+    fill(out, [
+      ["Result:", "Not reachable from this browser/network"],
+      ["URL:", target.href], ["Host:", target.hostname], ["Time:", elapsed + " ms"], [""],
+      ["Browser result:", reason], [""],
+      ["Possible causes:", "DNS filtering/blocking, firewall or content filtering, TLS failure, captive portal, offline connectivity, or a browser policy."],
+      [""],
+      ["Important:", "Browser JavaScript cannot directly tell us which DNS server was used or reliably distinguish DNS blocking from every other network failure."]
+    ]);
+  } finally { clearTimeout(timer); btn.disabled = false; }
+}
 async function fetchIPDetails() {
   const out = $("ip-output"), box = $("ip-map-container"), map = $("ip-map");
   out.textContent = "Fetching IP information and geolocation data...";
@@ -385,6 +432,7 @@ async function checkFile() {
 
 document.querySelectorAll(".tab-btn").forEach(b => b.addEventListener("click", () => switchTab(b)));
 $("dns-btn").addEventListener("click", lookupDNS);
+$("reach-btn").addEventListener("click", checkReachability);
 $("leak-btn").addEventListener("click", runLeakTest);
 $("ip-btn").addEventListener("click", fetchIPDetails);
 $("whois-btn").addEventListener("click", fetchWHOIS);
@@ -393,6 +441,7 @@ $("gen-btn").addEventListener("click", generatePassword);
 $("copy-btn").addEventListener("click", copyPassword);
 $("pwd-panel").addEventListener("input", generatePassword);
 $("domain-input").addEventListener("keydown", e => { if (e.key === "Enter") lookupDNS(); });
+$("reach-input").addEventListener("keydown", e => { if (e.key === "Enter") checkReachability(); });
 $("whois-input").addEventListener("keydown", e => { if (e.key === "Enter") fetchWHOIS(); });
 $("news-btn").addEventListener("click", loadNews);
 $("news-source").addEventListener("change", loadNews);
