@@ -445,74 +445,29 @@ const FILE_LIMIT = 256 * 1024 * 1024;
 // EmailRep is intentionally accessed through a user-owned proxy.
 // Browser JavaScript cannot safely call EmailRep directly because its API does not
 // provide the CORS behavior needed by a static GitHub Pages site.
-const EMAILREP_PROXY_URL = window.GECKOS_EMAILREP_ENDPOINT || "";
-
-async function checkPhishingEmail() {
+const CHECKPHISH_PROXY_URL = "https://geckos-phishing.cobaltmoth0.workers.dev";
+async function checkPhishingURL() {
   const out = $("phish-output"), btn = $("phish-btn");
-  const email = $("phish-input").value.trim();
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    out.className = "output-box";
-    out.textContent = "Enter a valid email address.";
-    return;
-  }
-  if (!EMAILREP_PROXY_URL) {
-    out.className = "output-box reach-failure";
-    out.textContent = "EmailRep is not configured yet. Deploy the included EmailRep proxy and set GECKOS_EMAILREP_ENDPOINT to its HTTPS URL.";
-    return;
-  }
-
-  btn.disabled = true;
-  out.className = "output-box";
-  out.textContent = "Checking email reputation...";
+  let target;
   try {
-    const data = await getJSON(EMAILREP_PROXY_URL + "?email=" + encodeURIComponent(email), {
-      cache: "no-store",
-      headers: { Accept: "application/json" }
-    });
-
-    const d = data.details || {};
-    let risk = 0;
-    if (data.suspicious) risk += 35;
-    if (d.blacklisted) risk += 30;
-    if (d.malicious_activity) risk += 30;
-    if (d.malicious_activity_recent) risk += 15;
-    if (d.data_breach) risk += 10;
-    if (d.credentials_leaked) risk += 15;
-    if (d.spam) risk += 15;
-    if (d.disposable) risk += 10;
-    if (d.suspicious_tld) risk += 10;
-    if (d.spoofable) risk += 10;
-    if (d.domain_reputation === "low") risk += 15;
-    if (d.domain_reputation === "none") risk += 8;
-    risk = Math.min(100, risk);
-
-    const level = risk >= 70 ? "High Risk" : risk >= 40 ? "Elevated Risk" : risk >= 15 ? "Low Risk" : "Minimal Known Risk";
-    out.classList.add(risk >= 40 ? "reach-failure" : "reach-success");
-
-    fill(out, [
-      ["Risk estimate:", level + " (" + risk + "/100)"],
-      ["Reputation:", data.reputation || "Unknown"],
-      ["Suspicious:", data.suspicious ? "Yes" : "No"],
-      ["References:", data.references ?? "N/A"],
-      [""],
-      ["Phishing-related signals:", d.malicious_activity ? "Detected" : "None reported"],
-      ["Blacklist:", d.blacklisted ? "Listed" : "Not listed"],
-      ["Data breach:", d.data_breach ? "Found" : "Not reported"],
-      ["Credentials leaked:", d.credentials_leaked ? "Reported" : "Not reported"],
-      ["Spam:", d.spam ? "Reported" : "Not reported"],
-      ["Disposable:", d.disposable ? "Yes" : "No"],
-      ["Domain reputation:", d.domain_reputation || "Unknown"],
-      [""],
-      ["Privacy:", "The email is sent to your configured EmailRep proxy over HTTPS. The included proxy does not log or store lookup addresses."]
-    ]);
-  } catch (e) {
-    out.className = "output-box reach-failure";
-    out.textContent = "Could not check this address: " + e.message;
-  } finally {
-    btn.disabled = false;
-  }
+    const raw = $("phish-input").value.trim();
+    if (!raw) throw new Error("Enter a website URL.");
+    target = new URL(/^[a-z][a-z0-9+.-]:\/\//i.test(raw) ? raw : "https://" + raw);
+    if (!["http:", "https:"].includes(target.protocol)) throw new Error("Only HTTP and HTTPS URLs are supported.");
+    if (target.username || target.password) throw new Error("URLs containing embedded credentials are not allowed.");
+  } catch (e) { out.textContent = e.message; return; }
+  btn.disabled = true;
+  out.textContent = "Submitting URL to CheckPhish...\n\nThis may take a few seconds.";
+  try {
+    const j = await getJSON(CHECKPHISH_PROXY_URL + "?url=" + encodeURIComponent(target.href), {}, 45000);
+    if (j.status === 202 || j.status === "PROCESSING") {
+      fill(out, [["Result:", "Scan is still processing."], ["URL:", target.href], ["Job ID:", j.jobID || "N/A"], [""], ["Note:", "Run the check again in a moment to retrieve the completed result."]]);
+      return;
+    }
+    fill(out, [["URL:", target.href], ["CheckPhish result:", j.disposition || j.verdict || j.status || "No verdict returned"], ["Job ID:", j.jobID || "N/A"], [""], ["Important:", "This is a reputation/analysis result, not proof that a site is safe or malicious."]]);
+  } catch (e) { out.textContent = "CheckPhish error: " + e.message; }
+  finally { btn.disabled = false; }
 }
-
 async function checkFile() {
   const out = $("file-output"), f = $("file-input").files[0];
   if (!f) return;
