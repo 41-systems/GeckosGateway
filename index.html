@@ -24,6 +24,7 @@
 <button class="tab-btn" data-tab="fp-panel">🔍 Fingerprint</button>
 <button class="tab-btn" data-tab="pwd-panel">🔑 Passwords</button>
 <button class="tab-btn" data-tab="file-panel">📁 File Check</button>
+<button class="tab-btn" data-tab="phish-panel">🎣 Phishing Tools</button>
 <button class="tab-btn" data-tab="news-panel">📰 News</button>
 </nav>
 
@@ -36,7 +37,7 @@
 <input type="text" id="domain-input" placeholder="e.g. google.com" value="google.com" autocomplete="off" aria-label="Domain name">
 <select id="record-type" aria-label="DNS record type">
 <option value="A">A · IPv4</option><option value="AAAA">AAAA · IPv6</option><option value="MX">MX · Mail</option>
-<option value="TXT">TXT · Text / SPF</option><option value="NS">NS · Nameservers</option><option value="CNAME">CNAME · Alias</option>
+<option value="TXT">TXT · Text / SPF</option><option value="NS">NS · Nameservers</option><option value="CNAME">CNAME · Alias</option><option value="CAA">CAA · Certificate Authorities</option><option value="SOA">SOA · Authority</option><option value="SRV">SRV · Services</option><option value="HTTPS">HTTPS · Service Binding</option><option value="DNSKEY">DNSKEY · DNSSEC</option><option value="DS">DS · DNSSEC Delegation</option>
 </select>
 </div>
 <button class="action-btn" id="dns-btn">🔎 Query DNS Record</button>
@@ -101,6 +102,39 @@
 </div>
 </section>
 
+<section id="phish-panel" class="tab-panel">
+<div class="section">
+<h2>Phishing &amp; Suspicious Link Toolkit</h2>
+<p class="help-text">A no-API approach: the URL is analyzed locally first, then you can open established third-party scanners. Nothing is automatically submitted from Gecko's Gateway.</p>
+<div class="input-group">
+<input type="url" id="phish-input" placeholder="e.g. https://example.com/login" autocomplete="off" spellcheck="false" aria-label="URL to triage">
+</div>
+<div class="input-group">
+<button class="action-btn" id="phish-analyze-btn">🔎 Analyze Locally</button>
+<button class="secondary-btn" id="phish-copy-btn" type="button">Copy URL</button>
+</div>
+<div id="phish-output" class="output-box" aria-live="polite">Enter a URL to inspect its structure locally...</div>
+</div>
+
+<div class="section">
+<h2>External Phishing Scanners</h2>
+<p class="help-text">These open the service directly in a new tab. Paste the URL or domain there when prompted. Results come from the external provider, not Gecko's Gateway.</p>
+<div class="input-group">
+<a class="action-btn tool-link" href="https://checkphish.bolster.ai/live-url-scan/" target="_blank" rel="noopener noreferrer">🛡️ CheckPhish URL Scanner ↗</a>
+<a class="action-btn tool-link" href="https://dnstwist.it/" target="_blank" rel="noopener noreferrer">🔀 dnstwist ↗</a>
+<a class="action-btn tool-link" href="https://www.phishtank.com/" target="_blank" rel="noopener noreferrer">🐟 PhishTank ↗</a>
+<a class="action-btn tool-link" href="https://isitphishing.org/" target="_blank" rel="noopener noreferrer">🎣 IsItPhishing ↗</a>
+</div>
+<div class="input-group">
+<a class="secondary-btn tool-link" href="https://phish.ly/" target="_blank" rel="noopener noreferrer">📨 phish.ly ↗</a>
+<a class="secondary-btn tool-link" href="https://analyzer.sublimesecurity.com/" target="_blank" rel="noopener noreferrer">📄 Sublime EML Analyzer ↗</a>
+<a class="secondary-btn tool-link" href="https://eml-analyzer.herokuapp.com/" target="_blank" rel="noopener noreferrer">📄 EML Analyzer ↗</a>
+<a class="secondary-btn tool-link" href="https://emailrep.io/" target="_blank" rel="noopener noreferrer">✉️ EmailRep ↗</a>
+</div>
+<p class="help-text small-note"><strong>Privacy:</strong> Don't submit passwords, private correspondence, confidential school/work data, or other sensitive information to third-party scanners. External services have their own retention and privacy policies.</p>
+</div>
+</section>
+
 <section id="news-panel" class="tab-panel">
 <div class="section">
 <h2>News</h2>
@@ -109,7 +143,7 @@
 <select id="news-source" aria-label="News source">
 <option value="hn-top">Hacker News · Top stories</option>
 <option value="hn-sec">Hacker News · Security stories (past week)</option>
-<option value="ghsa">GitHub · Newest security advisories</option>
+<option value="ghsa">GitHub · Newest security advisories</option><option value="malwaretips">MalwareTips · Security News</option>
 </select>
 <button class="action-btn" id="news-btn">🔄 Refresh</button>
 </div>
