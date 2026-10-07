@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src data:; connect-src https:; frame-src https://www.openstreetmap.org; object-src 'none'; base-uri 'none'; form-action 'none'; upgrade-insecure-requests">
 <meta name="referrer" content="no-referrer">
-<meta name="description" content="Gecko's Gateway: DNS, IP, RDAP, fingerprint and password tools.">
+<meta name="description" content="Gecko's Gateway: DNS, network reachability, IP, RDAP, fingerprint and password tools.">
 <title>🦎 Gecko's Gateway</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🦎%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="styles.css">
@@ -47,6 +47,18 @@
 <p class="help-text">Shows which DNS resolvers handle your lookups, using bash.ws. A random test ID and your IP address are sent to that service.</p>
 <button class="action-btn" id="leak-btn">🛡️ Run DNS Leak Test</button>
 <div id="leak-output" class="output-box" aria-live="polite">Click the button to start the test...</div>
+</div>
+</section>
+
+<section id="reach-panel" class="tab-panel">
+<div class="section">
+<h2>Network Reachability</h2>
+<p class="help-text">Tests the URL from this browser, using the DNS, network path, TLS and filtering rules available to the current device. It does not use a server-side proxy.</p>
+<div class="input-group">
+<input type="url" id="reach-input" placeholder="e.g. https://example.com" value="https://example.com" autocomplete="off" spellcheck="false" aria-label="Website or URL to test">
+</div>
+<button class="action-btn" id="reach-btn">📡 Test Reachability</button>
+<div id="reach-output" class="output-box" aria-live="polite">Enter a website or URL and run a test...</div>
 </div>
 </section>
 
