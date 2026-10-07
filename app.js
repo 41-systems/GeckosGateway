@@ -713,18 +713,7 @@ async function rssItems(url, source) {
     if (parsed.length) return parsed;
     throw new Error("No readable headlines were returned.");
   } catch (firstError) {
-    const response = await fetch("https://proxy.cors.dev/" + url, { credentials: "omit", referrerPolicy: "no-referrer", cache: "no-store" });
-    if (!response.ok) throw firstError;
-    const xml = await response.text();
-    const doc = new DOMParser().parseFromString(xml, "application/xml");
-    if (doc.querySelector("parsererror")) throw firstError;
-    return [...doc.querySelectorAll("item, entry")].slice(0, 15).map(item => {
-      const title = item.querySelector("title")?.textContent?.trim() || "Untitled";
-      const linkEl = item.querySelector("link[rel='alternate']") || item.querySelector("link");
-      const link = linkEl?.getAttribute("href") || linkEl?.textContent?.trim() || "";
-      const date = item.querySelector("pubDate")?.textContent?.trim() || item.querySelector("published")?.textContent?.trim() || item.querySelector("updated")?.textContent?.trim() || "recent";
-      return { title, url: link, meta: source + " · " + date };
-    }).filter(i => HTTPS.test(i.url));
+    throw firstError;
   }
 }
 
