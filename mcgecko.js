@@ -216,10 +216,10 @@
 
     for (const cd of state?.cds || []) {
       const x=cd.c*TILE+14,y=cd.r*TILE+14;
-      ctx.save(); ctx.translate(x,y); ctx.rotate(performance.now()/700);
-      ctx.fillStyle="#d9f4ff"; ctx.beginPath(); ctx.arc(0,0,8,0,Math.PI*2); ctx.fill();
-      ctx.strokeStyle="#0e7490"; ctx.lineWidth=3; ctx.stroke();
-      ctx.fillStyle="#0e7490"; ctx.beginPath(); ctx.arc(0,0,2.5,0,Math.PI*2); ctx.fill();
+      ctx.save(); ctx.translate(x,y); ctx.rotate(Math.sin(performance.now()/700)*0.08);
+      ctx.textAlign="center"; ctx.textBaseline="middle";
+      ctx.font="22px system-ui, 'Apple Color Emoji', 'Segoe UI Emoji', sans-serif";
+      ctx.fillText("💿",0,0);
       ctx.restore();
     }
 
@@ -241,27 +241,22 @@
 
   function drawGecko(p, t) {
     const x=p.c*TILE+14,y=p.r*TILE+14;
-    const bob=Math.sin(t/100)*1.2;
-    ctx.save(); ctx.translate(x,y+bob);
-    ctx.fillStyle = performance.now()<state.powerUntil ? "#d9f4ff" : "#5ee37d";
-    ctx.beginPath(); ctx.ellipse(0,2,10,7,0,0,Math.PI*2); ctx.fill();
-    ctx.beginPath(); ctx.arc(7,-4,6,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle="#06100a"; ctx.beginPath(); ctx.arc(9,-6,1.4,0,Math.PI*2); ctx.fill();
-    ctx.strokeStyle="#5ee37d"; ctx.lineWidth=3;
-    ctx.beginPath(); ctx.moveTo(-8,4); ctx.lineTo(-13,8); ctx.moveTo(-3,7); ctx.lineTo(-7,11); ctx.stroke();
+    ctx.save();
+    ctx.translate(x,y + Math.sin(t/100)*1.2);
+    ctx.textAlign="center"; ctx.textBaseline="middle";
+    ctx.font="24px system-ui, 'Apple Color Emoji', 'Segoe UI Emoji', sans-serif";
+    ctx.fillText(performance.now()<state.powerUntil ? "🛡️" : "🦎",0,0);
     ctx.restore();
   }
 
   function drawMalware(e, pulse) {
     const x=e.c*TILE+14,y=e.r*TILE+14;
-    const shapes={worm:"#ef4444",bug:"#a855f7",trojan:"#f97316",spyware:"#06b6d4"};
-    ctx.save(); ctx.translate(x,y);
-    ctx.fillStyle=shapes[e.kind] || "#ef4444";
-    ctx.beginPath(); ctx.arc(0,0,9+pulse,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle="#fff";
-    ctx.beginPath(); ctx.arc(-3,-2,2,0,Math.PI*2); ctx.arc(3,-2,2,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle="#111";
-    ctx.beginPath(); ctx.arc(-3,-2,1,0,Math.PI*2); ctx.arc(3,-2,1,0,Math.PI*2); ctx.fill();
+    const emojis={worm:"🪱",bug:"🐛",trojan:"🐴",spyware:"🕵️"};
+    ctx.save();
+    ctx.translate(x,y);
+    ctx.textAlign="center"; ctx.textBaseline="middle";
+    ctx.font="23px system-ui, 'Apple Color Emoji', 'Segoe UI Emoji', sans-serif";
+    ctx.fillText(emojis[e.kind] || "🦠",0,0);
     ctx.restore();
   }
 
