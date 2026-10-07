@@ -102,15 +102,15 @@
 </div>
 </section>
 
-<section id="phish-panel" class="tab-panel">
+<section <section id="phish-panel" class="tab-panel">
 <div class="section">
-<h2>Phishing & Email Reputation Check</h2>
-<p class="help-text">Checks an email address against EmailRep reputation signals, including phishing-related activity, malicious activity, breaches and blacklist indicators. The result is a general risk estimate, not a statistical probability.</p>
+<h2>Phishing URL Check</h2>
+<p class="help-text">Submits a website URL to CheckPhish for phishing and malicious-site analysis. The API key stays on the server-side Worker.</p>
 <div class="input-group">
-<input type="email" id="phish-input" placeholder="e.g. sender@example.com" autocomplete="off" spellcheck="false" aria-label="Email address to check">
+<input type="url" id="phish-input" placeholder="e.g. https://example.com" autocomplete="off" spellcheck="false" aria-label="Website URL to check">
 </div>
-<button class="action-btn" id="phish-btn">🎣 Check Email</button>
-<div id="phish-output" class="output-box" aria-live="polite">Enter an email address and run a check...</div>
+<button class="action-btn" id="phish-btn">🎣 Check URL</button>
+<div id="phish-output" class="output-box" aria-live="polite">Enter a website URL and run a check...</div>
 </div>
 </section>
 
