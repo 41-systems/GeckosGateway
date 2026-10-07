@@ -77,8 +77,18 @@ async function lookupDNS() {
   try {
     const j = await getJSON(`https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(d)}&type=${encodeURIComponent(t)}`,
       { headers: { Accept: "application/dns-json" }, cache: "no-store" });
-    if (!j.Answer?.length) { out.textContent = `No ${t} records found for ${d}.`; return; }
-    out.textContent = `Results for ${d} (${t}):\n\n` + j.Answer.map(r =>
+    if (!j.Answer?.length) {
+      out.textContent = `No ${t} records found for ${d}.\n\nResolver status: ${j.Status === 0 ? "NOERROR" : "DNS status " + j.Status}\nDNSSEC authenticated: ${j.AD ? "Yes" : "No / not indicated"}`;
+      return;
+    }
+    const header = [
+      `Results for ${d} (${t})`,
+      `Resolver status: ${j.Status === 0 ? "NOERROR" : "DNS status " + j.Status}`,
+      `DNSSEC authenticated: ${j.AD ? "Yes" : "No / not indicated"}`,
+      `Answers: ${j.Answer.length}`,
+      ""
+    ].join("\n");
+    out.textContent = header + j.Answer.map(r =>
       `Name: ${r.name}\nType: ${RR[r.type] || r.type}\nTTL: ${r.TTL}s\nData: ${r.data}`).join("\n-------------------------------\n");
   } catch (e) { out.textContent = "Error querying DNS: " + e.message; }
 }
