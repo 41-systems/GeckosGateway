@@ -24,7 +24,6 @@
 <button class="tab-btn" data-tab="fp-panel">🔍 Fingerprint</button>
 <button class="tab-btn" data-tab="pwd-panel">🔑 Passwords</button>
 <button class="tab-btn" data-tab="file-panel">📁 File Check</button>
-<button class="tab-btn" data-tab="phish-panel">🎣 Phishing Check</button>
 <button class="tab-btn" data-tab="news-panel">📰 News</button>
 </nav>
 
@@ -99,18 +98,6 @@
 <p class="help-text">Hashes a file in your browser and links to VirusTotal and Hybrid Analysis reports. The file is never uploaded.</p>
 <input type="file" id="file-input" aria-label="File to check">
 <div id="file-output" class="output-box" aria-live="polite">Choose a file to calculate its SHA-256...</div>
-</div>
-</section>
-
-<section <section id="phish-panel" class="tab-panel">
-<div class="section">
-<h2>Phishing URL Check</h2>
-<p class="help-text">Submits a website URL to CheckPhish for phishing and malicious-site analysis. The API key stays on the server-side Worker.</p>
-<div class="input-group">
-<input type="url" id="phish-input" placeholder="e.g. https://example.com" autocomplete="off" spellcheck="false" aria-label="Website URL to check">
-</div>
-<button class="action-btn" id="phish-btn">🎣 Check URL</button>
-<div id="phish-output" class="output-box" aria-live="polite">Enter a website URL and run a check...</div>
 </div>
 </section>
 
