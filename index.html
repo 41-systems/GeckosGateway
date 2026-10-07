@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src data:; connect-src 'self' https://api.github.com https://api.rss2json.com https://api64.ipify.org https://bash.ws https://cloudflare-dns.com https://hacker-news.firebaseio.com https://hn.algolia.com https://ipapi.co https://ipwho.is https://rdap.org https://search.arin.net; frame-src https://www.openstreetmap.org; object-src 'none'; base-uri 'none'; form-action 'none'; upgrade-insecure-requests">
-<meta name="referrer" content="no-referrer">\n<meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=(), usb=(), accelerometer=(), gyroscope=(), magnetometer=()">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src data:; connect-src 'self' https:; frame-src https://www.openstreetmap.org; object-src 'none'; base-uri 'none'; form-action 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=(), usb=(), accelerometer=(), gyroscope=(), magnetometer=()">
 <meta name="description" content="Gecko's Gateway: DNS, network reachability, IP, RDAP, fingerprint and password tools.">
 <title>Gecko's Gateway</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><text y=%2252%22 font-size=%2252%22>🦎</text></svg>" type="image/svg+xml">
@@ -295,15 +296,7 @@
 <span>Level: <strong id="mcgecko-level">1</strong></span>
 <span>Power: <strong id="mcgecko-power">—</strong></span>
 </div>
-<div class="mcgecko-game-shell">
-<div class="mcgecko-game-hud" aria-label="Game status">
-<div class="game-stat">🏆 Score<strong id="mcgecko-screen-score">0</strong></div>
-<div class="game-stat">❤️ Lives<strong id="mcgecko-screen-lives">3</strong></div>
-<div class="game-stat">🌐 Level<strong id="mcgecko-screen-level">1</strong></div>
-<div class="game-stat game-power">🛡️ Power<strong id="mcgecko-screen-power">—</strong></div>
-</div>
 <canvas id="mcgecko-canvas" width="560" height="620" aria-label="mcGecko maze game"></canvas>
-</div>
 <div class="mcgecko-controls">
 <button class="action-btn" id="mcgecko-start">▶ Start / Restart</button>
 <button class="secondary-btn" id="mcgecko-pause">⏸ Pause</button>
