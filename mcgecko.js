@@ -6,10 +6,6 @@
   const livesEl = document.getElementById("mcgecko-lives");
   const levelEl = document.getElementById("mcgecko-level");
   const powerEl = document.getElementById("mcgecko-power");
-  const screenScoreEl = document.getElementById("mcgecko-screen-score");
-  const screenLivesEl = document.getElementById("mcgecko-screen-lives");
-  const screenLevelEl = document.getElementById("mcgecko-screen-level");
-  const screenPowerEl = document.getElementById("mcgecko-screen-power");
   const statusEl = document.getElementById("mcgecko-status");
   const startBtn = document.getElementById("mcgecko-start");
   const pauseBtn = document.getElementById("mcgecko-pause");
@@ -189,10 +185,6 @@
     levelEl.textContent = state?.level ?? 1;
     const remaining = state ? Math.max(0, state.powerUntil - performance.now()) : 0;
     powerEl.textContent = remaining ? (remaining / 1000).toFixed(1) + "s" : "—";
-    if (screenScoreEl) screenScoreEl.textContent = state?.score ?? 0;
-    if (screenLivesEl) screenLivesEl.textContent = state?.lives ?? 3;
-    if (screenLevelEl) screenLevelEl.textContent = state?.level ?? 1;
-    if (screenPowerEl) screenPowerEl.textContent = remaining ? (remaining / 1000).toFixed(1) + "s" : "—";
   }
 
   function draw() {
