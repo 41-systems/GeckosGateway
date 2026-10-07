@@ -75,10 +75,10 @@ async function lookupDNS() {
   if (!d) { out.textContent = "Enter a valid domain name, e.g. example.com"; return; }
   out.textContent = `Fetching ${t} record for ${d}...`;
   try {
-    const j = await getJSON(`https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(d)}&type=${encodeURIComponent(t)}`,
+    const j = await getJSON(`https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(d)}&type=${encodeURIComponent(t)}&do=true`,
       { headers: { Accept: "application/dns-json" }, cache: "no-store" });
     if (!j.Answer?.length) {
-      out.textContent = `No ${t} records found for ${d}.\n\nResolver status: ${j.Status === 0 ? "NOERROR" : "DNS status " + j.Status}\nDNSSEC authenticated: ${j.AD ? "Yes" : "No / not indicated"}`;
+      out.textContent = `No ${t} records found for ${d}.\n\nResolver status: ${j.Status === 0 ? "NOERROR" : "DNS status " + j.Status}\nDNSSEC authenticated: ${j.AD ? "Yes — validated" : "No — not validated in this response"}`;
       return;
     }
     const header = [
@@ -86,8 +86,9 @@ async function lookupDNS() {
       `Resolver status: ${j.Status === 0 ? "NOERROR" : "DNS status " + j.Status}`,
       `DNSSEC authenticated: ${j.AD ? "Yes" : "No / not indicated"}`,
       `Answers: ${j.Answer.length}`,
+      j.TC ? "⚠ Response was truncated." : "",
       ""
-    ].join("\n");
+    ].filter(Boolean).join("\n");
     out.textContent = header + j.Answer.map(r =>
       `Name: ${r.name}\nType: ${RR[r.type] || r.type}\nTTL: ${r.TTL}s\nData: ${r.data}`).join("\n-------------------------------\n");
   } catch (e) { out.textContent = "Error querying DNS: " + e.message; }
@@ -193,10 +194,14 @@ async function checkReachability() {
       ["Public WAN IP:", d.ip],
       ["Network / ASN:", `AS${c.asn ?? d.asn ?? "N/A"} - ${c.org ?? d.asn_org ?? "N/A"}`],
       ["ISP:", c.isp ?? d.isp],
+      ["Connection Type:", c.type ?? "N/A"],
+      ["Reverse DNS / Domain:", c.domain ?? "N/A"],
       [""], ["--- GEO LOCATION DETAILS ---"],
       ["City / Region:", `${d.city ?? "N/A"}, ${d.region ?? "N/A"} (${d.postal ?? "N/A"})`],
       ["Country:", `${d.country ?? "N/A"} (${d.country_code ?? "N/A"})`],
+      ["Timezone:", d.timezone?.id ?? "N/A"],
       ["Coordinates:", ok ? `${lat}, ${lon}` : "N/A"],
+      ["Currency:", d.currency?.name ? `${d.currency.name} (${d.currency.code ?? "N/A"})` : "N/A"],
       [""]
     ]);
     if (ok) {
@@ -229,7 +234,10 @@ async function fetchWHOIS() {
     fill(out, [
       ["Domain Name:", j.ldhName || d], ["Registrar:", registrar], ["Registered On:", ev("registration")],
       ["Expires On:", ev("expiration")], ["Last Updated:", ev("last changed")], ["Nameservers:", ns.join(", ") || "N/A"],
-      ["RDAP Status(es):", st.length ? "" : "N/A"], ...st.map(s => ["• " + s])
+      ["RDAP Status(es):", st.length ? "" : "N/A"], ...st.map(s => ["• " + s]),
+      ["Domain Handle:", j.handle || "N/A"],
+      ["DNSSEC Delegation:", j.secureDNS?.delegationSigned ? "Signed" : "Not indicated / unsigned"],
+      ["Events Found:", Array.isArray(j.events) ? j.events.length : 0]
     ]);
   } catch (e) { out.textContent = "Error querying RDAP data: " + e.message; }
 }
@@ -338,15 +346,15 @@ function webglInfo() {
 function generateFingerprint() {
   const gl = webglInfo(), res = `${screen.width}x${screen.height} (${screen.colorDepth}-bit)`;
   const cores = navigator.hardwareConcurrency || "N/A", mem = navigator.deviceMemory ? `${navigator.deviceMemory} GB` : "N/A";
-  const lang = navigator.language || "N/A", tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "N/A";
+  const lang = navigator.language || "N/A", languages = Array.isArray(navigator.languages) ? navigator.languages.join(", ") : lang, tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "N/A";
   const touch = navigator.maxTouchPoints > 0 ? `Yes (${navigator.maxTouchPoints} points)` : "No";
   const raw = [navigator.userAgent, res, cores, mem, lang, tz, gl.vendor, gl.renderer, canvasFingerprint()].join("|");
   fill($("fp-output"), [
     ["Fingerprint Hash:", "#" + simpleHash(raw).toUpperCase()], [""],
-    ["GPU Vendor:", gl.vendor], ["GPU Renderer:", gl.renderer], ["Screen Size:", res], ["CPU Cores:", cores],
-    ["Device RAM:", mem], ["Language:", lang], ["Timezone:", tz], ["Touch Screen:", touch],
+    ["GPU Vendor:", gl.vendor], ["GPU Renderer:", gl.renderer], ["Screen Size:", res], ["Viewport:", window.innerWidth + "x" + window.innerHeight], ["Pixel Ratio:", window.devicePixelRatio || 1], ["CPU Cores:", cores],
+    ["Device RAM:", mem], ["Platform:", navigator.platform || "N/A"], ["Language:", lang], ["Languages:", languages], ["Timezone:", tz], ["Timezone Offset:", new Date().getTimezoneOffset() + " minutes"], ["Touch Screen:", touch], ["Online:", navigator.onLine ? "Yes" : "No"],
     ["Cookies Enabled:", navigator.cookieEnabled ? "Enabled" : "Disabled"],
-    ["Do Not Track:", navigator.doNotTrack || "Unspecified"], ["User Agent:", navigator.userAgent]
+    ["Do Not Track:", navigator.doNotTrack || "Unspecified"], ["Global Privacy Control:", navigator.globalPrivacyControl === true ? "Enabled" : "Not enabled / unavailable"], ["WebGL:", gl.vendor === "N/A" ? "Unavailable" : "Available"], ["WebGPU:", "gpu" in navigator ? "Available" : "Unavailable"], ["User Agent:", navigator.userAgent], [""], ["Privacy note:", "Calculated locally in your browser. These signals are not uploaded or stored by Gecko Gateway."]
   ]);
 }
 
@@ -522,7 +530,7 @@ async function loadNews() {
 
 const FILE_LIMIT = 256 * 1024 * 1024;
 
-async function checkFile() {
+async async function checkFile() {
   const out = $("file-output"), f = $("file-input").files[0];
   if (!f) return;
   if (f.size > FILE_LIMIT) { out.textContent = "File is too large to hash here (limit 256 MB)."; return; }
@@ -531,7 +539,7 @@ async function checkFile() {
   try {
     const digest = await crypto.subtle.digest("SHA-256", await f.arrayBuffer());
     const hash = [...new Uint8Array(digest)].map(b => b.toString(16).padStart(2, "0")).join("");
-    fill(out, [["File:", f.name], ["Size:", f.size.toLocaleString() + " bytes"], ["SHA-256:", hash], [""]]);
+    fill(out, [["File:", f.name], ["Type:", f.type || "Unknown"], ["Size:", f.size.toLocaleString() + " bytes"], ["Last Modified:", new Date(f.lastModified).toLocaleString()], ["SHA-256:", hash], [""]]);
     addLink(out, `https://www.virustotal.com/gui/file/${hash}`, "🛡️ Open VirusTotal report ↗");
     addLink(out, `https://hybrid-analysis.com/sample/${hash}`, "🔬 Open Hybrid Analysis report ↗");
   } catch (e) { out.textContent = "Could not read file: " + e.message; }
