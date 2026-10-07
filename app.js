@@ -530,7 +530,7 @@ async function loadNews() {
 
 const FILE_LIMIT = 256 * 1024 * 1024;
 
-async async function checkFile() {
+async function checkFile() {
   const out = $("file-output"), f = $("file-input").files[0];
   if (!f) return;
   if (f.size > FILE_LIMIT) { out.textContent = "File is too large to hash here (limit 256 MB)."; return; }
