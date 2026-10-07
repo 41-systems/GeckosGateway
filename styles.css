@@ -134,3 +134,15 @@ body{padding:10px}header{padding:22px 16px 18px}.tab-content{padding:14px}.secti
   text-align:center;
 }
 .small-note{font-size:.82rem;margin-top:10px}
+
+/* Consistent tool/news controls */
+.action-btn,.secondary-btn,.tool-link{box-sizing:border-box;min-height:44px;border-radius:9px;font-weight:700;transition:transform .18s,filter .18s,background .18s,border-color .18s;}
+.action-btn,.tool-link.action-btn{background:var(--green);border-color:var(--green);color:#fff;}
+.action-btn:hover:not(:disabled),.tool-link.action-btn:hover{filter:brightness(1.08);transform:translateY(-1px);}
+.secondary-btn{background:#fff;border-color:var(--green);color:var(--green);}
+.secondary-btn:hover{background:#eef8f1;border-color:var(--green);}
+.phish-actions,.phish-tools{display:flex;gap:10px;flex-wrap:wrap;}
+.phish-actions .action-btn,.phish-actions .secondary-btn{flex:1 1 180px;}
+.phish-tools .tool-link{flex:1 1 220px;}
+#news-list a{display:inline-flex;align-items:center;gap:6px;margin:5px 0;padding:8px 11px;border:1px solid var(--border);border-radius:8px;background:#f7fbf8;color:var(--green);font-weight:700;text-decoration:none;}
+#news-list a:hover{background:#eef8f1;border-color:var(--green);text-decoration:none;}
