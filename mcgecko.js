@@ -1,32 +1,17 @@
 (() => {
-  function loadThree(src){
-    return new Promise((resolve,reject)=>{
-      const s=document.createElement('script');
-      s.src=src;s.onload=()=>resolve();s.onerror=reject;
-      document.head.appendChild(s);
-    });
-  }
-  async function bootGame(){
+  const start=()=>{
     if(!window.THREE){
-      try{await loadThree('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js')}
-      catch(e){
-        try{await loadThree('https://unpkg.com/three@0.128.0/build/three.min.js')}
-        catch(err){
-          const ov=document.getElementById('ov'), sub=document.getElementById('sub');
-          if(sub)sub.textContent='3D engine could not load. Check your connection, then refresh.';
-          if(ov)ov.style.display='flex';
-          return;
-        }
-      }
+      const sub=document.getElementById("sub");
+      if(sub)sub.textContent="3D engine unavailable — refresh the page.";
+      return;
     }
-    initGame();
-  }
-  function initGame(){
-const T=THREE,R=Math.random,ri=(a,b)=>a+Math.floor(R()*(b-a+1)),pick=a=>a[ri(0,a.length-1)],S=2,N=27;
+    const T=THREE,R=Math.random,ri=(a,b)=>a+Math.floor(R()*(b-a+1)),pick=a=>a[ri(0,a.length-1)],S=2,N=27;
 const $=id=>document.getElementById(id);
 const renderer=new T.WebGLRenderer({antialias:true});
-renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,2));
-document.getElementById("mcgecko-game-root").prepend(renderer.domElement);
+const root=document.getElementById("mcgecko-game-root");
+renderer.setSize(root.clientWidth||720,root.clientHeight||520);renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+root.prepend(renderer.domElement);
+renderer.domElement.style.position="absolute";renderer.domElement.style.inset="0";
 const scene=new T.Scene(),cam=new T.PerspectiveCamera(62,innerWidth/innerHeight,.1,120);
 scene.add(new T.AmbientLight(0x7790b0,.8));
 const sun=new T.DirectionalLight(0xffffff,.5);sun.position.set(10,20,5);scene.add(sun);
@@ -338,9 +323,8 @@ addEventListener('mousedown',()=>{mouseDown=true;if(state==='play'&&!document.po
 addEventListener('mouseup',()=>mouseDown=false);
 addEventListener('keydown',e=>{K[e.code]=true;if(e.code==='Space')e.preventDefault()});
 addEventListener('keyup',e=>K[e.code]=false);
-addEventListener('resize',()=>{renderer.setSize(innerWidth,innerHeight);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix()});
+addEventListener('resize',()=>{renderer.setSize(root.clientWidth||720,root.clientHeight||520);cam.aspect=(root.clientWidth||720)/(root.clientHeight||520);cam.updateProjectionMatrix()});
 loop();
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bootGame,{once:true});
-  else bootGame();
+  };
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",start,{once:true});else start();
 })();
