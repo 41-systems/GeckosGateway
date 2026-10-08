@@ -2,7 +2,7 @@ const T=THREE,R=Math.random,ri=(a,b)=>a+Math.floor(R()*(b-a+1)),pick=a=>a[ri(0,a
 const $=id=>document.getElementById(id);
 const renderer=new T.WebGLRenderer({antialias:true});
 renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,2));
-document.body.prepend(renderer.domElement);
+document.getElementById("mcgecko-game-root").prepend(renderer.domElement);
 const scene=new T.Scene(),cam=new T.PerspectiveCamera(62,innerWidth/innerHeight,.1,120);
 scene.add(new T.AmbientLight(0x7790b0,.8));
 const sun=new T.DirectionalLight(0xffffff,.5);sun.position.set(10,20,5);scene.add(sun);
