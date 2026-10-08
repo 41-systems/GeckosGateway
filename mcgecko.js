@@ -330,6 +330,7 @@ addEventListener('keydown',e=>{K[e.code]=true;if(e.code==='Space')e.preventDefau
 addEventListener('keyup',e=>K[e.code]=false);
 addEventListener('resize',()=>{renderer.setSize(root.clientWidth||720,root.clientHeight||520);cam.aspect=(root.clientWidth||720)/(root.clientHeight||520);cam.updateProjectionMatrix()});
 loop();
+    }catch(e){showError(e);}
   };
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",start,{once:true});else start();
 })();
