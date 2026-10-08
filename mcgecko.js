@@ -86,20 +86,40 @@
   }
   function reset(){state={floor:1,score:0,lives:3,maxHp:5,hp:5,attack:0,power:null,powerUntil:0,speedUntil:0,shield:false,invuln:0,running:true,paused:false,revealed:false,floorData:null};state.floorData=buildFloor();statusEl.textContent="🦎 Explore the network. Collect CDs, survive, find the exit.";pauseBtn.textContent="⏸ Pause";last=performance.now();cancelAnimationFrame(raf);raf=requestAnimationFrame(loop)}
   function hud(){scoreEl.textContent=state?.score??0;livesEl.textContent=state?.lives??3;levelEl.textContent=state?.floor??1;powerEl.textContent=state?.power?state.power[0]+" "+state.power[1]:(state?.attack?"💿 ×"+state.attack:"—")}
-  function sprite(txt,x,y,size){ctx.font=size+"px system-ui,'Apple Color Emoji','Segoe UI Emoji',sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(txt,x,y)}
+  function drawVoxel(x,y,type,scale){
+    const p=state.floorData.p,dx=x-p.x,dy=y-p.y,D=Math.hypot(dx,dy),a=Math.atan2(dy,dx)-state.floorData.ang;
+    const ang=Math.atan2(Math.sin(a),Math.cos(a));if(Math.abs(ang)>FOV*.62)return;
+    const sx=W/2+(ang/(FOV/2))*(W/2),col=Math.max(0,Math.min(W-1,Math.floor(sx)));
+    if(state.depth[col]<D-.35)return;
+    const s=Math.min(105,560/D)*scale,sy=H*.48+H*.27/D;
+    const pal={worm:["#83df86","#285f35"],bug:["#d2a9ff","#603b91"],trojan:["#d89b62","#70431f"],spyware:["#d0d7dc","#46525a"],cd:["#9be9ff","#267187"],health:["#ff6d7d","#8b2634"],box:["#f0bb4e","#765719"],exit:["#b8dfcf","#385b4d"]}[type];
+    ctx.save();ctx.translate(sx,sy);ctx.globalAlpha=Math.max(.5,1-D/18);
+    ctx.fillStyle=pal[1];ctx.fillRect(-s*.43,-s*.48+s*.18,s*.86,s*.82);
+    ctx.fillStyle=pal[0];ctx.fillRect(-s*.5,-s*.5,s,s*.75);
+    ctx.fillStyle="rgba(255,255,255,.22)";ctx.fillRect(-s*.5,-s*.5,s*.16,s*.75);
+    ctx.fillStyle=pal[1];ctx.fillRect(-s*.5,-s*.5,s,s*.11);ctx.fillRect(-s*.5,s*.25,s,s*.11);ctx.fillRect(-s*.5,-s*.5,s*.11,s*.75);ctx.fillRect(s*.39,-s*.5,s*.11,s*.75);
+    if(type==="cd"){ctx.fillStyle="#e9fcff";ctx.fillRect(-s*.16,-s*.16,s*.32,s*.32)}
+    if(type==="health"){ctx.fillStyle="#fff";ctx.fillRect(-s*.09,-s*.28,s*.18,s*.56);ctx.fillRect(-s*.28,-s*.09,s*.56,s*.18)}
+    if(type==="box"){ctx.fillStyle="#654a15";ctx.fillRect(-s*.07,-s*.5,s*.14,s*.75);ctx.fillRect(-s*.5,-s*.05,s,s*.1)}
+    if(type==="exit"){ctx.fillStyle="#dffff3";ctx.fillRect(-s*.16,-s*.32,s*.32,s*.64)}
+    ctx.restore();
+  }
   function render(){
     ctx.fillStyle="#07100d";ctx.fillRect(0,0,W,H);
     if(!state){ctx.fillStyle="#b8ffd0";ctx.font="bold 30px system-ui";ctx.textAlign="center";ctx.fillText("🦎 mcGecko 3D",W/2,H/2);return}
     const d=state.floorData,p=d.p;
-    const horizon=H*.48;ctx.fillStyle="#14251d";ctx.fillRect(0,0,W,horizon);ctx.fillStyle="#08130e";ctx.fillRect(0,horizon,W,H-horizon);
+    const horizon=H*.48;ctx.fillStyle="#121a20";ctx.fillRect(0,0,W,horizon);ctx.fillStyle="#101815";ctx.fillRect(0,horizon,W,H-horizon);
     const depth=new Float32Array(W);
     for(let x=0;x<W;x++){const ra=d.ang-FOV/2+(x/W)*FOV;let distRay=.03,hit=false;while(distRay<20&&!hit){const rx=p.x+Math.cos(ra)*distRay,ry=p.y+Math.sin(ra)*distRay;if(wall(rx,ry))hit=true;else distRay+=.035}const corrected=distRay*Math.cos(ra-d.ang);depth[x]=corrected;const wh=Math.min(H*1.8,330/(corrected+.05));ctx.fillStyle=corrected<3?"#246342":"#173d2a";ctx.fillRect(x,horizon-wh/2,1,wh)}
+    state.depth=depth;
     const objects=[];
-    d.enemies.forEach(e=>objects.push({x:e.x,y:e.y,txt:{worm:"🪱",bug:"🐛",trojan:"🐴",spyware:"🕵️"}[e.kind],size:30}));
-    d.cds.forEach(q=>objects.push({x:q.x,y:q.y,txt:"💿",size:27}));d.health.forEach(q=>objects.push({x:q.x,y:q.y,txt:"❤️",size:24}));
-    if(d.box&&!d.boxOpen)objects.push({x:d.box.x,y:d.box.y,txt:"📦",size:30});objects.push({x:d.exit.x,y:d.exit.y,txt:d.exitOpen?"🚪":"🔒",size:28});
+    d.enemies.forEach(e=>objects.push({x:e.x,y:e.y,type:e.kind,size:1}));
+    d.cds.forEach(q=>objects.push({x:q.x,y:q.y,type:"cd",size:.72}));
+    d.health.forEach(q=>objects.push({x:q.x,y:q.y,type:"health",size:.62}));
+    if(d.box&&!d.boxOpen)objects.push({x:d.box.x,y:d.box.y,type:"box",size:1}));
+    objects.push({x:d.exit.x,y:d.exit.y,type:"exit",size:.9});
     objects.sort((a,b)=>dist(b,p)-dist(a,p));
-    for(const o of objects){const dx=o.x-p.x,dy=o.y-p.y,D=Math.hypot(dx,dy),ang=Math.atan2(dy,dx)-d.ang;let a=Math.atan2(Math.sin(ang),Math.cos(ang));if(Math.abs(a)>FOV*.62)continue;const sx=W/2+(a/(FOV/2))*(W/2),col=Math.max(0,Math.min(W-1,Math.floor(sx)));if(depth[col]<D-.25)continue;const sy=horizon+(H*.25/D);const size=Math.min(90,500/D);sprite(o.txt,sx,sy,size)}
+    for(const o of objects)drawVoxel(o.x,o.y,o.type,o.size);
     ctx.fillStyle="rgba(255,255,255,.18)";ctx.fillRect(W/2-1,H/2-10,2,20);ctx.fillRect(W/2-10,H/2-1,20,2);
     ctx.fillStyle="#fff";ctx.font="14px system-ui";ctx.textAlign="left";ctx.fillText("WASD / Arrows: move   Q/E: turn",14,H-14);
   }
