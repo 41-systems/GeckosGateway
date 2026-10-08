@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src data:; connect-src 'self' https:; frame-src https://www.openstreetmap.org; object-src 'none'; base-uri 'none'; form-action 'none'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdnjs.cloudflare.com; style-src 'self'; img-src data:; connect-src 'self' https:; frame-src https://www.openstreetmap.org; object-src 'none'; base-uri 'none'; form-action 'none'; upgrade-insecure-requests">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=(), usb=(), accelerometer=(), gyroscope=(), magnetometer=()">
 <meta name="description" content="Gecko's Gateway: DNS, network reachability, IP, RDAP, fingerprint and password tools.">
@@ -287,25 +287,10 @@
 
 <section id="mcgecko-panel" class="tab-panel">
 <div class="section mcgecko-section">
-<h2>🦎 mcGecko</h2>
-<p class="help-text">Gecko vs. Malware! Collect every anti-virus CD, avoid the malware, and clear the maze. Arrow keys or WASD to move. Grab a shield CD to turn the tables for a few seconds.</p>
-<div class="mcgecko-wrap">
-<div class="mcgecko-hud">
-<span>Score: <strong id="mcgecko-score">0</strong></span>
-<span>Lives: <strong id="mcgecko-lives">3</strong></span>
-<span>Level: <strong id="mcgecko-level">1</strong></span>
-<span>Power: <strong id="mcgecko-power">—</strong></span>
-</div>
-<canvas id="mcgecko-canvas" width="560" height="620" aria-label="mcGecko maze game"></canvas>
-<div class="mcgecko-controls">
-<button class="action-btn" id="mcgecko-start">▶ Start / Restart</button>
-<button class="secondary-btn" id="mcgecko-pause">⏸ Pause</button>
-</div>
-<p class="mcgecko-status" id="mcgecko-status" aria-live="polite">Press Start, then use Arrow Keys or WASD.</p>
-<p class="help-text small-note">Tip: this is a browser-only game. No game data or keystrokes are sent anywhere.</p>
-</div>
-</div>
-</section>
+<div id="hud"><div id="bars"><div class="bar"><div id="hp"></div></div><div class="bar"><div id="sh"></div></div></div><div id="info"></div><div id="chips"></div></div>
+<canvas id="mm" width="108" height="108"></canvas><div id="toast"></div>
+<div id="ov"><h1 id="t">GECKO.EXE</h1><p id="sub">10 floors. one gecko. all the malware.</p><button id="go">BOOT</button><small>WASD move · mouse look · click lash · shift dash</small></div>
+</div></section>
 
 <section id="pwd-panel" class="tab-panel">
 <div class="section">
@@ -380,6 +365,7 @@
 <footer>🦎 Gecko's Gateway</footer>
 </main>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
 <script src="app.js" defer></script>
 <script src="mcgecko.js" defer></script>
 </body>
