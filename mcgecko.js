@@ -116,7 +116,7 @@
     d.enemies.forEach(e=>objects.push({x:e.x,y:e.y,type:e.kind,size:1}));
     d.cds.forEach(q=>objects.push({x:q.x,y:q.y,type:"cd",size:.72}));
     d.health.forEach(q=>objects.push({x:q.x,y:q.y,type:"health",size:.62}));
-    if(d.box&&!d.boxOpen)objects.push({x:d.box.x,y:d.box.y,type:"box",size:1}));
+    if(d.box&&!d.boxOpen)objects.push({x:d.box.x,y:d.box.y,type:"box",size:1});
     objects.push({x:d.exit.x,y:d.exit.y,type:"exit",size:.9});
     objects.sort((a,b)=>dist(b,p)-dist(a,p));
     for(const o of objects)drawVoxel(o.x,o.y,o.type,o.size);
