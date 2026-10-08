@@ -1,3 +1,27 @@
+(() => {
+  function loadThree(src){
+    return new Promise((resolve,reject)=>{
+      const s=document.createElement('script');
+      s.src=src;s.onload=()=>resolve();s.onerror=reject;
+      document.head.appendChild(s);
+    });
+  }
+  async function bootGame(){
+    if(!window.THREE){
+      try{await loadThree('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js')}
+      catch(e){
+        try{await loadThree('https://unpkg.com/three@0.128.0/build/three.min.js')}
+        catch(err){
+          const ov=document.getElementById('ov'), sub=document.getElementById('sub');
+          if(sub)sub.textContent='3D engine could not load. Check your connection, then refresh.';
+          if(ov)ov.style.display='flex';
+          return;
+        }
+      }
+    }
+    initGame();
+  }
+  function initGame(){
 const T=THREE,R=Math.random,ri=(a,b)=>a+Math.floor(R()*(b-a+1)),pick=a=>a[ri(0,a.length-1)],S=2,N=27;
 const $=id=>document.getElementById(id);
 const renderer=new T.WebGLRenderer({antialias:true});
@@ -316,3 +340,7 @@ addEventListener('keydown',e=>{K[e.code]=true;if(e.code==='Space')e.preventDefau
 addEventListener('keyup',e=>K[e.code]=false);
 addEventListener('resize',()=>{renderer.setSize(innerWidth,innerHeight);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix()});
 loop();
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bootGame,{once:true});
+  else bootGame();
+})();
