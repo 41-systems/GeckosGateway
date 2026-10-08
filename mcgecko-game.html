@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none';">
+<title>GECKO.EXE</title>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05090a;color:#dfffe9;font-family:system-ui,sans-serif}
+#mcgecko-game-root{position:relative;width:100%;height:100%;overflow:hidden;background:#05090a}
+#mcgecko-game-root>canvas:first-child{position:absolute;inset:0;width:100%!important;height:100%!important}
+#hud{position:absolute;left:16px;top:16px;z-index:5;pointer-events:none}
+#bars{display:flex;flex-direction:column;gap:6px;width:180px}
+.bar{height:9px;background:#18251f;border:1px solid #3a5648;border-radius:99px;overflow:hidden}
+#hp,#sh{height:100%;width:100%;background:#3dff8a}
+#sh{background:#75b7ff}
+#info{margin-top:8px;font:700 12px/1.3 ui-monospace,monospace;text-shadow:0 1px 3px #000}
+#chips{margin-top:4px;font:11px/1.3 ui-monospace,monospace}
+#mm{position:absolute;right:16px;top:16px;width:108px;height:108px;z-index:5;border:1px solid #527060;background:#08100caa}
+#toast{position:absolute;left:50%;top:18%;transform:translateX(-50%);z-index:6;font-weight:800;letter-spacing:.08em;text-shadow:0 2px 8px #000;pointer-events:none}
+#ov{position:absolute;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:radial-gradient(circle,#10251a99,#020605dd 70%);backdrop-filter:blur(2px)}
+#ov h1{margin:0 0 8px;font:900 clamp(38px,7vw,76px)/1 monospace;letter-spacing:.08em;color:#baffcf;text-shadow:0 0 24px #3dff8a55}
+#ov p{margin:0 0 20px;color:#b8cfc1}
+#ov button{padding:12px 26px;border:1px solid #5cff9b;border-radius:8px;background:#102d1d;color:#dffff0;font-weight:800;cursor:pointer}
+#ov small{margin-top:14px;color:#91aa9b}
+</style>
+</head>
+<body>
+<div id="mcgecko-game-root">
+<div id="hud"><div id="bars"><div class="bar"><div id="hp"></div></div><div class="bar"><div id="sh"></div></div></div><div id="info"></div><div id="chips"></div></div>
+<canvas id="mm" width="108" height="108"></canvas><div id="toast"></div>
+<div id="ov"><h1 id="t">GECKO.EXE</h1><p id="sub">10 floors. one gecko. all the malware.</p><button id="go">BOOT</button><small>WASD move · mouse look · click lash · shift dash</small></div>
+</div>
+<script src="vendor/three.min.js"></script>
+<script src="mcgecko.js"></script>
+</body>
+</html>
