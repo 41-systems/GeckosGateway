@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self'; img-src data:; connect-src 'self' https:; frame-src https://www.openstreetmap.org; object-src 'none'; base-uri 'none'; form-action 'none'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self'; img-src data:; connect-src 'self' https:; frame-src 'self' https://www.openstreetmap.org; object-src 'none'; base-uri 'none'; form-action 'none'; upgrade-insecure-requests">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=(), usb=(), accelerometer=(), gyroscope=(), magnetometer=()">
 <meta name="description" content="Gecko's Gateway: DNS, network reachability, IP, RDAP, fingerprint and password tools.">
@@ -287,11 +287,9 @@
 
 <section id="mcgecko-panel" class="tab-panel">
 <div class="section mcgecko-section">
-<div id="mcgecko-game-root">
-<div id="hud"><div id="bars"><div class="bar"><div id="hp"></div></div><div class="bar"><div id="sh"></div></div></div><div id="info"></div><div id="chips"></div></div>
-<canvas id="mm" width="108" height="108"></canvas><div id="toast"></div>
-<div id="ov"><h1 id="t">GECKO.EXE</h1><p id="sub">10 floors. one gecko. all the malware.</p><button id="go">BOOT</button><small>WASD move · mouse look · click lash · shift dash</small></div>
-</div></div></section>
+<iframe id="mcgecko-frame" title="Gecko.EXE game" src="mcgecko-game.html" loading="eager"></iframe>
+</div>
+</section>
 
 <section id="pwd-panel" class="tab-panel">
 <div class="section">
@@ -366,9 +364,6 @@
 <footer>🦎 Gecko's Gateway</footer>
 </main>
 
-<script src="vendor/three.min.js" defer></script>
-<script src="vendor/three.min.js" defer></script>
 <script src="app.js" defer></script>
-<script src="mcgecko.js" defer></script>
 </body>
 </html>
