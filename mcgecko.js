@@ -1,10 +1,15 @@
 (() => {
+  let initialized=false;
+  const showError=(e)=>{
+    const sub=document.getElementById("sub"), ov=document.getElementById("ov");
+    if(sub)sub.textContent="GECKO.EXE failed to initialize: "+(e&&e.message?e.message:"unknown error");
+    if(ov)ov.style.display="flex";
+    console.error("GECKO.EXE init error",e);
+  };
   const start=()=>{
-    if(!window.THREE){
-      const sub=document.getElementById("sub");
-      if(sub)sub.textContent="3D engine unavailable — refresh the page.";
-      return;
-    }
+    if(initialized)return;
+    if(!window.THREE){showError(new Error("Three.js did not load"));return;}
+    try{
     const T=THREE,R=Math.random,ri=(a,b)=>a+Math.floor(R()*(b-a+1)),pick=a=>a[ri(0,a.length-1)],S=2,N=27;
 const $=id=>document.getElementById(id);
 const renderer=new T.WebGLRenderer({antialias:true});
